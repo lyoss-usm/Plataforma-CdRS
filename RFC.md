@@ -53,7 +53,7 @@
 ## 3. Diseño Técnico y Arquitectura
 
 * **Diagrama de Contexto:**
-<img width="1261" height="945" alt="image" src="https://github.com/user-attachments/assets/b822e204-872e-4bd7-9f7e-2ebd494a51af" />
+<img alt="image" src="https://github.com/user-attachments/assets/5721775a-dc90-4dcd-8cff-b9f812e73466" />
 
 * **Stack e Infraestructura:**
     * **Lenguajes/Librerias (Solo las mas importantes):** Svelte 5, Tailwind 4, Typescript, SQL.
