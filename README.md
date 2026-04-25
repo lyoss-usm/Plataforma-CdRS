@@ -1,30 +1,32 @@
-# [Nombre del proyecto CAMBIAR] ![](https://img.shields.io/badge/estado-activo-green) ![](https://img.shields.io/github/license/lyoss-usm/NOMBRE_DEL_REPOSITORIO-CAMBIAR)
+# Plataforma Club de Rol Sansano ![](https://img.shields.io/badge/estado-activo-green) ![](https://img.shields.io/github/license/lyoss-usm/Plataforma-CdRS)
 
-Pequeña descripción del proyecto..
+Este repositorio es para el **Sistema de Gestion de Prestamos e Inventario** diseñado para el *Club de Rol Sansano*. Contempla tanto una plataforma administrativa como un portal web abierto al publico, enfocandose en el **perfomance** y **UI/UX**.
+
 
 ## Seguimiento
-- Puedes seguir el progreso del proyecto en [GitHub Projects](https://link-de-gh-projects-CAMBIAR.com).
-- Para reportar problemas o sugerencias, visita [GitHub Issues](https://link-de-gh-issues-CAMBIAR.com).
-- Documentación adicional disponible en [GitHub Wiki](https://link-de-gh-wiki-CAMBIAR.com). (SOLO SI EL PROYECTO TIENE WIKI)
+- Puedes seguir el progreso del proyecto en [GitHub Projects](https://github.com/orgs/lyoss-usm/projects/18).
+- Para reportar problemas o sugerencias, visita [GitHub Issues](https://github.com/lyoss-usm/Plataforma-CdRS/issues).
+- Documentación adicional disponible en [GitHub Wiki](https://github.com/lyoss-usm/Plataforma-CdRS/wiki).
 
 ## Requisitos
-- [Requisito 1](https://enlace-al-requisito.com) (>= 1.0.0)
-- [Requisito 2](https://enlace-al-requisito.com) (>= 2.0.0)
+- [Node.js](https://nodejs.org/en) (>= 22.x)
+- [pnpm](https://pnpm.io/es/) (>= 10.x)
 
 ## Quick Start
-1. Clona el repositorio:
-    ```bash
-    git clone https://github.com/lyoss-usm/<nombre-del-proyecto>.git
-    ```
+1. Clona este repositorio:
+   ```bash
+   git clone https://github.com/lyoss-usm/Plataforma-CdRS.git
+   ```
 2. Navega al directorio del proyecto:
-    ```bash
-    cd <nombre-del-proyecto>
-    ```
+   ```bash
+   cd Plataforma-CdRS
+   ```
 3. Instala las dependencias:
-    ```bash
-    install dependencies
-    ```
-4. Ejecuta el proyecto:
-    ```bash
-    run project
-    ```
+   ```bash
+   pnpm install
+   ```
+4. Inicia el servidor de desarrollo:
+   ```bash
+   pnpm dev
+   ```
+5. Abre tu navegador y visita [http://localhost:5173/](http://localhost:5173/) para ver el sitio web en acción.
