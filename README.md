@@ -8,24 +8,25 @@ Este repositorio es para el **Sistema de Gestion de Prestamos e Inventario** dis
 - Para reportar problemas o sugerencias, visita [GitHub Issues](https://github.com/lyoss-usm/Plataforma-CdRS/issues).
 - Documentación adicional disponible en [GitHub Wiki](https://github.com/lyoss-usm/Plataforma-CdRS/wiki).
 
-## Requisitos (por definir)
-- [Requisito 1](https://enlace-al-requisito.com) (>= 1.0.0)
-- [Requisito 2](https://enlace-al-requisito.com) (>= 2.0.0)
+## Requisitos
+- [Node.js](https://nodejs.org/en) (>= 22.x)
+- [pnpm](https://pnpm.io/es/) (>= 10.x)
 
-## Quick Start (por definir)
-1. Clona el repositorio:
-    ```bash
-    git clone https://github.com/lyoss-usm/Plataforma-CdRS.git
-    ```
+## Quick Start
+1. Clona este repositorio:
+   ```bash
+   git clone https://github.com/lyoss-usm/Plataforma-CdRS.git
+   ```
 2. Navega al directorio del proyecto:
-    ```bash
-    cd Plataforma-CdRS
-    ```
+   ```bash
+   cd Plataforma-CdRS
+   ```
 3. Instala las dependencias:
-    ```bash
-    install dependencies
-    ```
-4. Ejecuta el proyecto:
-    ```bash
-    run project
-    ```
+   ```bash
+   pnpm install
+   ```
+4. Inicia el servidor de desarrollo:
+   ```bash
+   pnpm dev
+   ```
+5. Abre tu navegador y visita [http://localhost:5173/](http://localhost:5173/) para ver el sitio web en acción.
