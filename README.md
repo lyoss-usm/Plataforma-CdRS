@@ -11,6 +11,7 @@ Este repositorio es para el **Sistema de Gestion de Prestamos e Inventario** dis
 ## Requisitos
 - [Node.js](https://nodejs.org/en) (>= 22.x)
 - [pnpm](https://pnpm.io/es/) (>= 10.x)
+- [Make](https://www.gnu.org/software/make/) (>= 4.x)
 
 ## Quick Start
 1. Clona este repositorio:
@@ -21,12 +22,18 @@ Este repositorio es para el **Sistema de Gestion de Prestamos e Inventario** dis
    ```bash
    cd Plataforma-CdRS
    ```
-3. Instala las dependencias:
+3. Instala las dependencias y configura el entorno:
    ```bash
-   pnpm install
+   make init
    ```
 4. Inicia el servidor de desarrollo:
    ```bash
-   pnpm dev
+   make start
    ```
 5. Abre tu navegador y visita [http://localhost:5173/](http://localhost:5173/) para ver el sitio web en acción.
+
+> [!TIP]
+> Para ver mas comandos disponibles, ejecuta:
+> ```bash
+> make help
+> ```
