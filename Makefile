@@ -1,4 +1,4 @@
-.PHONY: all init start stop clean help
+.PHONY: all init start stop clean test-schemas help
 
 all: init start
 
@@ -9,6 +9,7 @@ help:
 	@echo "  init   - Instala dependencias y configura el entorno."
 	@echo "  start  - Inicia el entorno Supabase local y el servidor de desarrollo."
 	@echo "  stop   - Detiene el entorno Supabase local sin hacer backup."
+	@echo "  test-schemas - Ejecuta validaciones rapidas de schemas Zod."
 	@echo "  clean  - Limpia todos los contenedores, imágenes y volúmenes de Docker."
 
 	@echo "  help   - Muestra esta ayuda."
@@ -27,6 +28,9 @@ start:
 stop:
 	@echo "Deteniendo entorno supabase local..."
 	@pnpx supabase stop --no-backup
+
+test-schemas:
+	@node --experimental-strip-types scripts/test-schemas.ts
 
 clean:
 	@sudo docker system prune -a --volumes -f
