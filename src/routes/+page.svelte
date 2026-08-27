@@ -1,50 +1,101 @@
 <script lang="ts">
 	import LogoCoin from '$lib/components/LogoCoin.svelte';
+
+	const navLinks = [
+		{ href: '#inicio', label: 'Inicio' },
+		{ href: '#sobre-nosotros', label: 'Nosotros' },
+		{ href: '#faq', label: 'FAQ' },
+		{ href: '#redes', label: 'Redes' }
+	];
 </script>
 
-<header class="sticky top-0 z-40 surface-level-1">
-	<nav class="flex h-16 items-center justify-center glass-border">
-		<span class="font-display text-headline-md font-semibold tracking-tight text-on-surface">
-			Navegación
-		</span>
+<header class="fixed top-0 z-40 w-full border-b border-glass-border surface-level-1">
+	<nav class="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-6 px-6">
+		<a href="#inicio" class="flex shrink-0 items-center gap-3" aria-label="Ir al inicio">
+			<img
+				src="/logos/logo.webp"
+				alt="Logo del Club de Rol Sansano"
+				class="h-9 w-9 rounded-full object-cover"
+				width="36"
+				height="36"
+			/>
+			<span
+				class="hidden font-display text-headline-md font-semibold tracking-tight text-on-surface sm:block"
+			>
+				CdRS
+			</span>
+		</a>
+
+		<div class="hidden items-center gap-8 md:flex">
+			{#each navLinks as link}
+				<a
+					href={link.href}
+					class="font-mono text-label-md tracking-[0.05em] text-on-surface-variant uppercase transition hover:text-on-surface"
+				>
+					{link.label}
+				</a>
+			{/each}
+		</div>
+
+		<a
+			href="#catalogo"
+			class="shrink-0 rounded-base border border-primary/50 bg-primary/10 px-4 py-2 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow"
+		>
+			Ver catálogo
+		</a>
 	</nav>
 </header>
 
 <main>
 	<section
 		id="inicio"
-		class="flex min-h-screen scroll-mt-16 items-center justify-center overflow-hidden glass-border"
+		class="relative flex h-screen scroll-mt-16 items-center justify-center overflow-hidden glass-border"
 	>
-		<div class="mx-auto grid w-full max-w-6xl items-center gap-12 px-6 lg:grid-cols-2 lg:px-12">
-			<div class="flex flex-col items-start gap-6">
-				<span class="font-mono text-label-md text-on-surface-variant uppercase"
-					>Club de Rol Sansano</span
-				>
-				<h1 class="font-display text-headline-xl font-bold text-on-surface">
-					La mesa de los que juegan
-				</h1>
-				<p class="max-w-md text-body-lg leading-relaxed text-on-surface-variant">
-					Explora el catálogo de juegos de mesa del CdRS y solicita tu préstamo en segundos.
-				</p>
-				<div class="flex flex-wrap gap-4">
-					<a
-						href="#catalogo"
-						class="rounded-base border border-primary/50 bg-primary/10 px-6 py-3 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow"
-						>Ver catálogo</a
-					>
-					<a
-						href="#sobre-nosotros"
-						class="rounded-base border border-glass-border px-6 py-3 font-semibold text-on-surface-variant transition hover:bg-white/5 hover:text-on-surface"
-						>Conócenos</a
-					>
+		<div
+			class="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden select-none"
+			aria-hidden="true"
+		></div>
+
+		<div
+			class="relative z-10 mx-auto flex w-full max-w-5xl flex-col items-center gap-2 px-6 text-center sm:gap-6"
+		>
+			<span class="text-label-lg font-mono tracking-[0.05em] text-on-surface-variant uppercase"
+				>Club de Rol</span
+			>
+			<span
+				class="font-display text-[clamp(4rem,10vw,18rem)] leading-none font-bold tracking-tight whitespace-nowrap uppercase"
+			>
+				Sansano
+			</span>
+
+			<div class="flex flex-col items-center">
+				<div class="relative aspect-square w-28 sm:w-32">
+					<div class="absolute inset-2 rounded-full bg-ice-glow blur-2xl" aria-hidden="true"></div>
+					<div class="absolute inset-0">
+						<LogoCoin />
+					</div>
 				</div>
+
+				<img
+					src="/rolo/rolo_admirando_arriba_fix.png"
+					alt="Rolo admirando la moneda del club"
+					class="-mt-6 w-60 select-none sm:w-72"
+					width="436"
+					height="400"
+				/>
 			</div>
 
-			<div class="relative mx-auto aspect-square w-full max-w-105">
-				<div class="absolute inset-6 rounded-full"></div>
-				<div class="absolute inset-0 p-6">
-					<LogoCoin />
-				</div>
+			<div class="flex flex-wrap justify-center gap-4">
+				<a
+					href="#catalogo"
+					class="rounded-base border border-primary/50 bg-primary/10 px-6 py-3 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow"
+					>Ver catálogo</a
+				>
+				<a
+					href="#sobre-nosotros"
+					class="rounded-base border border-glass-border px-6 py-3 font-semibold text-on-surface-variant transition hover:bg-white/5 hover:text-on-surface"
+					>Conócenos</a
+				>
 			</div>
 		</div>
 	</section>
