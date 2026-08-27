@@ -1,4 +1,4 @@
-.PHONY: all init start stop clean design help
+.PHONY: all init start stop clean help
 
 all: init start
 
@@ -10,7 +10,7 @@ help:
 	@echo "  start  - Inicia el entorno Supabase local y el servidor de desarrollo."
 	@echo "  stop   - Detiene el entorno Supabase local sin hacer backup."
 	@echo "  clean  - Limpia todos los contenedores, imágenes y volúmenes de Docker."
-	@echo "  design - Sirve la guía de diseño estática (design/) en http://localhost:8000."
+	@echo ""
 
 	@echo "  help   - Muestra esta ayuda."
 
@@ -31,7 +31,3 @@ stop:
 
 clean:
 	@sudo docker system prune -a --volumes -f
-
-design:
-	@echo "Sirviendo guía de diseño en http://localhost:8000 (Ctrl+C para detener)..."
-	@python3 -m http.server 8000 --directory design
