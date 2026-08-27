@@ -4,8 +4,8 @@
 
 	const navLinks = [
 		{ href: '#inicio', label: 'Inicio' },
+		{ href: '#catalogo', label: 'Catálogo' },
 		{ href: '#sobre-nosotros', label: 'Nosotros' },
-		{ href: '#eventos', label: 'Eventos' },
 		{ href: '#faq', label: 'FAQ' },
 		{ href: '#redes', label: 'Redes' }
 	];
@@ -340,6 +340,13 @@
 	</section>
 
 	<section
+		id="catalogo"
+		class="flex h-screen scroll-mt-16 flex-col items-center justify-center gap-4 glass-border"
+	>
+		<h2 class="font-display text-headline-lg font-semibold text-on-surface">Catálogo</h2>
+	</section>
+
+	<section
 		id="sobre-nosotros"
 		class="relative flex scroll-mt-16 flex-col items-center justify-center gap-4 glass-border bg-surface-container-lowest p-12 px-6 py-24"
 	>
@@ -402,46 +409,78 @@
 			{/each}
 		</div>
 	</section>
-
-	<section
-		id="redes"
-		class="flex scroll-mt-16 flex-col items-center justify-center gap-4 glass-border bg-surface-container-lowest p-12 px-6 py-24"
-	>
-		<h2 class="font-display text-headline-lg font-semibold text-on-surface">Redes</h2>
-
-		<div class="mt-4 flex flex-wrap items-center justify-center gap-x-10 gap-y-5 max-sm:flex-col">
-			{#each socials as social (social.name)}
-				<a
-					href={social.url}
-					target="_blank"
-					rel="noopener noreferrer"
-					aria-label={social.name}
-					class="flex items-center gap-3 text-on-surface-variant transition hover:text-on-surface"
-				>
-					<svg
-						viewBox="0 0 24 24"
-						class="h-6 w-6 text-primary"
-						fill="currentColor"
-						aria-hidden="true"
-					>
-						<path d={social.path} />
-					</svg>
-					<span class="font-mono text-label-md tracking-wider uppercase">{social.handle}</span>
-				</a>
-			{/each}
-		</div>
-	</section>
-
-	<section
-		id="catalogo"
-		class="flex h-screen scroll-mt-16 flex-col items-center justify-center gap-4 glass-border"
-	>
-		<h2 class="font-display text-headline-lg font-semibold text-on-surface">Catálogo</h2>
-	</section>
 </main>
 
-<footer class="flex items-center justify-center gap-4 glass-border surface-level-1 p-8">
-	<span class="font-mono text-label-md text-on-surface-variant uppercase"
-		>CdRS · Club de Rol Sansano</span
-	>
+<footer id="redes" class="scroll-mt-16 border-t border-glass-border surface-level-1">
+	<div class="mx-auto max-w-6xl px-6 py-16">
+		<div class="grid gap-10 md:grid-cols-3">
+			<div class="flex flex-col items-start gap-3">
+				<a href="#inicio" class="flex items-center gap-3" aria-label="Ir al inicio">
+					<img
+						src="/logos/logo.webp"
+						alt="Logo del Club de Rol Sansano"
+						class="h-9 w-9 rounded-full object-cover"
+						width="36"
+						height="36"
+					/>
+					<span class="font-display text-headline-md font-semibold tracking-tight text-on-surface"
+						>Club de Rol Sansano</span
+					>
+				</a>
+				<p class="max-w-xs text-body-md text-on-surface-variant">
+					El club de rol del sur: dados, historias y buenas juntas.
+				</p>
+			</div>
+
+			<nav class="flex flex-col gap-2">
+				<span class="font-mono text-label-md tracking-wider text-on-surface-variant uppercase"
+					>Navegación</span
+				>
+				{#each navLinks as link (link.href)}
+					<a
+						href={link.href}
+						class="text-body-md text-on-surface-variant transition hover:text-on-surface"
+					>
+						{link.label}
+					</a>
+				{/each}
+			</nav>
+
+			<div class="flex flex-col gap-2">
+				<span class="font-mono text-label-md tracking-wider text-on-surface-variant uppercase"
+					>Redes</span
+				>
+				{#each socials as social (social.name)}
+					<a
+						href={social.url}
+						target="_blank"
+						rel="noopener noreferrer"
+						aria-label={social.name}
+						class="group flex items-center gap-3 text-on-surface-variant transition hover:text-primary"
+					>
+						<svg
+							viewBox="0 0 24 24"
+							class="h-5 w-5 text-primary"
+							fill="currentColor"
+							aria-hidden="true"
+						>
+							<path d={social.path} />
+						</svg>
+						<span class="font-mono text-label-md tracking-wider uppercase">{social.handle}</span>
+					</a>
+				{/each}
+			</div>
+		</div>
+
+		<div
+			class="mt-12 flex flex-col items-center justify-between gap-2 border-t border-glass-border pt-6 sm:flex-row"
+		>
+			<span class="font-mono text-label-md tracking-wider text-on-surface-variant uppercase"
+				>© {new Date().getFullYear()} · Club de Rol Sansano</span
+			>
+			<span class="font-mono text-label-md tracking-wider text-on-surface-variant uppercase"
+				>Hecho con 🎲</span
+			>
+		</div>
+	</div>
 </footer>
