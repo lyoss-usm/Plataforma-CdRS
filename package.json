@@ -39,5 +39,10 @@
 	"engines": {
 		"node": ">=22.0.0",
 		"pnpm": ">=10.0.0"
+	},
+	"dependencies": {
+		"@threlte/core": "^8.6.0",
+		"@types/three": "^0.185.4",
+		"three": "^0.185.1"
 	}
 }
