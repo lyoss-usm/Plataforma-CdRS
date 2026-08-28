@@ -1,6 +1,6 @@
 CREATE TYPE "tipo" AS ENUM (
-	'Juego Base',
-	'Expansión'
+	'Expansión',
+	'Juego base'
 );
 
 CREATE TYPE "dificultad" AS ENUM (
@@ -49,6 +49,8 @@ CREATE TABLE IF NOT EXISTS "Juego" (
 	"nombreJuego" TEXT NOT NULL UNIQUE,
 	-- Tipo de juego de mesa; Juego base o Expansión
 	"tipo" TIPO NOT NULL,
+	-- Si el juego es una expansión, id del juego base al que pertenece; NULL si el juego es un juego base.
+	"idJuegoBase" INTEGER,
 	-- Edad mínima recomendada para el juego de mesa
 	"edadMinima" SMALLINT,
 	-- Cantidad mínima de jugadores para el juego de mesa
@@ -70,10 +72,10 @@ CREATE TABLE IF NOT EXISTS "Juego" (
 	PRIMARY KEY("idJuego")
 );
 
-
 COMMENT ON COLUMN "Juego"."idJuego" IS 'Identificador único del juego de mesa';
 COMMENT ON COLUMN "Juego"."nombreJuego" IS 'Nombre del juego de mesa';
 COMMENT ON COLUMN "Juego"."tipo" IS 'Tipo de juego de mesa; Juego base o Expansión';
+COMMENT ON COLUMN "Juego"."idJuegoBase" IS 'Si el juego es una expansión, id del juego base al que pertenece; NULL si el juego es un juego base.';
 COMMENT ON COLUMN "Juego"."edadMinima" IS 'Edad mínima recomendada para el juego de mesa';
 COMMENT ON COLUMN "Juego"."jugadoresMin" IS 'Cantidad mínima de jugadores para el juego de mesa';
 COMMENT ON COLUMN "Juego"."jugadoresMax" IS 'Cantidad máxima de jugadores para el juego de mesa';
@@ -83,12 +85,13 @@ COMMENT ON COLUMN "Juego"."dificultad" IS 'Dificultad del juego de mesa; Fácil,
 COMMENT ON COLUMN "Juego"."pathImagen" IS 'Ruta interna de la imagen del juego de mesa';
 COMMENT ON COLUMN "Juego"."manual" IS 'Link al manual del juego de mesa';
 COMMENT ON COLUMN "Juego"."video" IS 'Link al video tutorial del juego de mesa';
+
 CREATE INDEX "idx_juego_tipo"
 ON "Juego" ("tipo");
 
 CREATE TABLE IF NOT EXISTS "Ejemplar" (
 	-- Identificador único del ejemplar, gestionado como QR
-	"idEjemplar" UUID NOT NULL,
+	"idEjemplar" TEXT NOT NULL,
 	-- Identificador del juego al que pertenece el ejemplar
 	"idJuego" INTEGER NOT NULL,
 	-- Indicador de si el juego es propiedad del club (false) o está prestado al club (true)
@@ -106,7 +109,6 @@ CREATE TABLE IF NOT EXISTS "Ejemplar" (
 	PRIMARY KEY("idEjemplar")
 );
 
-
 COMMENT ON COLUMN "Ejemplar"."idEjemplar" IS 'Identificador único del ejemplar, gestionado como QR';
 COMMENT ON COLUMN "Ejemplar"."idJuego" IS 'Identificador del juego al que pertenece el ejemplar';
 COMMENT ON COLUMN "Ejemplar"."esExterno" IS 'Indicador de si el juego es propiedad del club (false) o está prestado al club (true)';
@@ -115,6 +117,7 @@ COMMENT ON COLUMN "Ejemplar"."situacion" IS 'Descripción del estado general del
 COMMENT ON COLUMN "Ejemplar"."comentarios" IS 'Descripción detallada de las piezas faltantes del ejemplar';
 COMMENT ON COLUMN "Ejemplar"."componentes" IS 'Descripcion detallada de los componentes del ejemplar';
 COMMENT ON COLUMN "Ejemplar"."estadoEjemplar" IS 'Estado actual del ejemplar; En bodega, Prestado, Perdido, Para revisar, Con su dueño';
+
 CREATE INDEX "idx_ejemplar_juego_estado"
 ON "Ejemplar" ("idJuego", "estadoEjemplar");
 CREATE INDEX "idx_ejemplar_estado"
@@ -126,9 +129,9 @@ CREATE TABLE IF NOT EXISTS "Solicitud" (
 	-- Rut del sansano que realizó la solicitud
 	"rutSansano" INTEGER NOT NULL,
 	-- Identificador del ejemplar solicitado
-	"idEjemplar" UUID NOT NULL,
+	"idEjemplar" TEXT NOT NULL,
 	-- Identificador de la expansión solicitada. NULL si no se solicita
-	"idExpansion" UUID,
+	"idExpansion" TEXT,
 	-- Timestamp de la solicitud
 	"fechaSolicitud" TIMESTAMP NOT NULL,
 	-- Día seleccionado por el sansano para retirar el ejemplar del juego de mesa
@@ -142,7 +145,6 @@ CREATE TABLE IF NOT EXISTS "Solicitud" (
 	PRIMARY KEY("idSolicitud")
 );
 
-
 COMMENT ON COLUMN "Solicitud"."idSolicitud" IS 'Identificado único de la solicitud';
 COMMENT ON COLUMN "Solicitud"."rutSansano" IS 'Rut del sansano que realizó la solicitud';
 COMMENT ON COLUMN "Solicitud"."idEjemplar" IS 'Identificador del ejemplar solicitado';
@@ -154,6 +156,7 @@ Pendiente: En espera del retiro del ejemplar.
 Aprobado: Ejemplar retirado.
 Rechazado: Solicitud rechazada.
 Vencida: No se retiró el el ejemplar el día seleccionado';
+
 CREATE INDEX "idx_solicitud_estado_fecha_seleccionada"
 ON "Solicitud" ("estadoSolicitud", "fechaSeleccionada");
 CREATE INDEX "idx_solicitud_rut_sansano"
@@ -191,7 +194,6 @@ CREATE TABLE IF NOT EXISTS "Prestamo" (
 	PRIMARY KEY("idPrestamo")
 );
 
-
 COMMENT ON COLUMN "Prestamo"."idPrestamo" IS 'Identificador único del préstamo
 ';
 COMMENT ON COLUMN "Prestamo"."idSolicitud" IS 'Identificador de la solicitud que origina el préstamo';
@@ -205,6 +207,7 @@ COMMENT ON COLUMN "Prestamo"."tipoDocumento" IS 'Tipo de documento que se entreg
 COMMENT ON COLUMN "Prestamo"."comentarios" IS 'Comentarios opcionales sobre el préstamo';
 COMMENT ON COLUMN "Prestamo"."estadoPrestamo" IS 'Estado actual del préstamo;
 Activo: Préstamo en curso. Devuelto: ítems regresados. Cerrado: Ítems revisados y el proceso finalizado.';
+
 CREATE INDEX "idx_prestamo_id_solicitud"
 ON "Prestamo" ("idSolicitud");
 CREATE INDEX "idx_prestamo_estado"
@@ -230,7 +233,6 @@ CREATE TABLE IF NOT EXISTS "Sansano" (
 	PRIMARY KEY("rutSansano")
 );
 
-
 COMMENT ON COLUMN "Sansano"."rutSansano" IS 'Rut del sansano sin dígito verificador';
 COMMENT ON COLUMN "Sansano"."rolSansano" IS 'Rol USM del sansano sin dígito verificador';
 COMMENT ON COLUMN "Sansano"."digitoVerificador" IS 'Dígito verificador del rut y rol. El valor 10 representa K';
@@ -239,6 +241,7 @@ COMMENT ON COLUMN "Sansano"."nombreSansano" IS 'Nombre completo del sansano';
 COMMENT ON COLUMN "Sansano"."telefono" IS 'Número de teléfono móvil chileno, sin prefijo +569';
 COMMENT ON COLUMN "Sansano"."correoInstitucional" IS 'Correo institucional del sansano';
 COMMENT ON COLUMN "Sansano"."authUserId" IS 'Identificador del usuario asociado en Supabase Auth. NULL si no tiene cuenta.';
+
 CREATE INDEX "idx_sansano_id_cargo"
 ON "Sansano" ("idCargo");
 
@@ -258,13 +261,13 @@ CREATE TABLE IF NOT EXISTS "Suspension" (
 	PRIMARY KEY("idSuspencion")
 );
 
-
 COMMENT ON COLUMN "Suspension"."idSuspencion" IS 'Identificador único de la suspención';
 COMMENT ON COLUMN "Suspension"."rutSansano" IS 'Rut del sansano suspendido';
 COMMENT ON COLUMN "Suspension"."rutModerador" IS 'Rut del moderador que aplicó la suspención';
 COMMENT ON COLUMN "Suspension"."fechaInicio" IS 'Timestamp del inicio de la suspención';
 COMMENT ON COLUMN "Suspension"."fechaTermino" IS 'Timestamp del termino de la suspención. NULL si es una suspención permanente';
 COMMENT ON COLUMN "Suspension"."razon" IS 'Razón de la suspención';
+
 CREATE INDEX "idx_suspencion_sansano_fecha_fin"
 ON "Suspension" ("rutSansano", "fechaTermino");
 
@@ -278,11 +281,9 @@ CREATE TABLE IF NOT EXISTS "Cargo" (
 	PRIMARY KEY("idCargo")
 );
 
-
 COMMENT ON COLUMN "Cargo"."idCargo" IS 'Identificador único del cargo interno del club';
 COMMENT ON COLUMN "Cargo"."nombreCargo" IS 'Nombre del cargo interno del club';
 COMMENT ON COLUMN "Cargo"."descripcionCargo" IS 'Descripción opcional del cargo';
-
 
 CREATE TABLE IF NOT EXISTS "CargoPermiso" (
 	-- Identificador del cargo
@@ -292,10 +293,8 @@ CREATE TABLE IF NOT EXISTS "CargoPermiso" (
 	PRIMARY KEY("idCargo", "idPermiso")
 );
 
-
 COMMENT ON COLUMN "CargoPermiso"."idCargo" IS 'Identificador del cargo';
 COMMENT ON COLUMN "CargoPermiso"."idPermiso" IS 'Identificador del permiso';
-
 
 CREATE TABLE IF NOT EXISTS "Permiso" (
 	-- Identificador único del permiso otorgado a un cargo
@@ -306,7 +305,6 @@ CREATE TABLE IF NOT EXISTS "Permiso" (
 	"descripcionPermiso" TEXT,
 	PRIMARY KEY("idPermiso")
 );
-
 
 COMMENT ON COLUMN "Permiso"."idPermiso" IS 'Identificador único del permiso otorgado a un cargo';
 COMMENT ON COLUMN "Permiso"."nombrePermiso" IS 'Nombre del permiso otorgado a un cargo';
@@ -351,3 +349,6 @@ ON UPDATE CASCADE ON DELETE CASCADE;
 ALTER TABLE "CargoPermiso"
 ADD FOREIGN KEY("idPermiso") REFERENCES "Permiso"("idPermiso")
 ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE "Juego"
+ADD FOREIGN KEY("idJuegoBase") REFERENCES "Juego"("idJuego")
+ON UPDATE CASCADE ON DELETE RESTRICT;
