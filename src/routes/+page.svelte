@@ -1015,9 +1015,15 @@
 			<span class="font-mono text-label-md tracking-wider text-on-surface-variant uppercase"
 				>© {new Date().getFullYear()} · Club de Rol Sansano</span
 			>
-			<span class="font-mono text-label-md tracking-wider text-on-surface-variant uppercase"
-				>Hecho con 🎲</span
+			<div
+				class="flex flex-wrap items-center justify-end gap-x-2 font-mono text-label-md tracking-wider uppercase"
 			>
+				<span class="text-on-surface-variant">Hecho por</span>
+				<a class="font-semibold text-primary" href="https://www.lyoss.org/">
+					Linux y OpenSource USM
+					<span class="text-on-surface-variant">🎲</span>
+				</a>
+			</div>
 		</div>
 	</div>
 </footer>
