@@ -6,12 +6,14 @@ import {
 	createPrestamoSchema,
 	createSansanoSchema,
 	createSolicitudSchema,
+	juegoSchema,
 	permisoSchema,
-	suspensionSchema
+	suspensionSchema,
+	updateJuegoSchema
 } from '../src/lib/schemas/index.ts';
 
-const idEjemplar = '550e8400-e29b-41d4-a716-446655440000';
-const idExpansion = '550e8400-e29b-41d4-a716-446655440001';
+const idEjemplar = 'QR-CATAN-001';
+const idExpansion = 'QR-CATAN-EXP-001';
 const authUserId = '550e8400-e29b-41d4-a716-446655440002';
 const rutSansano = 12345678;
 const rutStaff = 87654321;
@@ -23,7 +25,8 @@ const cases = [
 		schema: createJuegoSchema,
 		value: {
 			nombreJuego: 'Catan',
-			tipo: 'Juego Base',
+			tipo: 'Juego base',
+			idJuegoBase: null,
 			edadMinima: 10,
 			jugadoresMin: 3,
 			jugadoresMax: 4,
@@ -131,6 +134,34 @@ const cases = [
 	}
 ];
 
+const invalidCases = [
+	{
+		name: 'Juego base con idJuegoBase',
+		schema: createJuegoSchema,
+		value: { ...cases[0].value, idJuegoBase: 2 }
+	},
+	{
+		name: 'Expansión sin idJuegoBase',
+		schema: createJuegoSchema,
+		value: { ...cases[0].value, tipo: 'Expansión', idJuegoBase: null }
+	},
+	{
+		name: 'Expansión autorreferenciada',
+		schema: juegoSchema,
+		value: { idJuego: 2, ...cases[0].value, tipo: 'Expansión', idJuegoBase: 2 }
+	},
+	{
+		name: 'Actualización incompleta de clasificación',
+		schema: updateJuegoSchema,
+		value: { tipo: 'Expansión' }
+	},
+	{
+		name: 'Identificador de ejemplar vacío',
+		schema: createEjemplarSchema,
+		value: { ...cases[1].value, idEjemplar: '   ' }
+	}
+];
+
 let hasErrors = false;
 
 for (const testCase of cases) {
@@ -144,6 +175,18 @@ for (const testCase of cases) {
 	}
 
 	console.log(`${testCase.name}: valido`);
+}
+
+for (const testCase of invalidCases) {
+	const result = testCase.schema.safeParse(testCase.value);
+
+	if (result.success) {
+		hasErrors = true;
+		console.error(`\n${testCase.name}: debió ser inválido`);
+		continue;
+	}
+
+	console.log(`${testCase.name}: inválido según lo esperado`);
 }
 
 if (hasErrors) {

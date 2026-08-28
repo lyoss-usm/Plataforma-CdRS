@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const tipoSchema = z.enum(['Juego Base', 'Expansión']);
+export const tipoSchema = z.enum(['Juego base', 'Expansión']);
 export type Tipo = z.infer<typeof tipoSchema>;
 
 export const dificultadSchema = z.enum(['Fácil', 'Intermedio', 'Difícil']);

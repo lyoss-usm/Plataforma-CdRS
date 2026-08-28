@@ -1,9 +1,9 @@
 import { z } from 'zod';
-import { integerIdSchema, nullableTextSchema, uuidSchema } from './common.ts';
+import { ejemplarIdSchema, integerIdSchema, nullableTextSchema } from './common.ts';
 import { completitudSchema, estadoEjemplarSchema } from './enums.ts';
 
 const ejemplarShape = {
-	idEjemplar: uuidSchema,
+	idEjemplar: ejemplarIdSchema,
 	idJuego: integerIdSchema,
 	esExterno: z.boolean(),
 	estadoCompletitud: completitudSchema,

@@ -1,12 +1,18 @@
 import { z } from 'zod';
-import { dateSchema, integerIdSchema, rutSchema, timestampSchema, uuidSchema } from './common.ts';
+import {
+	dateSchema,
+	ejemplarIdSchema,
+	integerIdSchema,
+	rutSchema,
+	timestampSchema
+} from './common.ts';
 import { estadoSolicitudSchema } from './enums.ts';
 
 const solicitudShape = {
 	idSolicitud: integerIdSchema,
 	rutSansano: rutSchema,
-	idEjemplar: uuidSchema,
-	idExpansion: uuidSchema.nullable(),
+	idEjemplar: ejemplarIdSchema,
+	idExpansion: ejemplarIdSchema.nullable(),
 	fechaSolicitud: timestampSchema,
 	fechaSeleccionada: dateSchema,
 	estadoSolicitud: estadoSolicitudSchema
