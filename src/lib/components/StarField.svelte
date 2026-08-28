@@ -119,7 +119,7 @@
 		const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 		let t = 0;
 		const frame = () => {
-			t += 0.016;
+			t += 0.016 * 2;
 			draw(t);
 			if (!reduced) raf = requestAnimationFrame(frame);
 		};
