@@ -385,7 +385,7 @@
 <main>
 	<section
 		id="inicio"
-		class="relative mt-12 flex scroll-mt-16 flex-col items-center justify-center gap-16 glass-border px-6 py-16"
+		class="relative mt-16 flex scroll-mt-16 flex-col items-center justify-center gap-16 glass-border px-6 py-16"
 	>
 		<div
 			class="pointer-events-none absolute inset-0 flex items-center justify-center overflow-hidden select-none"
