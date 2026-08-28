@@ -1021,7 +1021,7 @@
 				<span class="text-on-surface-variant">Hecho por</span>
 				<a class="font-semibold text-primary" href="https://www.lyoss.org/">
 					Linux y OpenSource USM
-					<span class="text-on-surface-variant">🎲</span>
+					<span class="text-on-surface-variant">🐧</span>
 				</a>
 			</div>
 		</div>
