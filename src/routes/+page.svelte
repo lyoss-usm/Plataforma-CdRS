@@ -163,6 +163,14 @@
 	let minRating = $state('cualquiera');
 	let selected: CatalogGame | null = $state(null);
 
+	let termsAccepted = $state(false);
+	let submitting = $state(false);
+	let submitted = $state(false);
+	let nameValue = $state('');
+	let rolValue = $state('');
+	let emailValue = $state('');
+	let commentValue = $state('');
+
 	const CATALOG_PAGE_SIZE = 10;
 	let visibleCount = $state(CATALOG_PAGE_SIZE);
 
@@ -274,7 +282,29 @@
 	});
 
 	const closeMenu = () => (menuOpen = false);
+
+	const openReservation = (game: CatalogGame) => {
+		selected = game;
+		termsAccepted = false;
+		submitting = false;
+		submitted = false;
+		nameValue = '';
+		rolValue = '';
+		emailValue = '';
+		commentValue = '';
+	};
+
 	const closeModal = () => (selected = null);
+
+	const handleSubmit = (event: SubmitEvent) => {
+		event.preventDefault();
+		if (submitting) return;
+		submitting = true;
+		setTimeout(() => {
+			submitting = false;
+			submitted = true;
+		}, 800);
+	};
 </script>
 
 <svelte:window
@@ -812,9 +842,11 @@
 			{#each visibleGames as game (game.id)}
 				<button
 					type="button"
-					onclick={() => (selected = game)}
+					onclick={() => game.status === 'available' && openReservation(game)}
 					class="group flex cursor-pointer flex-col text-left"
-					aria-label={`Reservar ${game.name}`}
+					aria-label={game.status === 'available'
+						? `Reservar ${game.name}`
+						: `${game.name}, prestado`}
 				>
 					<div
 						class="relative aspect-[3/4] overflow-hidden rounded-base bg-surface-container-lowest"
@@ -1033,42 +1065,215 @@
 		class="fixed inset-0 z-50 flex items-center justify-center p-4"
 		role="dialog"
 		aria-modal="true"
-		aria-label={`Reserva de ${selected.name}`}
+		aria-label={`Pedir ${selected.name}`}
 	>
 		<button
 			type="button"
 			class="absolute inset-0 cursor-pointer bg-black/60 backdrop-blur-sm"
-			aria-label="Cerrar aviso"
+			aria-label="Cerrar formulario"
 			onclick={closeModal}
 		></button>
 		<div
-			class="relative w-full max-w-md rounded-base surface-level-3 border border-glass-border p-8 text-center"
+			class="relative max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-base surface-level-3 border border-glass-border p-6 sm:p-8"
 		>
-			<div
-				class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-primary/40 bg-primary/15"
+			<button
+				type="button"
+				onclick={closeModal}
+				aria-label="Cerrar formulario"
+				class="absolute top-3 right-3 z-10 flex h-9 w-9 cursor-pointer items-center justify-center rounded-base border border-glass-border bg-black/30 text-on-surface-variant transition hover:bg-black/50 hover:text-on-surface"
 			>
 				<svg
 					viewBox="0 0 24 24"
-					class="h-6 w-6 text-primary"
+					class="h-5 w-5"
 					fill="none"
 					stroke="currentColor"
 					aria-hidden="true"
 				>
-					<path d="M12 9v4 M12 16.5h.01" stroke-linecap="round" stroke-width="2" />
+					<path d="M18 6 6 18 M6 6l12 12" stroke-linecap="round" stroke-width="2" />
 				</svg>
-			</div>
-			<h3 class="font-display text-headline-md font-semibold text-on-surface">{selected.name}</h3>
-			<p class="mt-2 text-body-md text-on-surface-variant">
-				Las reservas aún no están disponibles. Muy pronto podrás apartar tus juegos directamente
-				desde aquí.
-			</p>
-			<button
-				type="button"
-				onclick={closeModal}
-				class="mt-6 cursor-pointer rounded-base border border-primary/50 bg-primary/10 px-6 py-2 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow"
-			>
-				Entendido
 			</button>
+			{#if submitted}
+				<div class="flex flex-col items-center gap-3 py-6 text-center">
+					<div
+						class="flex h-14 w-14 items-center justify-center rounded-full border border-primary/50 bg-primary/15"
+					>
+						<svg
+							viewBox="0 0 24 24"
+							class="h-7 w-7 text-primary"
+							fill="none"
+							stroke="currentColor"
+							aria-hidden="true"
+						>
+							<path d="M20 6 9 17l-5-5" stroke-linecap="round" stroke-width="2.2" />
+						</svg>
+					</div>
+					<h3 class="font-display text-headline-md font-semibold text-on-surface">
+						Solicitud enviada
+					</h3>
+					<p class="text-body-md text-on-surface-variant">
+						El pedido de <span class="font-semibold text-on-surface">{selected.name}</span>
+						quedó registrado. Te contactaremos para coordinar la entrega.
+					</p>
+					<button
+						type="button"
+						onclick={closeModal}
+						class="mt-4 cursor-pointer rounded-base border border-primary/50 bg-primary/10 px-6 py-2 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow"
+					>
+						Listo
+					</button>
+				</div>
+			{:else}
+				<div class="mb-6 flex gap-4">
+					<img
+						src={selected.cover}
+						alt={`Caja de ${selected.name}`}
+						class="h-24 w-20 rounded-base border border-glass-border bg-surface-container-lowest object-cover"
+						width="80"
+						height="96"
+					/>
+					<div class="flex flex-col justify-center gap-1">
+						<span class="font-mono text-label-md tracking-wider text-on-surface-variant uppercase"
+							>Pedir juego</span
+						>
+						<h3 class="font-display text-headline-md leading-tight font-semibold text-on-surface">
+							{selected.name}
+						</h3>
+						<p class="font-mono text-sm text-on-surface-variant">
+							{selected.minPlayers}–{selected.maxPlayers} jug.
+							{selected.minTime === selected.maxTime
+								? `· ${selected.minTime} min`
+								: `· ${selected.minTime}–${selected.maxTime} min`}
+						</p>
+						{#if selected.status === 'loaned'}
+							<span
+								class="w-fit rounded-full border border-glass-border bg-black/40 px-2 py-0.5 font-mono text-xs tracking-wider text-on-surface-variant uppercase"
+							>
+								Prestado
+							</span>
+						{/if}
+					</div>
+				</div>
+
+				<form onsubmit={handleSubmit} class="flex flex-col gap-4">
+					<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+						<div class="flex flex-col gap-1.5">
+							<label
+								for="pedir-nombre"
+								class="font-mono text-label-md tracking-wider text-on-surface-variant uppercase"
+							>
+								Nombre
+							</label>
+							<input
+								id="pedir-nombre"
+								type="text"
+								bind:value={nameValue}
+								placeholder="Tu nombre completo"
+								class="w-full rounded-base border border-glass-border bg-surface-container-lowest px-4 py-2.5 text-body-md text-on-surface transition outline-none placeholder:text-on-surface-variant/70 focus:border-primary/50"
+							/>
+						</div>
+						<div class="flex flex-col gap-1.5">
+							<label
+								for="pedir-rol"
+								class="font-mono text-label-md tracking-wider text-on-surface-variant uppercase"
+							>
+								ROL
+							</label>
+							<input
+								id="pedir-rol"
+								type="text"
+								bind:value={rolValue}
+								placeholder="12345678-9"
+								class="w-full rounded-base border border-glass-border bg-surface-container-lowest px-4 py-2.5 font-mono text-body-md text-on-surface transition outline-none placeholder:text-on-surface-variant/70 focus:border-primary/50"
+							/>
+						</div>
+					</div>
+
+					<div class="flex flex-col gap-1.5">
+						<label
+							for="pedir-correo"
+							class="font-mono text-label-md tracking-wider text-on-surface-variant uppercase"
+						>
+							Correo
+						</label>
+						<input
+							id="pedir-correo"
+							type="email"
+							bind:value={emailValue}
+							placeholder="correo@usm.cl"
+							class="w-full rounded-base border border-glass-border bg-surface-container-lowest px-4 py-2.5 text-body-md text-on-surface transition outline-none placeholder:text-on-surface-variant/70 focus:border-primary/50"
+						/>
+					</div>
+
+					<div class="flex flex-col gap-1.5">
+						<label
+							for="pedir-comentario"
+							class="font-mono text-label-md tracking-wider text-on-surface-variant uppercase"
+						>
+							Comentario <span class="normal-case opacity-60">(opcional)</span>
+						</label>
+						<textarea
+							id="pedir-comentario"
+							bind:value={commentValue}
+							rows="2"
+							placeholder="Algo que debamos saber…"
+							class="w-full resize-none rounded-base border border-glass-border bg-surface-container-lowest px-4 py-2.5 text-body-md text-on-surface transition outline-none placeholder:text-on-surface-variant/70 focus:border-primary/50"
+						></textarea>
+					</div>
+
+					<details class="rounded-base border border-glass-border bg-surface-container-lowest px-4">
+						<summary
+							class="cursor-pointer py-3 font-mono text-label-md tracking-wider text-on-surface-variant uppercase select-none hover:text-on-surface"
+						>
+							Términos y Condiciones
+						</summary>
+						<div class="text-body-sm flex flex-col gap-2 pb-4 text-on-surface-variant">
+							<p>
+								Los préstamos son gratuitos y exclusivos para estudiantes USM. Al retirar un juego
+								te haces responsable de la caja y su contenido.
+							</p>
+							<p>
+								Devuelve la caja completa y en el mismo estado, dentro del plazo acordado con el
+								club.
+							</p>
+							<p>
+								El club se reserva el derecho de suspender el préstamo en caso de atrasos o daños
+								recurrentes.
+							</p>
+						</div>
+					</details>
+
+					<label class="text-body-sm flex cursor-pointer items-start gap-3 text-on-surface-variant">
+						<input
+							type="checkbox"
+							bind:checked={termsAccepted}
+							class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-primary"
+						/>
+						<span>He leído y acepto los términos y condiciones del préstamo.</span>
+					</label>
+
+					<button
+						type="submit"
+						disabled={!termsAccepted || submitting}
+						aria-busy={submitting}
+						class="disabled:ice-glow-none mt-1 flex w-full cursor-pointer items-center justify-center gap-2 rounded-base border border-primary/50 bg-primary/10 px-6 py-2.5 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-primary/10"
+					>
+						{#if submitting}
+							<svg
+								viewBox="0 0 24 24"
+								class="h-4 w-4 animate-spin"
+								fill="none"
+								stroke="currentColor"
+								aria-hidden="true"
+							>
+								<path d="M21 12a9 9 0 1 1-6.219-8.56" stroke-linecap="round" stroke-width="2.2" />
+							</svg>
+							Enviando…
+						{:else}
+							Enviar solicitud
+						{/if}
+					</button>
+				</form>
+			{/if}
 		</div>
 	</div>
 {/if}
