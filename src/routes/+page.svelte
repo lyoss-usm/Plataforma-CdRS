@@ -462,16 +462,40 @@
 				{/each}
 			</div>
 		</div>
+
+		<img
+			src="/rolo/rolo_corriendo_apurado_fix.png"
+			alt="Rolo corriendo apurado de regreso al catálogo"
+			class="pointer-events-none absolute bottom-2 left-0 z-10 hidden w-40 drop-shadow-lg select-none md:block lg:w-52"
+			loading="lazy"
+			width="358"
+			height="360"
+		/>
 	</section>
 
 	<section
 		id="catalogo"
 		class="flex scroll-mt-16 flex-col items-center gap-8 glass-border px-6 py-24"
 	>
-		<h2 class="font-display text-headline-lg font-semibold text-on-surface">Catálogo</h2>
-		<p class="max-w-xl text-center text-body-md text-on-surface-variant">
-			Préstamo gratuito entre estudiantes. Cada caja viene completa, con sus instrucciones y piezas.
-		</p>
+		<div class="flex w-full max-w-6xl flex-col gap-8">
+			<div class="flex gap-4 sm:flex-row sm:items-end sm:justify-between">
+				<div class="flex flex-col gap-2">
+					<h2 class="font-display text-headline-lg font-semibold text-on-surface">Catálogo</h2>
+					<p class="max-w-xl text-body-md text-on-surface-variant">
+						Préstamo gratuito entre estudiantes. Cada caja viene completa, con sus instrucciones y
+						piezas.
+					</p>
+				</div>
+				<img
+					src="/rolo/rolo_cargando_cajas_fix.png"
+					alt="Rolo cargando cajas de juegos del catálogo"
+					class="w-28 shrink-0 self-start drop-shadow-lg sm:w-32 lg:w-36"
+					loading="lazy"
+					width="200"
+					height="200"
+				/>
+			</div>
+		</div>
 
 		<div class="flex w-full max-w-6xl flex-col gap-3">
 			<div
@@ -878,6 +902,15 @@
 				</div>
 			{/each}
 		</div>
+
+		<img
+			src="/rolo/rolo_saludando.webp"
+			alt="Rolo saludando a los integrantes del club"
+			class="pointer-events-none absolute right-0 bottom-2 z-10 hidden w-44 -scale-x-100 drop-shadow-lg select-none md:block lg:w-52"
+			loading="lazy"
+			width="400"
+			height="400"
+		/>
 	</section>
 
 	<section
