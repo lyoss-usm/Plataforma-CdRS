@@ -11,7 +11,7 @@ export type AdminRoute =
 	| '/admin/solicitudes'
 	| '/admin/inventario'
 	| '/admin/miembros'
-	| '/admin/miembros?tab=sanciones';
+	| '/admin/miembros?tab=moderacion';
 
 export type LoanRoute = '/admin/prestamos?tipo=general' | '/admin/prestamos?tipo=junta';
 
@@ -20,7 +20,7 @@ export const loanRouteFor: Record<LoanType, LoanRoute> = {
 	junta: '/admin/prestamos?tipo=junta'
 };
 
-export const moderacionRoute: AdminRoute = '/admin/miembros?tab=sanciones';
+export const moderacionRoute: AdminRoute = '/admin/miembros?tab=moderacion';
 
 export const roleMeta: Record<
 	AdminRole,
@@ -163,9 +163,9 @@ export const sidebarSections: { title: string; links: SidebarLink[] }[] = [
 				roles: ['junior', 'senior', 'directivo'],
 				children: [
 					{
-						id: 'sanciones',
+						id: 'moderacion',
 						href: moderacionRoute,
-						label: 'Sanciones',
+						label: 'Moderación',
 						icon: 'shield-check',
 						roles: ['directivo']
 					}

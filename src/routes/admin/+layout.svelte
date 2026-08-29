@@ -37,7 +37,7 @@
 	const activeId = $derived.by(() => {
 		const path = page.url.pathname;
 		if (path.startsWith('/admin/miembros')) {
-			return page.url.searchParams.get('tab') === 'sanciones' ? 'sanciones' : 'miembros';
+			return page.url.searchParams.get('tab') === 'moderacion' ? 'moderacion' : 'miembros';
 		}
 		if (path.startsWith('/admin/solicitudes')) return 'solicitudes';
 		if (path.startsWith('/admin/inventario')) return 'inventario';
@@ -51,7 +51,7 @@
 	);
 
 	const isActive = (id: string) =>
-		id === activeId || (id === 'miembros' && activeId === 'sanciones');
+		id === activeId || (id === 'miembros' && activeId === 'moderacion');
 
 	const linkClasses = (id: string) =>
 		isActive(id)

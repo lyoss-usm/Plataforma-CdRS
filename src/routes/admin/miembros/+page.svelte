@@ -7,13 +7,13 @@
 	import { moderacionRoute } from '$lib/data/admin';
 	import { adminSession } from '$lib/stores/adminSession.svelte';
 
-	type MembersTab = 'miembros' | 'sanciones';
+	type MembersTab = 'miembros' | 'moderacion';
 
 	const role = $derived(adminSession.user.role);
-	const canManageSanciones = $derived(role === 'directivo');
+	const canManageModeracion = $derived(role === 'directivo');
 	const tab = $derived<MembersTab>(
-		page.url.searchParams.get('tab') === 'sanciones' && canManageSanciones
-			? 'sanciones'
+		page.url.searchParams.get('tab') === 'moderacion' && canManageModeracion
+			? 'moderacion'
 			: 'miembros'
 	);
 
@@ -21,7 +21,7 @@
 		t === tab ? 'bg-tertiary/15 text-tertiary' : 'text-on-surface-variant hover:text-on-surface';
 
 	$effect(() => {
-		if (page.url.searchParams.get('tab') === 'sanciones' && !canManageSanciones) {
+		if (page.url.searchParams.get('tab') === 'moderacion' && !canManageModeracion) {
 			goto(resolve('/admin/miembros'));
 		}
 	});
@@ -29,7 +29,7 @@
 
 <SectionPage title="Miembros del Club">
 	{#snippet actions()}
-		{#if canManageSanciones}
+		{#if canManageModeracion}
 			<div
 				class="flex items-center rounded-base border border-glass-border bg-white/5 p-0.5"
 				role="group"
@@ -46,18 +46,18 @@
 				</a>
 				<a
 					href={resolve(moderacionRoute)}
-					aria-current={tab === 'sanciones' ? 'page' : undefined}
+					aria-current={tab === 'moderacion' ? 'page' : undefined}
 					class="rounded-base px-3 py-1.5 font-mono text-label-md tracking-wider uppercase transition {tabClasses(
-						'sanciones'
+						'moderacion'
 					)}"
 				>
-					Sanciones
+					Moderación
 				</a>
 			</div>
 		{/if}
 	{/snippet}
 
-	{#if tab === 'sanciones'}
+	{#if tab === 'moderacion'}
 		<SectionPlaceholder
 			description="Permisos y baneos de usuarios. Esta vista aún no tiene maqueta."
 		/>
