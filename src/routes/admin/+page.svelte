@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import Icon from '$lib/components/Icon.svelte';
 	import { quickActions } from '$lib/data/admin';
 	import { adminSession } from '$lib/stores/adminSession.svelte';
 
@@ -29,18 +30,7 @@
 					<span
 						class="flex h-9 w-9 shrink-0 items-center justify-center rounded-base border border-glass-border bg-primary/10 text-primary"
 					>
-						<svg
-							viewBox="0 0 24 24"
-							class="h-4 w-4"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="1.8"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							aria-hidden="true"
-						>
-							<path d={action.icon} />
-						</svg>
+						<Icon name={action.icon} class="h-4 w-4" />
 					</span>
 					<span class="flex min-w-0 flex-col gap-0.5">
 						<span class="font-display text-body-md leading-tight font-semibold text-on-surface">
@@ -65,18 +55,7 @@
 					type="button"
 					class="flex items-center gap-2 rounded-base border border-primary/50 bg-primary/10 px-4 py-2 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow"
 				>
-					<svg
-						viewBox="0 0 24 24"
-						class="h-5 w-5"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="1.8"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						aria-hidden="true"
-					>
-						<path d="M12 3v11m0 0 4-4m-4 4-4-4M4 20h16" />
-					</svg>
+					<Icon name="download" class="h-5 w-5" />
 					Exportar
 				</button>
 			</div>

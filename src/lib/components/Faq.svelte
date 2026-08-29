@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { Plus } from '@lucide/svelte';
+
 	const faqs = [
 		{
 			q: '¿Necesito experiencia previa?',
@@ -42,16 +44,11 @@
 					class="flex cursor-pointer list-none items-center justify-between gap-4 rounded-base px-5 py-4 font-display text-body-lg font-semibold text-on-surface select-none [&::-webkit-details-marker]:hidden"
 				>
 					<span>{faq.q}</span>
-					<svg
-						viewBox="0 0 24 24"
+					<Plus
 						class="h-5 w-5 shrink-0 text-primary transition-transform group-open:rotate-45"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="1.8"
+						strokeWidth={1.8}
 						aria-hidden="true"
-					>
-						<path d="M12 5v14 M5 12h14" stroke-linecap="round" />
-					</svg>
+					/>
 				</summary>
 				<p class="px-5 pb-5 text-body-md text-on-surface-variant">{faq.a}</p>
 			</details>

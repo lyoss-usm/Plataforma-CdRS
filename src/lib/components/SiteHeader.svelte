@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { Menu, X } from '@lucide/svelte';
+
 	const navLinks = [
 		{ href: '#inicio', label: 'Inicio' },
 		{ href: '#sobre-nosotros', label: 'Nosotros' },
@@ -62,25 +64,9 @@
 				onclick={() => (menuOpen = !menuOpen)}
 			>
 				{#if menuOpen}
-					<svg
-						viewBox="0 0 24 24"
-						class="h-6 w-6"
-						fill="none"
-						stroke="currentColor"
-						aria-hidden="true"
-					>
-						<path d="M6 6l12 12 M18 6L6 18" stroke-linecap="round" stroke-width="1.8" />
-					</svg>
+					<X class="h-6 w-6" strokeWidth={1.8} aria-hidden="true" />
 				{:else}
-					<svg
-						viewBox="0 0 24 24"
-						class="h-6 w-6"
-						fill="none"
-						stroke="currentColor"
-						aria-hidden="true"
-					>
-						<path d="M4 7h16 M4 12h16 M4 17h16" stroke-linecap="round" stroke-width="1.8" />
-					</svg>
+					<Menu class="h-6 w-6" strokeWidth={1.8} aria-hidden="true" />
 				{/if}
 			</button>
 		</div>

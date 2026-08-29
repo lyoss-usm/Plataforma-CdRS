@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Check, ChevronDown, LoaderCircle, Search, X } from '@lucide/svelte';
 	import { catalog, type CatalogGame } from '$lib/data/catalog';
 
 	const CATALOG_PAGE_SIZE = 10;
@@ -188,19 +189,7 @@
 		<div
 			class="flex items-center gap-3 rounded-base border border-glass-border bg-surface-container-lowest px-4 py-2.5 text-on-surface-variant transition focus-within:border-primary/40"
 		>
-			<svg
-				viewBox="0 0 24 24"
-				class="h-5 w-5 shrink-0"
-				fill="none"
-				stroke="currentColor"
-				aria-hidden="true"
-			>
-				<path
-					d="M21 21l-4.35-4.35M17 11a6 6 0 1 1-12 0 6 6 0 0 1 12 0Z"
-					stroke-linecap="round"
-					stroke-width="1.8"
-				/>
-			</svg>
+			<Search class="h-5 w-5 shrink-0" strokeWidth={1.8} aria-hidden="true" />
 			<input
 				type="search"
 				bind:value={query}
@@ -229,15 +218,7 @@
 					{#if players !== 'cualquiera'}
 						<span class="hidden sm:inline">· {optionLabels.players}</span>
 					{/if}
-					<svg
-						viewBox="0 0 24 24"
-						class="h-4 w-4"
-						fill="none"
-						stroke="currentColor"
-						aria-hidden="true"
-					>
-						<path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-width="2" />
-					</svg>
+					<ChevronDown class="h-4 w-4" strokeWidth={2} aria-hidden="true" />
 				</button>
 
 				{#if openDropdown === 'players'}
@@ -258,15 +239,7 @@
 									{opt.label}
 								</span>
 								{#if players === opt.value}
-									<svg
-										viewBox="0 0 24 24"
-										class="h-4 w-4 text-primary"
-										fill="none"
-										stroke="currentColor"
-										aria-hidden="true"
-									>
-										<path d="M20 6 9 17l-5-5" stroke-linecap="round" stroke-width="2.2" />
-									</svg>
+									<Check class="h-4 w-4 text-primary" strokeWidth={2.2} aria-hidden="true" />
 								{/if}
 							</button>
 						{/each}
@@ -293,15 +266,7 @@
 					{#if duration !== 'cualquiera'}
 						<span class="hidden sm:inline">· {optionLabels.duration}</span>
 					{/if}
-					<svg
-						viewBox="0 0 24 24"
-						class="h-4 w-4"
-						fill="none"
-						stroke="currentColor"
-						aria-hidden="true"
-					>
-						<path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-width="2" />
-					</svg>
+					<ChevronDown class="h-4 w-4" strokeWidth={2} aria-hidden="true" />
 				</button>
 
 				{#if openDropdown === 'duration'}
@@ -322,15 +287,7 @@
 									{opt.label}
 								</span>
 								{#if duration === opt.value}
-									<svg
-										viewBox="0 0 24 24"
-										class="h-4 w-4 text-primary"
-										fill="none"
-										stroke="currentColor"
-										aria-hidden="true"
-									>
-										<path d="M20 6 9 17l-5-5" stroke-linecap="round" stroke-width="2.2" />
-									</svg>
+									<Check class="h-4 w-4 text-primary" strokeWidth={2.2} aria-hidden="true" />
 								{/if}
 							</button>
 						{/each}
@@ -357,15 +314,7 @@
 					{#if statusFilter !== 'cualquiera'}
 						<span class="hidden sm:inline">· {optionLabels.status}</span>
 					{/if}
-					<svg
-						viewBox="0 0 24 24"
-						class="h-4 w-4"
-						fill="none"
-						stroke="currentColor"
-						aria-hidden="true"
-					>
-						<path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-width="2" />
-					</svg>
+					<ChevronDown class="h-4 w-4" strokeWidth={2} aria-hidden="true" />
 				</button>
 
 				{#if openDropdown === 'status'}
@@ -386,15 +335,7 @@
 									{opt.label}
 								</span>
 								{#if statusFilter === opt.value}
-									<svg
-										viewBox="0 0 24 24"
-										class="h-4 w-4 text-primary"
-										fill="none"
-										stroke="currentColor"
-										aria-hidden="true"
-									>
-										<path d="M20 6 9 17l-5-5" stroke-linecap="round" stroke-width="2.2" />
-									</svg>
+									<Check class="h-4 w-4 text-primary" strokeWidth={2.2} aria-hidden="true" />
 								{/if}
 							</button>
 						{/each}
@@ -421,15 +362,7 @@
 					{#if minRating !== 'cualquiera'}
 						<span class="hidden sm:inline">· {optionLabels.rating}</span>
 					{/if}
-					<svg
-						viewBox="0 0 24 24"
-						class="h-4 w-4"
-						fill="none"
-						stroke="currentColor"
-						aria-hidden="true"
-					>
-						<path d="m6 9 6 6 6-6" stroke-linecap="round" stroke-width="2" />
-					</svg>
+					<ChevronDown class="h-4 w-4" strokeWidth={2} aria-hidden="true" />
 				</button>
 
 				{#if openDropdown === 'rating'}
@@ -450,15 +383,7 @@
 									{opt.label}
 								</span>
 								{#if minRating === opt.value}
-									<svg
-										viewBox="0 0 24 24"
-										class="h-4 w-4 text-primary"
-										fill="none"
-										stroke="currentColor"
-										aria-hidden="true"
-									>
-										<path d="M20 6 9 17l-5-5" stroke-linecap="round" stroke-width="2.2" />
-									</svg>
+									<Check class="h-4 w-4 text-primary" strokeWidth={2.2} aria-hidden="true" />
 								{/if}
 							</button>
 						{/each}
@@ -581,30 +506,14 @@
 				aria-label="Cerrar formulario"
 				class="absolute top-3 right-3 z-10 flex h-9 w-9 cursor-pointer items-center justify-center rounded-base border border-glass-border bg-black/30 text-on-surface-variant transition hover:bg-black/50 hover:text-on-surface"
 			>
-				<svg
-					viewBox="0 0 24 24"
-					class="h-5 w-5"
-					fill="none"
-					stroke="currentColor"
-					aria-hidden="true"
-				>
-					<path d="M18 6 6 18 M6 6l12 12" stroke-linecap="round" stroke-width="2" />
-				</svg>
+				<X class="h-5 w-5" strokeWidth={2} aria-hidden="true" />
 			</button>
 			{#if submitted}
 				<div class="flex flex-col items-center gap-3 py-6 text-center">
 					<div
 						class="flex h-14 w-14 items-center justify-center rounded-full border border-primary/50 bg-primary/15"
 					>
-						<svg
-							viewBox="0 0 24 24"
-							class="h-7 w-7 text-primary"
-							fill="none"
-							stroke="currentColor"
-							aria-hidden="true"
-						>
-							<path d="M20 6 9 17l-5-5" stroke-linecap="round" stroke-width="2.2" />
-						</svg>
+						<Check class="h-7 w-7 text-primary" strokeWidth={2.2} aria-hidden="true" />
 					</div>
 					<h3 class="font-display text-headline-md font-semibold text-on-surface">
 						Solicitud enviada
@@ -757,15 +666,7 @@
 						class="disabled:ice-glow-none mt-1 flex w-full cursor-pointer items-center justify-center gap-2 rounded-base border border-primary/50 bg-primary/10 px-6 py-2.5 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-primary/10"
 					>
 						{#if submitting}
-							<svg
-								viewBox="0 0 24 24"
-								class="h-4 w-4 animate-spin"
-								fill="none"
-								stroke="currentColor"
-								aria-hidden="true"
-							>
-								<path d="M21 12a9 9 0 1 1-6.219-8.56" stroke-linecap="round" stroke-width="2.2" />
-							</svg>
+							<LoaderCircle class="h-4 w-4 animate-spin" strokeWidth={2.2} aria-hidden="true" />
 							Enviando…
 						{:else}
 							Enviar solicitud

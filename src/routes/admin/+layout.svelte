@@ -2,6 +2,8 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
+	import Icon from '$lib/components/Icon.svelte';
+	import type { IconName } from '$lib/icons';
 	import {
 		bottomSlotsByRole,
 		roleMeta,
@@ -43,6 +45,10 @@
 		if (path === '/admin') return 'home';
 		return '';
 	});
+
+	const prestamosIcon = $derived(
+		page.url.searchParams.get('tipo') === 'junta' ? 'boxes' : ('box' as IconName)
+	);
 
 	const isActive = (id: string) =>
 		id === activeId || (id === 'miembros' && activeId === 'sanciones');
@@ -154,18 +160,10 @@
 								link.id
 							)}"
 						>
-							<svg
-								viewBox="0 0 24 24"
+							<Icon
+								name={link.id === 'prestamos' ? prestamosIcon : link.icon}
 								class="h-5 w-5 shrink-0 transition {iconClasses(link.id)}"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="1.8"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								aria-hidden="true"
-							>
-								<path d={link.icon} />
-							</svg>
+							/>
 							<span class="truncate">{link.label}</span>
 						</a>
 						{#each childOf(link) as child (child.id)}
@@ -176,18 +174,10 @@
 									child.id
 								)}"
 							>
-								<svg
-									viewBox="0 0 24 24"
+								<Icon
+									name={child.icon}
 									class="h-4 w-4 shrink-0 transition {iconClasses(child.id)}"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="1.8"
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									aria-hidden="true"
-								>
-									<path d={child.icon} />
-								</svg>
+								/>
 								<span class="truncate">{child.label}</span>
 							</a>
 						{/each}
@@ -212,18 +202,7 @@
 					aria-current={isActive(slot.id) ? 'page' : undefined}
 					class={`flex flex-col items-center justify-center gap-0.5 transition ${isActive(slot.id) ? 'text-primary' : 'text-on-surface-variant hover:text-on-surface'}`}
 				>
-					<svg
-						viewBox="0 0 24 24"
-						class="h-6 w-6"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="1.8"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						aria-hidden="true"
-					>
-						<path d={slot.icon} />
-					</svg>
+					<Icon class="h-6 w-6" name={slot.id === 'prestamos' ? prestamosIcon : slot.icon} />
 					<span class="font-mono text-[10px] tracking-wider uppercase">{slot.label}</span>
 				</a>
 			{/each}
