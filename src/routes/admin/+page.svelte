@@ -20,27 +20,36 @@
 		<h2 class="font-mono text-label-md tracking-wider text-on-surface-variant uppercase">
 			Accesos rápidos
 		</h2>
-		<div class="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+		<div class="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
 			{#each actions as action (action.id)}
 				<a
 					href={resolve(action.href)}
-					class="group flex flex-col gap-2 rounded-base surface-level-2 border border-glass-border p-5 transition hover:scale-[1.02] hover:ice-glow"
+					class="group flex w-full min-w-0 items-center gap-3 rounded-base surface-level-2 border border-glass-border p-3 transition hover:ice-glow"
 				>
-					<svg
-						viewBox="0 0 24 24"
-						class="h-6 w-6 text-primary transition"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="1.8"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-						aria-hidden="true"
+					<span
+						class="flex h-9 w-9 shrink-0 items-center justify-center rounded-base border border-glass-border bg-primary/10 text-primary"
 					>
-						<path d={action.icon} />
-					</svg>
-					<span class="font-display text-body-lg font-semibold text-on-surface">{action.label}</span
-					>
-					<span class="text-body-md text-on-surface-variant">{action.description}</span>
+						<svg
+							viewBox="0 0 24 24"
+							class="h-4 w-4"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.8"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							aria-hidden="true"
+						>
+							<path d={action.icon} />
+						</svg>
+					</span>
+					<span class="flex min-w-0 flex-col gap-0.5">
+						<span class="font-display text-body-md leading-tight font-semibold text-on-surface">
+							{action.label}
+						</span>
+						<span class="text-label-md text-on-surface-variant">
+							{action.description}
+						</span>
+					</span>
 				</a>
 			{/each}
 		</div>
