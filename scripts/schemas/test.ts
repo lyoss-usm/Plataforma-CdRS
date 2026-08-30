@@ -10,7 +10,7 @@ import {
 	permisoSchema,
 	suspensionSchema,
 	updateJuegoSchema
-} from '../src/lib/schemas/index.ts';
+} from '../../src/lib/schemas/index.ts';
 
 const idEjemplar = 'QR-CATAN-001';
 const idExpansion = 'QR-CATAN-EXP-001';
