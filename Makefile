@@ -18,6 +18,7 @@ help:
 	@echo "  test-seed - Valida configuración y factories sin usar la base de datos."
 	@echo "  test-seed-integration - Prueba el seed contra Supabase local."
 	@echo "  clean  - Limpia todos los contenedores, imágenes y volúmenes de Docker."
+	@echo ""
 
 	@echo "  help   - Muestra esta ayuda."
 

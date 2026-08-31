@@ -1,3 +1,5 @@
+allowBuilds:
+  supabase: true
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'
   - esbuild

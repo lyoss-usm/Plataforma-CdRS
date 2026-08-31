@@ -1,1 +1,210 @@
 @import 'tailwindcss';
+
+/* ---------------------------------------------------------------------------
+ * Tema: Frozen Light (dark) — tokens estáticos del lenguaje visual
+ * ------------------------------------------------------------------------ */
+@theme {
+	--font-display: 'Sora', ui-sans-serif, system-ui, sans-serif;
+	--font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+	--font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+	--radius-base: 0.25rem;
+
+	--text-headline-xl: 3rem;
+	--text-headline-xl--line-height: 3.5rem;
+	--text-headline-xl--letter-spacing: -0.02em;
+	--text-headline-lg: 2rem;
+	--text-headline-lg--line-height: 2.5rem;
+	--text-headline-lg--letter-spacing: -0.01em;
+	--text-headline-md: 1.5rem;
+	--text-headline-md--line-height: 2rem;
+	--text-body-lg: 1.125rem;
+	--text-body-lg--line-height: 1.75rem;
+	--text-body-md: 1rem;
+	--text-body-md--line-height: 1.5rem;
+	--text-label-md: 0.875rem;
+	--text-label-md--line-height: 1.25rem;
+	--text-label-md--letter-spacing: 0.05em;
+}
+
+/* ---------------------------------------------------------------------------
+ * Paleta del tema (variará por data-theme, seed de #11)
+ * ------------------------------------------------------------------------ */
+:root {
+	color-scheme: dark;
+}
+
+:root,
+[data-theme='frozen'] {
+	--color-surface: #111318;
+	--color-surface-dim: #111318;
+	--color-surface-bright: #37393e;
+	--color-surface-container-lowest: #0c0e12;
+	--color-surface-container-low: #1a1c20;
+	--color-surface-container: #1e2024;
+	--color-surface-container-high: #282a2e;
+	--color-surface-container-highest: #333539;
+	--color-on-surface: #e2e2e8;
+	--color-on-surface-variant: #bec8ce;
+	--color-inverse-surface: #e2e2e8;
+	--color-inverse-on-surface: #2f3035;
+	--color-outline: #899298;
+	--color-outline-variant: #3f484e;
+	--color-surface-tint: #7bd1fa;
+	--color-primary: #c5eaff;
+	--color-on-primary: #003547;
+	--color-primary-container: #7dd3fc;
+	--color-on-primary-container: #005b78;
+	--color-inverse-primary: #006686;
+	--color-secondary: #bcc7de;
+	--color-on-secondary: #263143;
+	--color-secondary-container: #3e495d;
+	--color-on-secondary-container: #aeb9d0;
+	--color-tertiary: #ffdfba;
+	--color-on-tertiary: #452b00;
+	--color-tertiary-container: #febc60;
+	--color-on-tertiary-container: #754b00;
+	--color-error: #ffb4ab;
+	--color-on-error: #690005;
+	--color-error-container: #93000a;
+	--color-on-error-container: #ffdad6;
+	--color-primary-fixed: #c0e8ff;
+	--color-primary-fixed-dim: #7bd1fa;
+	--color-on-primary-fixed: #001e2b;
+	--color-on-primary-fixed-variant: #004d66;
+	--color-secondary-fixed: #d8e3fb;
+	--color-secondary-fixed-dim: #bcc7de;
+	--color-on-secondary-fixed: #111c2d;
+	--color-on-secondary-fixed-variant: #3c475a;
+	--color-tertiary-fixed: #ffddb5;
+	--color-tertiary-fixed-dim: #fcba5e;
+	--color-on-tertiary-fixed: #2a1800;
+	--color-on-tertiary-fixed-variant: #633f00;
+	--color-background: #111318;
+	--color-on-background: #e2e2e8;
+	--color-surface-variant: #333539;
+
+	/* Efectos propios del lenguaje visual (refracción) */
+	--color-glass-border: rgb(255 255 255 / 0.08);
+	--color-surface-overlay: rgb(15 18 24 / 0.65);
+	--color-ice-glow: rgb(125 211 252 / 0.15);
+}
+
+/* Expone la paleta del tema como utilidades Tailwind sin duplicar variables */
+@theme inline {
+	--color-surface: var(--color-surface);
+	--color-surface-dim: var(--color-surface-dim);
+	--color-surface-bright: var(--color-surface-bright);
+	--color-surface-container-lowest: var(--color-surface-container-lowest);
+	--color-surface-container-low: var(--color-surface-container-low);
+	--color-surface-container: var(--color-surface-container);
+	--color-surface-container-high: var(--color-surface-container-high);
+	--color-surface-container-highest: var(--color-surface-container-highest);
+	--color-on-surface: var(--color-on-surface);
+	--color-on-surface-variant: var(--color-on-surface-variant);
+	--color-inverse-surface: var(--color-inverse-surface);
+	--color-inverse-on-surface: var(--color-inverse-on-surface);
+	--color-outline: var(--color-outline);
+	--color-outline-variant: var(--color-outline-variant);
+	--color-surface-tint: var(--color-surface-tint);
+	--color-primary: var(--color-primary);
+	--color-on-primary: var(--color-on-primary);
+	--color-primary-container: var(--color-primary-container);
+	--color-on-primary-container: var(--color-on-primary-container);
+	--color-inverse-primary: var(--color-inverse-primary);
+	--color-secondary: var(--color-secondary);
+	--color-on-secondary: var(--color-on-secondary);
+	--color-secondary-container: var(--color-secondary-container);
+	--color-on-secondary-container: var(--color-on-secondary-container);
+	--color-tertiary: var(--color-tertiary);
+	--color-on-tertiary: var(--color-on-tertiary);
+	--color-tertiary-container: var(--color-tertiary-container);
+	--color-on-tertiary-container: var(--color-on-tertiary-container);
+	--color-error: var(--color-error);
+	--color-on-error: var(--color-on-error);
+	--color-error-container: var(--color-error-container);
+	--color-on-error-container: var(--color-on-error-container);
+	--color-primary-fixed: var(--color-primary-fixed);
+	--color-primary-fixed-dim: var(--color-primary-fixed-dim);
+	--color-on-primary-fixed: var(--color-on-primary-fixed);
+	--color-on-primary-fixed-variant: var(--color-on-primary-fixed-variant);
+	--color-secondary-fixed: var(--color-secondary-fixed);
+	--color-secondary-fixed-dim: var(--color-secondary-fixed-dim);
+	--color-on-secondary-fixed: var(--color-on-secondary-fixed);
+	--color-on-secondary-fixed-variant: var(--color-on-secondary-fixed-variant);
+	--color-tertiary-fixed: var(--color-tertiary-fixed);
+	--color-tertiary-fixed-dim: var(--color-tertiary-fixed-dim);
+	--color-on-tertiary-fixed: var(--color-on-tertiary-fixed);
+	--color-on-tertiary-fixed-variant: var(--color-on-tertiary-fixed-variant);
+	--color-background: var(--color-background);
+	--color-on-background: var(--color-on-background);
+	--color-surface-variant: var(--color-surface-variant);
+
+	--color-glass-border: var(--color-glass-border);
+	--color-surface-overlay: var(--color-surface-overlay);
+	--color-ice-glow: var(--color-ice-glow);
+}
+
+/* ---------------------------------------------------------------------------
+ * Utilidades del sistema (Refractive Tiers)
+ * ------------------------------------------------------------------------ */
+@utility glass-border {
+	border-width: 1px;
+	border-style: solid;
+	border-color: var(--color-glass-border);
+}
+
+@utility ice-glow {
+	box-shadow: 0 0 40px 0 var(--color-ice-glow);
+}
+
+@utility surface-level-1 {
+	background-color: var(--color-surface-overlay);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+}
+
+@utility surface-level-2 {
+	background-color: var(--color-surface-overlay);
+	border-width: 1px;
+	border-style: solid;
+	border-color: var(--color-glass-border);
+	backdrop-filter: blur(24px);
+	-webkit-backdrop-filter: blur(24px);
+}
+
+@utility surface-level-3 {
+	background-color: var(--color-surface-overlay);
+	border-width: 1px;
+	border-style: solid;
+	border-color: var(--color-glass-border);
+	backdrop-filter: blur(40px);
+	-webkit-backdrop-filter: blur(40px);
+	box-shadow: 0 0 40px 0 var(--color-ice-glow);
+}
+
+/* ---------------------------------------------------------------------------
+ * Base
+ * ------------------------------------------------------------------------ */
+@layer base {
+	html {
+		scroll-behavior: smooth;
+	}
+
+	body {
+		background-color: var(--color-background);
+		color: var(--color-on-background);
+		font-family: var(--font-body);
+		-webkit-font-smoothing: antialiased;
+	}
+
+	::selection {
+		background-color: var(--color-primary-container);
+		color: var(--color-on-primary-container);
+	}
+
+	:focus-visible {
+		outline: 2px solid color-mix(in oklab, var(--color-primary) 60%, transparent);
+		outline-offset: 2px;
+	}
+}
