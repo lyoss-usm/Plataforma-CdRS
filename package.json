@@ -10,12 +10,18 @@
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"db:seed": "node --experimental-strip-types scripts/seed/generate.ts",
+		"db:seed:clean": "node --experimental-strip-types scripts/seed/clean.ts",
+		"db:reset:seed": "pnpx supabase db reset --local && pnpm db:seed",
 		"lint": "prettier --check . && eslint .",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"test:seed": "node --experimental-strip-types scripts/seed/tests/unit.ts",
+		"test:seed:integration": "node --experimental-strip-types scripts/seed/tests/integration.ts"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^2.0.5",
 		"@eslint/js": "^10.0.1",
+		"@faker-js/faker": "^10.6.0",
 		"@sveltejs/adapter-auto": "^7.0.1",
 		"@sveltejs/kit": "^2.57.1",
 		"@sveltejs/vite-plugin-svelte": "^7.0.0",
@@ -25,6 +31,7 @@
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-svelte": "^3.17.1",
 		"globals": "^17.5.0",
+		"postgres": "^3.4.9",
 		"prettier": "^3.8.3",
 		"prettier-plugin-svelte": "^3.5.1",
 		"prettier-plugin-tailwindcss": "^0.7.3",
@@ -37,7 +44,11 @@
 		"vite": "^8.0.10"
 	},
 	"engines": {
-		"node": ">=22.0.0",
+		"node": ">=22.13.0",
 		"pnpm": ">=10.0.0"
-	}
+	},
+	"dependencies": {
+		"zod": "^4.4.3"
+	},
+	"packageManager": "pnpm@11.24.0+sha512.bd27e345e976dcb0be0b7a1228217b049a817e21b1f355c90dbe7dc46671895a8bc1e6d06c24554505ea93ea0b45f489a27ec1bfbc8de6a9659fca0f16fa0000"
 }

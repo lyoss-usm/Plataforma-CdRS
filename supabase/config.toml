@@ -120,7 +120,7 @@ file_size_limit = "50MiB"
 
 # Allow connections via S3 compatible clients
 [storage.s3_protocol]
-enabled = true
+enabled = false # MODIFICADO: Desactivado
 
 # Image transformation API is available to Supabase Pro plan.
 # [storage.image_transformation]
