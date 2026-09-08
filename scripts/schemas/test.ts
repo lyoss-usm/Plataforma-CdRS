@@ -1,6 +1,9 @@
 import {
 	cargoPermisoSchema,
 	cargoSchema,
+	catalogGameSchema,
+	catalogPageSchema,
+	catalogQuerySchema,
 	createEjemplarSchema,
 	createJuegoSchema,
 	createPrestamoSchema,
@@ -18,6 +21,23 @@ const authUserId = '550e8400-e29b-41d4-a716-446655440002';
 const rutSansano = 12345678;
 const rutStaff = 87654321;
 const fechaRetiro = '2026-05-21T18:30:00-04:00';
+
+const catalogGame = {
+	idJuego: 1,
+	nombreJuego: 'Catan',
+	tipo: 'Juego base' as const,
+	idJuegoBase: null,
+	edadMinima: 10,
+	jugadoresMin: 3,
+	jugadoresMax: 4,
+	duracion: 90,
+	calificacion: 7.5,
+	dificultad: 'Intermedio' as const,
+	pathImagen: '/ludoteca/catan.jpg',
+	manual: null,
+	video: null,
+	disponible: true
+};
 
 const cases = [
 	{
@@ -131,10 +151,58 @@ const cases = [
 			idCargo: 1,
 			idPermiso: 1
 		}
+	},
+	{
+		name: 'Juego del catálogo',
+		schema: catalogGameSchema,
+		value: catalogGame
+	},
+	{
+		name: 'Consulta del catálogo',
+		schema: catalogQuerySchema,
+		value: {
+			nombre: 'catan',
+			jugadores: 4,
+			duracionMax: 120,
+			disponible: true,
+			calificacionMin: 7
+		}
+	},
+	{
+		name: 'Página del catálogo',
+		schema: catalogPageSchema,
+		value: {
+			juegos: [catalogGame],
+			total: 1,
+			hayMas: false
+		}
 	}
 ];
 
 const invalidCases = [
+	{
+		name: 'Rango de duración invertido',
+		schema: catalogQuerySchema,
+		value: {
+			duracionMin: 120,
+			duracionMax: 30
+		}
+	},
+	{
+		name: 'Página del catálogo demasiado grande',
+		schema: catalogQuerySchema,
+		value: {
+			limit: 100
+		}
+	},
+	{
+		name: 'Disponibilidad ausente',
+		schema: catalogGameSchema,
+		value: {
+			...catalogGame,
+			disponible: undefined
+		}
+	},
 	{
 		name: 'Juego base con idJuegoBase',
 		schema: createJuegoSchema,
