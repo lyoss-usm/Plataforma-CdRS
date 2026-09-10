@@ -1,8 +1,11 @@
 <script lang="ts">
 	import { onDestroy, untrack } from 'svelte';
-	import { ChevronDown, LoaderCircle, Search } from '@lucide/svelte';
+	import { Check, ChevronDown, LoaderCircle, Search } from '@lucide/svelte';
 	import GameCard from '$lib/components/GameCard.svelte';
 	import type { CatalogPage } from '$lib/schemas';
+
+	type FiltroDuracion = 'cualquiera' | 'corta' | 'media' | 'larga' | 'epica';
+	type MenuFiltro = 'ninguno' | 'jugadores' | 'duracion';
 
 	interface Props {
 		paginaInicial: CatalogPage;
@@ -12,7 +15,20 @@
 	interface FiltrosCatalogo {
 		nombre: string;
 		jugadores: number | null;
+		duracionMin: number | null;
+		duracionMax: number | null;
 	}
+
+	const opcionesDuracion: Array<{
+		value: FiltroDuracion;
+		label: string;
+	}> = [
+		{ value: 'cualquiera', label: 'Cualquiera' },
+		{ value: 'corta', label: '≤ 30 min' },
+		{ value: 'media', label: '30–60' },
+		{ value: 'larga', label: '60–120' },
+		{ value: 'epica', label: '> 120' }
+	];
 
 	let { paginaInicial, errorInicial }: Props = $props();
 
@@ -20,8 +36,9 @@
 	let error = $state(untrack(() => errorInicial));
 	let nombre = $state('');
 	let jugadores = $state<number | null>(null);
+	let duracion = $state<FiltroDuracion>('cualquiera');
 	let cargando = $state(false);
-	let menuJugadoresAbierto = $state(false);
+	let menuAbierto = $state<MenuFiltro>('ninguno');
 
 	let primeraEjecucion = true;
 	let solicitudActual: AbortController | null = null;
@@ -30,15 +47,49 @@
 		jugadores === null || (Number.isInteger(jugadores) && jugadores > 0)
 	);
 
-	const hayFiltrosActivos = $derived(nombre.trim() !== '' || jugadores !== null);
+	const etiquetaDuracion = $derived(
+		opcionesDuracion.find((opcion) => opcion.value === duracion)?.label ?? 'Cualquiera'
+	);
+
+	const hayFiltrosActivos = $derived(
+		nombre.trim() !== '' || jugadores !== null || duracion !== 'cualquiera'
+	);
 
 	const chipBase =
 		'cursor-pointer rounded-full border px-3 py-1 font-mono text-sm tracking-wide transition';
 
+	function alternarMenu(menu: Exclude<MenuFiltro, 'ninguno'>): void {
+		menuAbierto = menuAbierto === menu ? 'ninguno' : menu;
+	}
+
+	function seleccionarDuracion(valor: FiltroDuracion): void {
+		duracion = valor;
+		menuAbierto = 'ninguno';
+	}
+
+	function obtenerRangoDuracion(valor: FiltroDuracion): {
+		minimo: number | null;
+		maximo: number | null;
+	} {
+		switch (valor) {
+			case 'corta':
+				return { minimo: null, maximo: 30 };
+			case 'media':
+				return { minimo: 31, maximo: 60 };
+			case 'larga':
+				return { minimo: 61, maximo: 120 };
+			case 'epica':
+				return { minimo: 121, maximo: null };
+			default:
+				return { minimo: null, maximo: null };
+		}
+	}
+
 	function limpiarFiltros(): void {
 		nombre = '';
 		jugadores = null;
-		menuJugadoresAbierto = false;
+		duracion = 'cualquiera';
+		menuAbierto = 'ninguno';
 	}
 
 	async function consultarCatalogo(filtros: FiltrosCatalogo): Promise<void> {
@@ -57,6 +108,14 @@
 
 		if (filtros.jugadores !== null) {
 			parametros.set('jugadores', String(filtros.jugadores));
+		}
+
+		if (filtros.duracionMin !== null) {
+			parametros.set('duracionMin', String(filtros.duracionMin));
+		}
+
+		if (filtros.duracionMax !== null) {
+			parametros.set('duracionMax', String(filtros.duracionMax));
 		}
 
 		const queryString = parametros.toString();
@@ -96,6 +155,7 @@
 	$effect(() => {
 		const nombreActual = nombre.trim();
 		const jugadoresActuales = jugadores;
+		const duracionActual = duracion;
 
 		if (primeraEjecucion) {
 			primeraEjecucion = false;
@@ -112,10 +172,14 @@
 			return;
 		}
 
+		const rangoDuracion = obtenerRangoDuracion(duracionActual);
+
 		const temporizador = window.setTimeout(() => {
 			void consultarCatalogo({
 				nombre: nombreActual,
-				jugadores: jugadoresActuales
+				jugadores: jugadoresActuales,
+				duracionMin: rangoDuracion.minimo,
+				duracionMax: rangoDuracion.maximo
 			});
 		}, 300);
 
@@ -132,7 +196,7 @@
 <svelte:window
 	onkeydown={(event) => {
 		if (event.key === 'Escape') {
-			menuJugadoresAbierto = false;
+			menuAbierto = 'ninguno';
 		}
 	}}
 />
@@ -188,8 +252,8 @@
 				<button
 					type="button"
 					aria-haspopup="dialog"
-					aria-expanded={menuJugadoresAbierto}
-					onclick={() => (menuJugadoresAbierto = !menuJugadoresAbierto)}
+					aria-expanded={menuAbierto === 'jugadores'}
+					onclick={() => alternarMenu('jugadores')}
 					class={chipBase +
 						' inline-flex w-full items-center justify-between gap-2 px-4 py-2 sm:w-auto sm:justify-start ' +
 						(jugadores !== null
@@ -209,7 +273,7 @@
 					<ChevronDown class="h-4 w-4" strokeWidth={2} aria-hidden="true" />
 				</button>
 
-				{#if menuJugadoresAbierto}
+				{#if menuAbierto === 'jugadores'}
 					<div
 						class="absolute top-full left-0 z-20 mt-2 w-64 rounded-base surface-level-3 border border-glass-border p-3"
 						role="dialog"
@@ -236,7 +300,58 @@
 						{#if !jugadoresValidos}
 							<p class="mt-2 text-sm text-error">Ingresa un número entero mayor que cero.</p>
 						{/if}
+					</div>
+				{/if}
+			</div>
 
+			<div class="relative">
+				<button
+					type="button"
+					aria-haspopup="listbox"
+					aria-expanded={menuAbierto === 'duracion'}
+					onclick={() => alternarMenu('duracion')}
+					class={chipBase +
+						' inline-flex w-full items-center justify-between gap-2 px-4 py-2 sm:w-auto sm:justify-start ' +
+						(duracion !== 'cualquiera'
+							? ' border-primary/50 bg-primary/15 text-primary'
+							: ' border-glass-border bg-white/5 text-on-surface-variant hover:border-primary/30 hover:text-on-surface')}
+				>
+					<span class="sm:hidden">
+						{duracion === 'cualquiera' ? 'Duración' : etiquetaDuracion}
+					</span>
+
+					<span class="hidden sm:inline">Duración</span>
+
+					{#if duracion !== 'cualquiera'}
+						<span class="hidden sm:inline">· {etiquetaDuracion}</span>
+					{/if}
+
+					<ChevronDown class="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+				</button>
+
+				{#if menuAbierto === 'duracion'}
+					<div
+						class="absolute top-full left-0 z-20 mt-2 w-max min-w-40 rounded-base surface-level-3 border border-glass-border p-1.5"
+						role="listbox"
+						aria-label="Duración"
+					>
+						{#each opcionesDuracion as opcion (opcion.value)}
+							<button
+								type="button"
+								role="option"
+								aria-selected={duracion === opcion.value}
+								onclick={() => seleccionarDuracion(opcion.value)}
+								class="flex w-full cursor-pointer items-center justify-between gap-8 rounded-base px-3 py-1.5 font-mono text-sm whitespace-nowrap transition hover:bg-white/5"
+							>
+								<span class={duracion === opcion.value ? 'text-primary' : 'text-on-surface'}>
+									{opcion.label}
+								</span>
+
+								{#if duracion === opcion.value}
+									<Check class="h-4 w-4 text-primary" strokeWidth={2.2} aria-hidden="true" />
+								{/if}
+							</button>
+						{/each}
 					</div>
 				{/if}
 			</div>
@@ -252,12 +367,12 @@
 			{/if}
 		</div>
 
-		{#if menuJugadoresAbierto}
+		{#if menuAbierto !== 'ninguno'}
 			<button
 				type="button"
 				class="fixed inset-0 z-10 cursor-default"
-				aria-label="Cerrar filtro de jugadores"
-				onclick={() => (menuJugadoresAbierto = false)}
+				aria-label="Cerrar filtros"
+				onclick={() => (menuAbierto = 'ninguno')}
 			></button>
 		{/if}
 	</div>
