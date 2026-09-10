@@ -5,13 +5,16 @@
 	import Nosotros from '$lib/components/Nosotros.svelte';
 	import SiteFooter from '$lib/components/SiteFooter.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
+	import type { PageData } from './$types';
+
+	let { data }: { data: PageData } = $props();
 </script>
 
 <SiteHeader />
 
 <main>
 	<Hero />
-	<Catalog />
+	<Catalog paginaInicial={data.catalogoInicial} errorInicial={data.errorCatalogo} />
 	<Nosotros />
 	<Faq />
 </main>

@@ -10,27 +10,27 @@
 
 	function formatearJugadores(minimo: number | null, maximo: number | null): string {
 		if (minimo === null && maximo === null) {
-			return 'Sin información';
+			return 'Jug. sin informar';
 		}
 
 		if (minimo === null) {
-			return `Hasta ${maximo}`;
+			return `Hasta ${maximo} jug.`;
 		}
 
 		if (maximo === null) {
-			return `Desde ${minimo}`;
+			return `Desde ${minimo} jug.`;
 		}
 
 		if (minimo === maximo) {
-			return String(minimo);
+			return `${minimo} jug.`;
 		}
 
-		return `${minimo}–${maximo}`;
+		return `${minimo}–${maximo} jug.`;
 	}
 </script>
 
-<article class="overflow-hidden rounded-base border border-glass-border bg-surface-container-low">
-	<div class="relative aspect-[3/4] bg-surface-container-lowest">
+<article class="group flex flex-col text-left">
+	<div class="relative aspect-[3/4] overflow-hidden rounded-base bg-surface-container-lowest">
 		{#if juego.pathImagen && !imagenFallida}
 			<img
 				src={juego.pathImagen}
@@ -38,7 +38,9 @@
 				loading="lazy"
 				width="400"
 				height="533"
-				class="h-full w-full object-cover"
+				class={juego.disponible
+					? 'h-full w-full object-cover transition duration-500 group-hover:scale-105'
+					: 'h-full w-full object-cover opacity-70 grayscale transition duration-500 group-hover:opacity-80'}
 				onerror={() => (imagenFallida = true)}
 			/>
 		{:else}
@@ -51,61 +53,30 @@
 			</div>
 		{/if}
 
-		<span
-			class={juego.disponible
-				? 'absolute right-2 bottom-2 rounded-base bg-primary px-2 py-1 font-mono text-xs font-semibold text-on-primary'
-				: 'absolute right-2 bottom-2 rounded-base bg-surface-container-highest px-2 py-1 font-mono text-xs font-semibold text-on-surface-variant'}
-		>
-			{juego.disponible ? 'Disponible' : 'No disponible'}
-		</span>
+		{#if juego.disponible}
+			<span class="sr-only">Disponible</span>
+		{:else}
+			<div class="absolute inset-0 bg-primary/20"></div>
+
+			<span
+				class="absolute bottom-2 left-2 rounded-base bg-black/50 px-2 py-0.5 font-mono text-xs tracking-wider text-on-surface uppercase backdrop-blur-sm"
+			>
+				No disponible
+			</span>
+		{/if}
 	</div>
 
-	<div class="flex flex-col gap-4 p-4">
-		<div class="flex flex-col gap-1">
-			<span class="font-mono text-xs tracking-wider text-on-surface-variant uppercase">
-				{juego.tipo}
-			</span>
+	<div class="flex flex-col gap-0.5 px-1 pt-2">
+		<h3
+			class="line-clamp-2 font-display text-body-lg leading-snug font-semibold text-on-surface transition group-hover:text-primary"
+		>
+			{juego.nombreJuego}
+		</h3>
 
-			<h3 class="font-display text-body-lg font-semibold text-on-surface">
-				{juego.nombreJuego}
-			</h3>
-		</div>
-
-		<dl class="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
-			<div>
-				<dt class="text-on-surface-variant">Jugadores</dt>
-				<dd class="font-medium text-on-surface">
-					{formatearJugadores(juego.jugadoresMin, juego.jugadoresMax)}
-				</dd>
-			</div>
-
-			<div>
-				<dt class="text-on-surface-variant">Duración</dt>
-				<dd class="font-medium text-on-surface">
-					{juego.duracion === null ? 'Sin información' : `${juego.duracion} min`}
-				</dd>
-			</div>
-
-			<div>
-				<dt class="text-on-surface-variant">Edad mínima</dt>
-				<dd class="font-medium text-on-surface">
-					{juego.edadMinima === null ? 'Sin información' : `${juego.edadMinima}+`}
-				</dd>
-			</div>
-
-			<div>
-				<dt class="text-on-surface-variant">Dificultad</dt>
-				<dd class="font-medium text-on-surface">
-					{juego.dificultad ?? 'Sin información'}
-				</dd>
-			</div>
-
-			<div>
-				<dt class="text-on-surface-variant">Calificación</dt>
-				<dd class="font-medium text-on-surface">
-					{juego.calificacion === null ? 'Sin información' : `${juego.calificacion.toFixed(1)}/10`}
-				</dd>
-			</div>
-		</dl>
+		<p class="font-mono text-xs text-on-surface-variant">
+			{formatearJugadores(juego.jugadoresMin, juego.jugadoresMax)}
+			· {juego.duracion === null ? 'Duración sin informar' : `${juego.duracion} min`}
+			· {juego.edadMinima === null ? 'Edad sin informar' : `${juego.edadMinima}+`}
+		</p>
 	</div>
 </article>
