@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onDestroy, untrack } from 'svelte';
-	import { LoaderCircle, Search } from '@lucide/svelte';
+	import { ChevronDown, LoaderCircle, Search } from '@lucide/svelte';
 	import GameCard from '$lib/components/GameCard.svelte';
 	import type { CatalogPage } from '$lib/schemas';
 
@@ -9,17 +9,39 @@
 		errorInicial: string | null;
 	}
 
+	interface FiltrosCatalogo {
+		nombre: string;
+		jugadores: number | null;
+	}
+
 	let { paginaInicial, errorInicial }: Props = $props();
 
 	let pagina = $state(untrack(() => paginaInicial));
 	let error = $state(untrack(() => errorInicial));
 	let nombre = $state('');
+	let jugadores = $state<number | null>(null);
 	let cargando = $state(false);
+	let menuJugadoresAbierto = $state(false);
 
 	let primeraEjecucion = true;
 	let solicitudActual: AbortController | null = null;
 
-	async function buscarPorNombre(nombreActual: string): Promise<void> {
+	const jugadoresValidos = $derived(
+		jugadores === null || (Number.isInteger(jugadores) && jugadores > 0)
+	);
+
+	const hayFiltrosActivos = $derived(nombre.trim() !== '' || jugadores !== null);
+
+	const chipBase =
+		'cursor-pointer rounded-full border px-3 py-1 font-mono text-sm tracking-wide transition';
+
+	function limpiarFiltros(): void {
+		nombre = '';
+		jugadores = null;
+		menuJugadoresAbierto = false;
+	}
+
+	async function consultarCatalogo(filtros: FiltrosCatalogo): Promise<void> {
 		solicitudActual?.abort();
 
 		const controlador = new AbortController();
@@ -29,8 +51,12 @@
 
 		const parametros = new URLSearchParams();
 
-		if (nombreActual !== '') {
-			parametros.set('nombre', nombreActual);
+		if (filtros.nombre !== '') {
+			parametros.set('nombre', filtros.nombre);
+		}
+
+		if (filtros.jugadores !== null) {
+			parametros.set('jugadores', String(filtros.jugadores));
 		}
 
 		const queryString = parametros.toString();
@@ -55,7 +81,7 @@
 				return;
 			}
 
-			console.error('No se pudo buscar en el catálogo:', causa);
+			console.error('No se pudo consultar el catálogo:', causa);
 
 			if (solicitudActual === controlador) {
 				error = 'No pudimos actualizar el catálogo en este momento.';
@@ -69,6 +95,7 @@
 
 	$effect(() => {
 		const nombreActual = nombre.trim();
+		const jugadoresActuales = jugadores;
 
 		if (primeraEjecucion) {
 			primeraEjecucion = false;
@@ -77,8 +104,19 @@
 
 		solicitudActual?.abort();
 
+		if (
+			jugadoresActuales !== null &&
+			(!Number.isInteger(jugadoresActuales) || jugadoresActuales <= 0)
+		) {
+			cargando = false;
+			return;
+		}
+
 		const temporizador = window.setTimeout(() => {
-			void buscarPorNombre(nombreActual);
+			void consultarCatalogo({
+				nombre: nombreActual,
+				jugadores: jugadoresActuales
+			});
 		}, 300);
 
 		return () => {
@@ -90,6 +128,14 @@
 		solicitudActual?.abort();
 	});
 </script>
+
+<svelte:window
+	onkeydown={(event) => {
+		if (event.key === 'Escape') {
+			menuJugadoresAbierto = false;
+		}
+	}}
+/>
 
 <section
 	id="catalogo"
@@ -117,7 +163,7 @@
 		</div>
 	</div>
 
-	<div class="w-full max-w-6xl">
+	<div class="flex w-full max-w-6xl flex-col gap-3">
 		<div
 			class="flex items-center gap-3 rounded-base border border-glass-border bg-surface-container-lowest px-4 py-2.5 text-on-surface-variant transition focus-within:border-primary/40"
 		>
@@ -133,9 +179,87 @@
 
 			{#if cargando}
 				<LoaderCircle class="h-5 w-5 shrink-0 animate-spin" strokeWidth={1.8} aria-hidden="true" />
-				<span class="sr-only" role="status">Buscando juegos</span>
+				<span class="sr-only" role="status">Actualizando catálogo</span>
 			{/if}
 		</div>
+
+		<div class="grid w-full grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:items-center">
+			<div class="relative">
+				<button
+					type="button"
+					aria-haspopup="dialog"
+					aria-expanded={menuJugadoresAbierto}
+					onclick={() => (menuJugadoresAbierto = !menuJugadoresAbierto)}
+					class={chipBase +
+						' inline-flex w-full items-center justify-between gap-2 px-4 py-2 sm:w-auto sm:justify-start ' +
+						(jugadores !== null
+							? ' border-primary/50 bg-primary/15 text-primary'
+							: ' border-glass-border bg-white/5 text-on-surface-variant hover:border-primary/30 hover:text-on-surface')}
+				>
+					<span class="sm:hidden">
+						{jugadores === null ? 'Jugadores' : `${jugadores} jug.`}
+					</span>
+
+					<span class="hidden sm:inline">Jugadores</span>
+
+					{#if jugadores !== null}
+						<span class="hidden sm:inline">· {jugadores}</span>
+					{/if}
+
+					<ChevronDown class="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+				</button>
+
+				{#if menuJugadoresAbierto}
+					<div
+						class="absolute top-full left-0 z-20 mt-2 w-64 rounded-base surface-level-3 border border-glass-border p-3"
+						role="dialog"
+						aria-label="Filtrar por cantidad de jugadores"
+					>
+						<label
+							for="filtro-jugadores"
+							class="font-mono text-xs tracking-wider text-on-surface-variant uppercase"
+						>
+							Cantidad de jugadores
+						</label>
+
+						<input
+							id="filtro-jugadores"
+							type="number"
+							bind:value={jugadores}
+							min="1"
+							step="1"
+							placeholder="Ej: 4"
+							aria-invalid={!jugadoresValidos}
+							class="mt-2 w-full rounded-base border border-glass-border bg-surface-container-lowest px-3 py-2 text-body-md text-on-surface outline-none placeholder:text-on-surface-variant/70 focus:border-primary/50"
+						/>
+
+						{#if !jugadoresValidos}
+							<p class="mt-2 text-sm text-error">Ingresa un número entero mayor que cero.</p>
+						{/if}
+
+					</div>
+				{/if}
+			</div>
+
+			{#if hayFiltrosActivos}
+				<button
+					type="button"
+					onclick={limpiarFiltros}
+					class="cursor-pointer px-2 text-center font-mono text-sm tracking-wide text-on-surface-variant underline decoration-primary/50 underline-offset-4 transition hover:text-on-surface sm:text-left"
+				>
+					Limpiar
+				</button>
+			{/if}
+		</div>
+
+		{#if menuJugadoresAbierto}
+			<button
+				type="button"
+				class="fixed inset-0 z-10 cursor-default"
+				aria-label="Cerrar filtro de jugadores"
+				onclick={() => (menuJugadoresAbierto = false)}
+			></button>
+		{/if}
 	</div>
 
 	{#if error}
