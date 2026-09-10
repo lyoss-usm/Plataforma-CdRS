@@ -37,3 +37,12 @@ Este repositorio es para el **Sistema de Gestion de Prestamos e Inventario** dis
 > ```bash
 > make help
 > ```
+
+## Documentación de la API
+
+Con el servidor de desarrollo en ejecución, la documentación interactiva está disponible en:
+
+- [Swagger UI](http://localhost:5173/docs/api)
+- [Contrato OpenAPI](http://localhost:5173/openapi.yaml)
+
+El contrato fuente se encuentra en [`static/openapi.yaml`](static/openapi.yaml). Al agregar o modificar endpoints, este archivo debe actualizarse para mantener la documentación sincronizada con la implementación.

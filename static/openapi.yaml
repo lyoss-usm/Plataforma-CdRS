@@ -1,0 +1,360 @@
+openapi: 3.1.0
+
+info:
+  title: API Plataforma Club de Rol Sansano
+  version: 0.1.0
+  description:
+    API utilizada por el catálogo público del Club de Rol Sansano.
+
+    Los filtros y la paginación se ejecutan en PostgreSQL. El catálogo se obtiene desde los datos persistidos en Supabase.
+  license:
+    name: MIT
+    identifier: MIT
+
+servers:
+  - url: /
+    description: Servidor actual
+
+tags:
+  - name: Catálogo
+    description: Consulta pública de juegos
+
+paths:
+  /api/catalogo:
+    get:
+      operationId: obtenerCatalogo
+      tags:
+        - Catálogo
+      summary: Consultar el catálogo
+      description: |
+        Retorna una página de juegos. Todos los filtros proporcionados se
+        combinan mediante AND.
+
+        La búsqueda por nombre es parcial e insensible a mayúsculas y acentos.
+      security: []
+
+      parameters:
+        - name: nombre
+          in: query
+          required: false
+          description: Texto contenido en el nombre del juego
+          schema:
+            type: string
+            default: ''
+          example: catan
+
+        - name: jugadores
+          in: query
+          required: false
+          description: Cantidad de jugadores que debe admitir el juego
+          schema:
+            type: integer
+            minimum: 1
+          example: 4
+
+        - name: duracionMin
+          in: query
+          required: false
+          description: Duración mínima inclusiva, en minutos
+          schema:
+            type: integer
+            minimum: 1
+          example: 30
+
+        - name: duracionMax
+          in: query
+          required: false
+          description: Duración máxima inclusiva, en minutos
+          schema:
+            type: integer
+            minimum: 1
+          example: 120
+
+        - name: disponible
+          in: query
+          required: false
+          description: Filtra según la existencia de un ejemplar en bodega
+          schema:
+            type: boolean
+          example: true
+
+        - name: calificacionMin
+          in: query
+          required: false
+          description: Calificación mínima inclusiva
+          schema:
+            type: number
+            minimum: 0
+            maximum: 10
+          example: 7
+
+        - name: dificultad
+          in: query
+          required: false
+          description: Dificultad exacta del juego
+          schema:
+            type: string
+            enum:
+              - Fácil
+              - Intermedio
+              - Difícil
+          example: Intermedio
+
+        - name: offset
+          in: query
+          required: false
+          description: Cantidad de resultados que deben omitirse
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          example: 0
+
+        - name: limit
+          in: query
+          required: false
+          description: Cantidad máxima de juegos en la página
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+          example: 10
+
+      responses:
+        '200':
+          description: Página del catálogo obtenida correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CatalogPage'
+              example:
+                juegos:
+                  - idJuego: 1
+                    nombreJuego: Catan
+                    tipo: Juego base
+                    idJuegoBase: null
+                    edadMinima: 10
+                    jugadoresMin: 3
+                    jugadoresMax: 4
+                    duracion: 90
+                    calificacion: 7.5
+                    dificultad: Intermedio
+                    pathImagen: /ludoteca/catan.jpg
+                    manual: null
+                    video: null
+                    disponible: true
+                total: 1
+                hayMas: false
+
+        '400':
+          description: Uno o más parámetros de consulta son inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+              example:
+                message: Los filtros del catálogo no son válidos.
+                issues:
+                  - code: too_big
+                    path:
+                      - limit
+                    message: 'Too big: expected number to be <=50'
+
+        '500':
+          description: No fue posible consultar o validar los datos de Supabase
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                message: No se pudo cargar el catálogo.
+
+components:
+  schemas:
+    CatalogGame:
+      type: object
+      additionalProperties: false
+      required:
+        - idJuego
+        - nombreJuego
+        - tipo
+        - idJuegoBase
+        - edadMinima
+        - jugadoresMin
+        - jugadoresMax
+        - duracion
+        - calificacion
+        - dificultad
+        - pathImagen
+        - manual
+        - video
+        - disponible
+      properties:
+        idJuego:
+          type: integer
+          minimum: 1
+          description: Identificador único del juego
+
+        nombreJuego:
+          type: string
+          minLength: 1
+          description: Nombre del juego
+
+        tipo:
+          type: string
+          enum:
+            - Juego base
+            - Expansión
+          description: Clasificación del registro
+
+        idJuegoBase:
+          type:
+            - integer
+            - 'null'
+          minimum: 1
+          description: |
+            Identificador del juego base asociado. Es null cuando tipo es
+            Juego base.
+
+        edadMinima:
+          type:
+            - integer
+            - 'null'
+          minimum: 1
+          description: Edad mínima recomendada
+
+        jugadoresMin:
+          type:
+            - integer
+            - 'null'
+          minimum: 1
+          description: Cantidad mínima de jugadores
+
+        jugadoresMax:
+          type:
+            - integer
+            - 'null'
+          minimum: 1
+          description: Cantidad máxima de jugadores
+
+        duracion:
+          type:
+            - integer
+            - 'null'
+          minimum: 1
+          description: Duración estimada en minutos
+
+        calificacion:
+          type:
+            - number
+            - 'null'
+          minimum: 0
+          maximum: 10
+          description: Calificación del juego
+
+        dificultad:
+          type:
+            - string
+            - 'null'
+          enum:
+            - Fácil
+            - Intermedio
+            - Difícil
+            - null
+          description: Dificultad del juego
+
+        pathImagen:
+          type:
+            - string
+            - 'null'
+          description: Ruta persistida de la imagen
+
+        manual:
+          type:
+            - string
+            - 'null'
+          format: uri
+          description: URL del manual
+
+        video:
+          type:
+            - string
+            - 'null'
+          format: uri
+          description: URL del video tutorial
+
+        disponible:
+          type: boolean
+          description: |
+            Es true cuando existe al menos un Ejemplar en estado En bodega.
+
+    CatalogPage:
+      type: object
+      additionalProperties: false
+      required:
+        - juegos
+        - total
+        - hayMas
+      properties:
+        juegos:
+          type: array
+          items:
+            $ref: '#/components/schemas/CatalogGame'
+
+        total:
+          type: integer
+          format: int64
+          minimum: 0
+          description: Cantidad total de juegos que cumplen los filtros
+
+        hayMas:
+          type: boolean
+          description: Indica si existe una página posterior
+
+    ValidationIssue:
+      type: object
+      required:
+        - code
+        - path
+        - message
+      properties:
+        code:
+          type: string
+          description: Código de validación de Zod
+
+        path:
+          type: array
+          description: Ruta del parámetro inválido
+          items:
+            oneOf:
+              - type: string
+              - type: integer
+
+        message:
+          type: string
+          description: Descripción de la validación fallida
+      additionalProperties: true
+
+    ValidationError:
+      type: object
+      additionalProperties: false
+      required:
+        - message
+        - issues
+      properties:
+        message:
+          type: string
+        issues:
+          type: array
+          items:
+            $ref: '#/components/schemas/ValidationIssue'
+
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - message
+      properties:
+        message:
+          type: string
