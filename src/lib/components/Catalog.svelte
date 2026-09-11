@@ -5,7 +5,8 @@
 	import type { CatalogPage } from '$lib/schemas';
 
 	type FiltroDuracion = 'cualquiera' | 'corta' | 'media' | 'larga' | 'epica';
-	type MenuFiltro = 'ninguno' | 'jugadores' | 'duracion';
+	type FiltroDisponibilidad = 'cualquiera' | 'disponible' | 'no-disponible';
+	type MenuFiltro = 'ninguno' | 'jugadores' | 'duracion' | 'estado';
 
 	interface Props {
 		paginaInicial: CatalogPage;
@@ -17,6 +18,7 @@
 		jugadores: number | null;
 		duracionMin: number | null;
 		duracionMax: number | null;
+		disponible: boolean | null;
 	}
 
 	const opcionesDuracion: Array<{
@@ -30,6 +32,15 @@
 		{ value: 'epica', label: '> 120' }
 	];
 
+	const opcionesDisponibilidad: Array<{
+		value: FiltroDisponibilidad;
+		label: string;
+	}> = [
+		{ value: 'cualquiera', label: 'Cualquiera' },
+		{ value: 'disponible', label: 'Disponible' },
+		{ value: 'no-disponible', label: 'No disponible' }
+	];
+
 	let { paginaInicial, errorInicial }: Props = $props();
 
 	let pagina = $state(untrack(() => paginaInicial));
@@ -37,6 +48,7 @@
 	let nombre = $state('');
 	let jugadores = $state<number | null>(null);
 	let duracion = $state<FiltroDuracion>('cualquiera');
+	let disponibilidad = $state<FiltroDisponibilidad>('cualquiera');
 	let cargando = $state(false);
 	let menuAbierto = $state<MenuFiltro>('ninguno');
 
@@ -50,9 +62,15 @@
 	const etiquetaDuracion = $derived(
 		opcionesDuracion.find((opcion) => opcion.value === duracion)?.label ?? 'Cualquiera'
 	);
+	const etiquetaDisponibilidad = $derived(
+		opcionesDisponibilidad.find((opcion) => opcion.value === disponibilidad)?.label ?? 'Cualquiera'
+	);
 
 	const hayFiltrosActivos = $derived(
-		nombre.trim() !== '' || jugadores !== null || duracion !== 'cualquiera'
+		nombre.trim() !== '' ||
+			jugadores !== null ||
+			duracion !== 'cualquiera' ||
+			disponibilidad !== 'cualquiera'
 	);
 
 	const chipBase =
@@ -65,6 +83,22 @@
 	function seleccionarDuracion(valor: FiltroDuracion): void {
 		duracion = valor;
 		menuAbierto = 'ninguno';
+	}
+
+	function seleccionarDisponibilidad(valor: FiltroDisponibilidad): void {
+		disponibilidad = valor;
+		menuAbierto = 'ninguno';
+	}
+
+	function obtenerDisponibilidad(valor: FiltroDisponibilidad): boolean | null {
+		switch (valor) {
+			case 'disponible':
+				return true;
+			case 'no-disponible':
+				return false;
+			default:
+				return null;
+		}
 	}
 
 	function obtenerRangoDuracion(valor: FiltroDuracion): {
@@ -89,6 +123,7 @@
 		nombre = '';
 		jugadores = null;
 		duracion = 'cualquiera';
+		disponibilidad = 'cualquiera';
 		menuAbierto = 'ninguno';
 	}
 
@@ -116,6 +151,10 @@
 
 		if (filtros.duracionMax !== null) {
 			parametros.set('duracionMax', String(filtros.duracionMax));
+		}
+
+		if (filtros.disponible !== null) {
+			parametros.set('disponible', String(filtros.disponible));
 		}
 
 		const queryString = parametros.toString();
@@ -156,6 +195,7 @@
 		const nombreActual = nombre.trim();
 		const jugadoresActuales = jugadores;
 		const duracionActual = duracion;
+		const disponibilidadActual = disponibilidad;
 
 		if (primeraEjecucion) {
 			primeraEjecucion = false;
@@ -173,13 +213,15 @@
 		}
 
 		const rangoDuracion = obtenerRangoDuracion(duracionActual);
+		const disponibleActual = obtenerDisponibilidad(disponibilidadActual);
 
 		const temporizador = window.setTimeout(() => {
 			void consultarCatalogo({
 				nombre: nombreActual,
 				jugadores: jugadoresActuales,
 				duracionMin: rangoDuracion.minimo,
-				duracionMax: rangoDuracion.maximo
+				duracionMax: rangoDuracion.maximo,
+				disponible: disponibleActual
 			});
 		}, 300);
 
@@ -348,6 +390,58 @@
 								</span>
 
 								{#if duracion === opcion.value}
+									<Check class="h-4 w-4 text-primary" strokeWidth={2.2} aria-hidden="true" />
+								{/if}
+							</button>
+						{/each}
+					</div>
+				{/if}
+			</div>
+
+			<div class="relative">
+				<button
+					type="button"
+					aria-haspopup="listbox"
+					aria-expanded={menuAbierto === 'estado'}
+					onclick={() => alternarMenu('estado')}
+					class={chipBase +
+						' inline-flex w-full items-center justify-between gap-2 px-4 py-2 sm:w-auto sm:justify-start ' +
+						(disponibilidad !== 'cualquiera'
+							? ' border-primary/50 bg-primary/15 text-primary'
+							: ' border-glass-border bg-white/5 text-on-surface-variant hover:border-primary/30 hover:text-on-surface')}
+				>
+					<span class="sm:hidden">
+						{disponibilidad === 'cualquiera' ? 'Estado' : etiquetaDisponibilidad}
+					</span>
+
+					<span class="hidden sm:inline">Estado</span>
+
+					{#if disponibilidad !== 'cualquiera'}
+						<span class="hidden sm:inline">· {etiquetaDisponibilidad}</span>
+					{/if}
+
+					<ChevronDown class="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+				</button>
+
+				{#if menuAbierto === 'estado'}
+					<div
+						class="absolute top-full left-0 z-20 mt-2 w-max min-w-40 rounded-base surface-level-3 border border-glass-border p-1.5"
+						role="listbox"
+						aria-label="Estado de disponibilidad"
+					>
+						{#each opcionesDisponibilidad as opcion (opcion.value)}
+							<button
+								type="button"
+								role="option"
+								aria-selected={disponibilidad === opcion.value}
+								onclick={() => seleccionarDisponibilidad(opcion.value)}
+								class="flex w-full cursor-pointer items-center justify-between gap-8 rounded-base px-3 py-1.5 font-mono text-sm whitespace-nowrap transition hover:bg-white/5"
+							>
+								<span class={disponibilidad === opcion.value ? 'text-primary' : 'text-on-surface'}>
+									{opcion.label}
+								</span>
+
+								{#if disponibilidad === opcion.value}
 									<Check class="h-4 w-4 text-primary" strokeWidth={2.2} aria-hidden="true" />
 								{/if}
 							</button>
