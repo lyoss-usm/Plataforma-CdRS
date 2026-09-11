@@ -14,6 +14,11 @@ export const catalogGameSchema = juegoSchema.and(
 
 export type CatalogGame = z.infer<typeof catalogGameSchema>;
 
+export type CatalogFilterValues = Pick<
+	CatalogQuery,
+	'nombre' | 'jugadores' | 'duracionMin' | 'duracionMax' | 'disponible'
+>;
+
 export const catalogQuerySchema = z
 	.object({
 		nombre: z.string().trim().default(''),

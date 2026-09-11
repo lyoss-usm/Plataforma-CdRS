@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Catalog from '$lib/components/Catalog.svelte';
+	import Catalog from '$lib/components/catalog/Catalog.svelte';
 	import Faq from '$lib/components/Faq.svelte';
 	import Hero from '$lib/components/Hero.svelte';
 	import Nosotros from '$lib/components/Nosotros.svelte';
