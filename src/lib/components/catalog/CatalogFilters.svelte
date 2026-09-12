@@ -414,7 +414,7 @@
 			<button
 				type="button"
 				onclick={limpiarFiltros}
-				class="cursor-pointer px-2 text-center font-mono text-sm tracking-wide text-on-surface-variant underline decoration-primary/50 underline-offset-4 transition hover:text-on-surface sm:text-left"
+				class="col-span-2 cursor-pointer px-2 text-center font-mono text-sm tracking-wide text-on-surface-variant underline decoration-primary/50 underline-offset-4 transition hover:text-on-surface sm:col-auto sm:text-left"
 			>
 				Limpiar
 			</button>
