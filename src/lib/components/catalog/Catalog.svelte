@@ -9,21 +9,28 @@
 		errorInicial: string | null;
 	}
 
+	const FILTROS_INICIALES: CatalogFilterValues = {
+		nombre: '',
+		jugadores: null,
+		duracionMin: null,
+		duracionMax: null,
+		disponible: null,
+		calificacionMin: null
+	};
+
 	let { paginaInicial, errorInicial }: Props = $props();
 
 	let pagina = $state(untrack(() => paginaInicial));
 	let error = $state(untrack(() => errorInicial));
 	let cargando = $state(false);
+	let filtrosActuales = $state<CatalogFilterValues | null>({ ...FILTROS_INICIALES });
 
 	let solicitudActual: AbortController | null = null;
 	let temporizadorActual: number | null = null;
 
-	async function consultarCatalogo(filtros: CatalogFilterValues): Promise<void> {
-		const controlador = new AbortController();
-		solicitudActual = controlador;
-		cargando = true;
-		error = null;
+	const juegosRestantes = $derived(Math.max(pagina.total - pagina.juegos.length, 0));
 
+	function crearParametros(filtros: CatalogFilterValues, offset: number): URLSearchParams {
 		const parametros = new URLSearchParams();
 
 		if (filtros.nombre !== '') {
@@ -50,6 +57,24 @@
 			parametros.set('calificacionMin', String(filtros.calificacionMin));
 		}
 
+		if (offset > 0) {
+			parametros.set('offset', String(offset));
+		}
+
+		return parametros;
+	}
+
+	async function consultarCatalogo(
+		filtros: CatalogFilterValues,
+		offset = 0,
+		acumular = false
+	): Promise<void> {
+		const controlador = new AbortController();
+		solicitudActual = controlador;
+		cargando = true;
+		error = null;
+
+		const parametros = crearParametros(filtros, offset);
 		const queryString = parametros.toString();
 		const endpoint = queryString === '' ? '/api/catalogo' : `/api/catalogo?${queryString}`;
 
@@ -64,7 +89,17 @@
 
 			const nuevaPagina = (await response.json()) as CatalogPage;
 
-			if (solicitudActual === controlador) {
+			if (solicitudActual !== controlador) {
+				return;
+			}
+
+			if (acumular) {
+				pagina = {
+					juegos: [...pagina.juegos, ...nuevaPagina.juegos],
+					total: nuevaPagina.total,
+					hayMas: nuevaPagina.hayMas
+				};
+			} else {
 				pagina = nuevaPagina;
 			}
 		} catch (causa: unknown) {
@@ -79,6 +114,7 @@
 			}
 		} finally {
 			if (solicitudActual === controlador) {
+				solicitudActual = null;
 				cargando = false;
 			}
 		}
@@ -93,8 +129,10 @@
 		if (solicitudActual !== null) {
 			solicitudActual.abort();
 			solicitudActual = null;
-			cargando = false;
 		}
+
+		filtrosActuales = filtros;
+		cargando = filtros !== null;
 
 		if (filtros === null) {
 			return;
@@ -104,6 +142,14 @@
 			temporizadorActual = null;
 			void consultarCatalogo(filtros);
 		}, 300);
+	}
+
+	async function cargarMas(): Promise<void> {
+		if (filtrosActuales === null || cargando || error !== null || !pagina.hayMas) {
+			return;
+		}
+
+		await consultarCatalogo(filtrosActuales, pagina.juegos.length, true);
 	}
 
 	onDestroy(() => {
@@ -173,5 +219,16 @@
 				<GameCard {juego} />
 			{/each}
 		</div>
+	{/if}
+
+	{#if pagina.hayMas && !error}
+		<button
+			type="button"
+			onclick={cargarMas}
+			disabled={cargando || filtrosActuales === null}
+			class="cursor-pointer rounded-base border border-primary/50 bg-primary/10 px-6 py-2 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow disabled:cursor-not-allowed disabled:opacity-60"
+		>
+			{cargando ? 'Cargando…' : `Cargar más (${juegosRestantes} restantes)`}
+		</button>
 	{/if}
 </section>
