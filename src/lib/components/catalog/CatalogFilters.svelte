@@ -4,7 +4,8 @@
 
 	type FiltroDuracion = 'cualquiera' | 'corta' | 'media' | 'larga' | 'epica';
 	type FiltroDisponibilidad = 'cualquiera' | 'disponible' | 'no-disponible';
-	type MenuFiltro = 'ninguno' | 'jugadores' | 'duracion' | 'estado';
+	type FiltroCalificacion = number | null;
+	type MenuFiltro = 'ninguno' | 'jugadores' | 'duracion' | 'estado' | 'calificacion';
 
 	interface Props {
 		cargando: boolean;
@@ -31,12 +32,23 @@
 		{ value: 'no-disponible', label: 'No disponible' }
 	];
 
+	const opcionesCalificacion: Array<{
+		value: FiltroCalificacion;
+		label: string;
+	}> = [
+		{ value: null, label: 'Cualquiera' },
+		{ value: 8, label: '8.0+' },
+		{ value: 7, label: '7.0+' },
+		{ value: 6, label: '6.0+' }
+	];
+
 	let { cargando, onCambiar }: Props = $props();
 
 	let nombre = $state('');
 	let jugadores = $state<number | null>(null);
 	let duracion = $state<FiltroDuracion>('cualquiera');
 	let disponibilidad = $state<FiltroDisponibilidad>('cualquiera');
+	let calificacionMin = $state<FiltroCalificacion>(null);
 	let menuAbierto = $state<MenuFiltro>('ninguno');
 
 	let primeraEjecucion = true;
@@ -52,12 +64,16 @@
 	const etiquetaDisponibilidad = $derived(
 		opcionesDisponibilidad.find((opcion) => opcion.value === disponibilidad)?.label ?? 'Cualquiera'
 	);
+	const etiquetaCalificacion = $derived(
+		opcionesCalificacion.find((opcion) => opcion.value === calificacionMin)?.label ?? 'Cualquiera'
+	);
 
 	const hayFiltrosActivos = $derived(
 		nombre.trim() !== '' ||
 			jugadores !== null ||
 			duracion !== 'cualquiera' ||
-			disponibilidad !== 'cualquiera'
+			disponibilidad !== 'cualquiera' ||
+			calificacionMin !== null
 	);
 
 	const chipBase =
@@ -74,6 +90,11 @@
 
 	function seleccionarDisponibilidad(valor: FiltroDisponibilidad): void {
 		disponibilidad = valor;
+		menuAbierto = 'ninguno';
+	}
+
+	function seleccionarCalificacion(valor: FiltroCalificacion): void {
+		calificacionMin = valor;
 		menuAbierto = 'ninguno';
 	}
 
@@ -111,6 +132,7 @@
 		jugadores = null;
 		duracion = 'cualquiera';
 		disponibilidad = 'cualquiera';
+		calificacionMin = null;
 		menuAbierto = 'ninguno';
 	}
 
@@ -119,6 +141,7 @@
 		const jugadoresActuales = jugadores;
 		const duracionActual = duracion;
 		const disponibilidadActual = disponibilidad;
+		const calificacionMinimaActual = calificacionMin;
 
 		if (primeraEjecucion) {
 			primeraEjecucion = false;
@@ -140,7 +163,8 @@
 			jugadores: jugadoresActuales,
 			duracionMin: rangoDuracion.minimo,
 			duracionMax: rangoDuracion.maximo,
-			disponible: obtenerDisponibilidad(disponibilidadActual)
+			disponible: obtenerDisponibilidad(disponibilidadActual),
+			calificacionMin: calificacionMinimaActual
 		});
 	});
 </script>
@@ -326,6 +350,58 @@
 							</span>
 
 							{#if disponibilidad === opcion.value}
+								<Check class="h-4 w-4 text-primary" strokeWidth={2.2} aria-hidden="true" />
+							{/if}
+						</button>
+					{/each}
+				</div>
+			{/if}
+		</div>
+
+		<div class="relative">
+			<button
+				type="button"
+				aria-haspopup="listbox"
+				aria-expanded={menuAbierto === 'calificacion'}
+				onclick={() => alternarMenu('calificacion')}
+				class={chipBase +
+					' inline-flex w-full items-center justify-between gap-2 px-4 py-2 sm:w-auto sm:justify-start ' +
+					(calificacionMin !== null
+						? ' border-primary/50 bg-primary/15 text-primary'
+						: ' border-glass-border bg-white/5 text-on-surface-variant hover:border-primary/30 hover:text-on-surface')}
+			>
+				<span class="sm:hidden">
+					{calificacionMin === null ? 'Calificación' : etiquetaCalificacion}
+				</span>
+
+				<span class="hidden sm:inline">Calificación</span>
+
+				{#if calificacionMin !== null}
+					<span class="hidden sm:inline">· {etiquetaCalificacion}</span>
+				{/if}
+
+				<ChevronDown class="h-4 w-4" strokeWidth={2} aria-hidden="true" />
+			</button>
+
+			{#if menuAbierto === 'calificacion'}
+				<div
+					class="absolute top-full left-0 z-20 mt-2 w-max min-w-40 rounded-base surface-level-3 border border-glass-border p-1.5"
+					role="listbox"
+					aria-label="Calificación mínima"
+				>
+					{#each opcionesCalificacion as opcion (opcion.value)}
+						<button
+							type="button"
+							role="option"
+							aria-selected={calificacionMin === opcion.value}
+							onclick={() => seleccionarCalificacion(opcion.value)}
+							class="flex w-full cursor-pointer items-center justify-between gap-8 rounded-base px-3 py-1.5 font-mono text-sm whitespace-nowrap transition hover:bg-white/5"
+						>
+							<span class={calificacionMin === opcion.value ? 'text-primary' : 'text-on-surface'}>
+								{opcion.label}
+							</span>
+
+							{#if calificacionMin === opcion.value}
 								<Check class="h-4 w-4 text-primary" strokeWidth={2.2} aria-hidden="true" />
 							{/if}
 						</button>

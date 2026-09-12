@@ -46,6 +46,10 @@
 			parametros.set('disponible', String(filtros.disponible));
 		}
 
+		if (filtros.calificacionMin !== null) {
+			parametros.set('calificacionMin', String(filtros.calificacionMin));
+		}
+
 		const queryString = parametros.toString();
 		const endpoint = queryString === '' ? '/api/catalogo' : `/api/catalogo?${queryString}`;
 

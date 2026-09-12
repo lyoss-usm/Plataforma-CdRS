@@ -16,7 +16,7 @@ export type CatalogGame = z.infer<typeof catalogGameSchema>;
 
 export type CatalogFilterValues = Pick<
 	CatalogQuery,
-	'nombre' | 'jugadores' | 'duracionMin' | 'duracionMax' | 'disponible'
+	'nombre' | 'jugadores' | 'duracionMin' | 'duracionMax' | 'disponible' | 'calificacionMin'
 >;
 
 export const catalogQuerySchema = z
