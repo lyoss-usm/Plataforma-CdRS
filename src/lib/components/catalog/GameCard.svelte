@@ -64,6 +64,14 @@
 				No disponible
 			</span>
 		{/if}
+
+		{#if juego.tipo === 'Expansión'}
+			<span
+				class="absolute top-2 left-2 rounded-base bg-black/50 px-2 py-0.5 font-mono text-xs tracking-wider text-on-surface uppercase backdrop-blur-sm"
+			>
+				Expansión
+			</span>
+		{/if}
 	</div>
 
 	<div class="flex flex-col gap-0.5 px-1 pt-2">
