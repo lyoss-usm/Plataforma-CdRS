@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { Star } from '@lucide/svelte';
 	import type { CatalogGame } from '$lib/schemas';
 
 	interface Props {
@@ -70,6 +71,20 @@
 				class="absolute top-2 left-2 rounded-base bg-black/50 px-2 py-0.5 font-mono text-xs tracking-wider text-on-surface uppercase backdrop-blur-sm"
 			>
 				Expansión
+			</span>
+		{/if}
+
+		{#if juego.calificacion !== null}
+			<span
+				class="absolute top-2 right-2 inline-flex items-center gap-1 rounded-base bg-black/50 px-2 py-0.5 font-mono text-xs tracking-wider text-on-surface backdrop-blur-sm"
+				aria-label={`Valoración: ${juego.calificacion.toFixed(1)} de 10`}
+			>
+				<Star
+					class="h-3.5 w-3.5 fill-current text-primary"
+					strokeWidth={1.8}
+					aria-hidden="true"
+				/>
+				<span aria-hidden="true">{juego.calificacion.toFixed(1)}</span>
 			</span>
 		{/if}
 	</div>
