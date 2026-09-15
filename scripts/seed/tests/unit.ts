@@ -1,29 +1,56 @@
 import assert from 'node:assert/strict';
+import { readdirSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import {
 	DEFAULT_DATABASE_URL,
+	DEFAULT_SUPABASE_URL,
 	SEED_PROFILES,
 	assertLocalDatabaseUrl,
+	normalizeSupabaseUrl,
 	parseSeedOptions
 } from '../config.ts';
-import { datasetCounts, generateSeedDataset } from '../factories.ts';
+import {
+	LUDOTECA_BUCKET,
+	SAMPLE_GAME_IMAGES,
+	datasetCounts,
+	generateSeedDataset
+} from '../factories.ts';
 
-const defaults = parseSeedOptions([]);
+const defaults = parseSeedOptions([], {});
 assert.equal(defaults.profile, 'small');
 assert.deepEqual(defaults.counts, SEED_PROFILES.small);
+assert.equal(defaults.supabaseUrl, DEFAULT_SUPABASE_URL);
 
-const overridden = parseSeedOptions(['--profile', 'medium', '--sansanos', '12', '--seed', '42']);
+const overridden = parseSeedOptions(
+	['--profile', 'medium', '--sansanos', '12', '--seed', '42'],
+	{}
+);
 assert.equal(overridden.counts.sansanos, 12);
 assert.equal(overridden.counts.juegosBase, SEED_PROFILES.medium.juegosBase);
 assert.equal(overridden.seed, 42);
 
-assert.throws(() => parseSeedOptions(['--profile', 'unknown']), /Perfil desconocido/);
-assert.throws(() => parseSeedOptions(['--sansanos=-1']), /entero no negativo/);
+const fromEnvironment = parseSeedOptions([], {
+	SUPABASE_URL: 'https://entorno.supabase.co/'
+});
+assert.equal(fromEnvironment.supabaseUrl, 'https://entorno.supabase.co');
+
+const fromArgument = parseSeedOptions(['--supabase-url', 'https://argumento.supabase.co/'], {
+	SUPABASE_URL: 'https://entorno.supabase.co'
+});
+assert.equal(fromArgument.supabaseUrl, 'https://argumento.supabase.co');
+
+assert.throws(() => normalizeSupabaseUrl('esto-no-es-una-url'), /URL válida/);
+assert.throws(() => normalizeSupabaseUrl('ftp://example.com'), /HTTP o HTTPS/);
+assert.throws(() => normalizeSupabaseUrl('https://example.com/una/ruta'), /solamente el origen/);
+
+assert.throws(() => parseSeedOptions(['--profile', 'unknown'], {}), /Perfil desconocido/);
+assert.throws(() => parseSeedOptions(['--sansanos=-1'], {}), /entero no negativo/);
 assert.throws(
-	() => parseSeedOptions(['--juegosBase', '0', '--expansiones', '1']),
+	() => parseSeedOptions(['--juegosBase', '0', '--expansiones', '1'], {}),
 	/al menos un juego base/
 );
 assert.throws(
-	() => parseSeedOptions(['--solicitudes', '1', '--prestamos', '2']),
+	() => parseSeedOptions(['--solicitudes', '1', '--prestamos', '2'], {}),
 	/prestamos no puede superar solicitudes/
 );
 
@@ -96,4 +123,51 @@ for (const copyId of activeCopyIds) {
 	assert.equal(copyById.get(copyId)?.estadoEjemplar, 'Prestado');
 }
 
-console.log('Configuración y factories del seed: válidas');
+const ludotecaDirectory = fileURLToPath(new URL('../../../static/ludoteca/', import.meta.url));
+const localImageNames = readdirSync(ludotecaDirectory, { withFileTypes: true })
+	.filter((entry) => entry.isFile())
+	.map((entry) => entry.name)
+	.sort();
+const expectedImageNames = [...SAMPLE_GAME_IMAGES].sort();
+
+assert.deepEqual(
+	localImageNames,
+	expectedImageNames,
+	'Las imágenes locales deben coincidir con SAMPLE_GAME_IMAGES'
+);
+
+const storageUrl = 'https://catalogo-ejemplo.supabase.co';
+const imageDataset = generateSeedDataset(SEED_PROFILES.medium, 1234, storageUrl);
+const imagePrefix = `/storage/v1/object/public/${LUDOTECA_BUCKET}/`;
+const allowedImageNames = new Set<string>(SAMPLE_GAME_IMAGES);
+const generatedImageNames = new Set<string>();
+
+for (const juego of imageDataset.juegos) {
+	if (juego.pathImagen === null) {
+		assert.fail(`El juego ${juego.idJuego} no tiene una imagen`);
+	}
+
+	const imageUrl = new URL(juego.pathImagen);
+	assert.equal(imageUrl.origin, storageUrl);
+	assert.equal(
+		imageUrl.pathname.startsWith(imagePrefix),
+		true,
+		`La imagen de ${juego.nombreJuego} no pertenece al bucket ${LUDOTECA_BUCKET}`
+	);
+
+	const imageName = decodeURIComponent(imageUrl.pathname.slice(imagePrefix.length));
+	assert.equal(
+		allowedImageNames.has(imageName),
+		true,
+		`La imagen ${imageName} no existe en static/ludoteca`
+	);
+	generatedImageNames.add(imageName);
+}
+
+assert.deepEqual(
+	[...generatedImageNames].sort(),
+	expectedImageNames,
+	'El perfil medium debe utilizar todas las imágenes de muestra'
+);
+
+console.log('Configuración, factories e imágenes del seed: válidas');

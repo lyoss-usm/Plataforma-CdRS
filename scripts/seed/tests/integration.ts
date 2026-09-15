@@ -2,12 +2,13 @@ import assert from 'node:assert/strict';
 import postgres from 'postgres';
 import {
 	DEFAULT_DATABASE_URL,
+	DEFAULT_SUPABASE_URL,
 	SEED_ID_END,
 	SEED_ID_START,
 	assertLocalDatabaseUrl
 } from '../config.ts';
 import { clearSeedData, expectedPersistedCounts, replaceSeedData } from '../database.ts';
-import { generateSeedDataset } from '../factories.ts';
+import { LUDOTECA_BUCKET, generateSeedDataset } from '../factories.ts';
 
 const databaseUrl = process.env.DATABASE_URL ?? DEFAULT_DATABASE_URL;
 assertLocalDatabaseUrl(databaseUrl);
@@ -37,6 +38,21 @@ try {
 
 	await replaceSeedData(databaseUrl, dataset);
 	const firstSnapshot = await seedSnapshot();
+	const expectedImagePrefix = `${DEFAULT_SUPABASE_URL}/storage/v1/object/public/${LUDOTECA_BUCKET}/`;
+	const [invalidImagePaths] = await sql`
+		SELECT count(*)::int AS count
+		FROM "Juego"
+		WHERE "idJuego" BETWEEN ${SEED_ID_START} AND ${SEED_ID_END}
+		  AND (
+			"pathImagen" IS NULL
+			OR "pathImagen" NOT LIKE ${`${expectedImagePrefix}%`}
+		  )
+	`;
+	assert.equal(
+		invalidImagePaths.count,
+		0,
+		'Todos los juegos generados deben guardar una URL del bucket ludoteca'
+	);
 
 	await sql`
 		INSERT INTO "Cargo" ("idCargo", "nombreCargo", "descripcionCargo")
@@ -113,7 +129,7 @@ try {
 	await replaceSeedData(databaseUrl, dataset);
 
 	console.log(
-		'Seed integrado: conteos, idempotencia, limpieza, aislamiento, relaciones y rollback válidos'
+		'Seed integrado: conteos, imágenes, idempotencia, limpieza, aislamiento, relaciones y rollback válidos'
 	);
 } finally {
 	if (sentinelInserted) {
@@ -124,7 +140,7 @@ try {
 
 async function seedSnapshot(): Promise<unknown> {
 	return sql`
-		SELECT "idJuego", "nombreJuego", "tipo", "idJuegoBase"
+		SELECT "idJuego", "nombreJuego", "tipo", "idJuegoBase", "pathImagen"
 		FROM "Juego"
 		WHERE "idJuego" BETWEEN ${SEED_ID_START} AND ${SEED_ID_END}
 		ORDER BY "idJuego"
