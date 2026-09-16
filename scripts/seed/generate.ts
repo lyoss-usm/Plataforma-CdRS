@@ -10,11 +10,11 @@ async function main(): Promise<void> {
 	}
 
 	const options = parseSeedOptions(args);
-	const dataset = generateSeedDataset(options.counts, options.seed);
+	const dataset = generateSeedDataset(options.counts, options.seed, options.supabaseUrl);
 	const generatedCounts = datasetCounts(dataset);
 
 	console.log(
-		`Seed local: perfil=${options.profile}, seed=${options.seed}, dryRun=${options.dryRun}`
+		`Seed local: perfil=${options.profile}, seed=${options.seed}, storage=${options.supabaseUrl}, dryRun=${options.dryRun}`
 	);
 	console.table(options.counts);
 	console.table(generatedCounts);

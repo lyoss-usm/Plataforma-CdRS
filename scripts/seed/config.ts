@@ -2,6 +2,7 @@ import { parseArgs } from 'node:util';
 import { z } from 'zod';
 
 export const DEFAULT_DATABASE_URL = 'postgresql://postgres:postgres@127.0.0.1:54322/postgres';
+export const DEFAULT_SUPABASE_URL = 'http://127.0.0.1:54321';
 export const DEFAULT_REFERENCE_DATE = '2026-08-30T12:00:00.000Z';
 export const DEFAULT_RANDOM_SEED = 20260830;
 export const SEED_ID_START = 1_000_000_000;
@@ -30,6 +31,7 @@ export interface SeedOptions {
 	seed: number;
 	counts: SeedCounts;
 	databaseUrl: string;
+	supabaseUrl: string;
 	dryRun: boolean;
 }
 
@@ -37,6 +39,7 @@ type ParsedCliValues = Partial<Record<keyof SeedCounts, string>> & {
 	profile: string;
 	seed?: string;
 	'database-url'?: string;
+	'supabase-url'?: string;
 	'dry-run': boolean;
 	help: boolean;
 };
@@ -89,6 +92,7 @@ const cliOptions = {
 	profile: { type: 'string' as const, default: 'small' },
 	seed: { type: 'string' as const },
 	'database-url': { type: 'string' as const },
+	'supabase-url': { type: 'string' as const },
 	'dry-run': { type: 'boolean' as const, default: false },
 	help: { type: 'boolean' as const, short: 'h', default: false },
 	...Object.fromEntries(countOptionNames.map((name) => [name, { type: 'string' as const }]))
@@ -119,6 +123,9 @@ export function parseSeedOptions(
 	const counts = countsSchema.parse({ ...SEED_PROFILES[profile], ...overrides });
 	const seed =
 		values.seed === undefined ? DEFAULT_RANDOM_SEED : parseNonNegativeInteger('seed', values.seed);
+	const supabaseUrl = normalizeSupabaseUrl(
+		values['supabase-url'] ?? env.SUPABASE_URL ?? DEFAULT_SUPABASE_URL
+	);
 
 	validateSeedCounts(counts);
 
@@ -127,6 +134,7 @@ export function parseSeedOptions(
 		seed,
 		counts,
 		databaseUrl: values['database-url'] ?? env.DATABASE_URL ?? DEFAULT_DATABASE_URL,
+		supabaseUrl,
 		dryRun: values['dry-run']
 	};
 }
@@ -167,6 +175,26 @@ export function validateSeedCounts(counts: SeedCounts): void {
 	}
 }
 
+export function normalizeSupabaseUrl(value: string): string {
+	let parsed: URL;
+
+	try {
+		parsed = new URL(value);
+	} catch {
+		throw new Error('SUPABASE_URL no es una URL válida.');
+	}
+
+	if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+		throw new Error('SUPABASE_URL debe utilizar HTTP o HTTPS.');
+	}
+
+	if (parsed.pathname !== '/' || parsed.search !== '' || parsed.hash !== '') {
+		throw new Error('SUPABASE_URL debe contener solamente el origen del proyecto.');
+	}
+
+	return parsed.origin;
+}
+
 export function assertLocalDatabaseUrl(databaseUrl: string): URL {
 	let parsed: URL;
 	try {
@@ -194,6 +222,7 @@ Opciones:
   --profile <small|medium|large>  Perfil base (default: small)
   --seed <entero>                 Semilla aleatoria reproducible
   --database-url <url>            Conexión Supabase local (o DATABASE_URL)
+  --supabase-url <url>            URL base de Supabase para las imágenes
   --dry-run                       Genera y valida sin conectarse a PostgreSQL
   --<entidad> <cantidad>          Sobrescribe una cantidad del perfil
   -h, --help                      Muestra esta ayuda

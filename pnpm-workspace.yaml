@@ -1,5 +1,17 @@
+overrides:
+  react: 18.3.1
+  react-dom: 18.3.1
+
 allowBuilds:
+  '@scarf/scarf': false
+  '@tailwindcss/oxide': true
+  '@tree-sitter-grammars/tree-sitter-yaml': false
+  core-js-pure: false
+  esbuild: true
   supabase: true
+  tree-sitter: false
+  tree-sitter-json: false
+
 onlyBuiltDependencies:
   - '@tailwindcss/oxide'
   - esbuild

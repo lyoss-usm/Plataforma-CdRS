@@ -11,7 +11,12 @@ import {
 	solicitudSchema,
 	suspensionSchema
 } from '../../src/lib/schemas/index.ts';
-import { DEFAULT_REFERENCE_DATE, SEED_ID_START, type SeedCounts } from './config.ts';
+import {
+	DEFAULT_REFERENCE_DATE,
+	DEFAULT_SUPABASE_URL,
+	SEED_ID_START,
+	type SeedCounts
+} from './config.ts';
 
 type Cargo = z.infer<typeof cargoSchema>;
 type Permiso = z.infer<typeof permisoSchema>;
@@ -37,9 +42,39 @@ export interface SeedDataset {
 
 const difficulty = ['Fácil', 'Intermedio', 'Difícil'] as const;
 const documents = ['Carnet', 'TNE', 'TUI', 'Otro'] as const;
+
+export const LUDOTECA_BUCKET = 'ludoteca';
+
+export const SAMPLE_GAME_IMAGES = [
+	'7-wonders.png',
+	'azul.jpg',
+	'carcassonne.jpg',
+	'cascadia.jpg',
+	'catan.jpg',
+	'codenames.jpg',
+	'dixit.jpg',
+	'dominion.jpg',
+	'exploding-kittens.png',
+	'gloomhaven.jpg',
+	'hanabi.jpg',
+	'love-letter.jpg',
+	'munchkin.jpg',
+	'pandemic.jpg',
+	'puerto-rico.jpg',
+	'scythe.png',
+	'small-world.jpg',
+	'splendor.jpg',
+	'ticket-to-ride.jpg',
+	'wingspan.jpg'
+] as const;
+
 const referenceDate = new Date(DEFAULT_REFERENCE_DATE);
 
-export function generateSeedDataset(counts: SeedCounts, randomSeed: number): SeedDataset {
+export function generateSeedDataset(
+	counts: SeedCounts,
+	randomSeed: number,
+	supabaseUrl = DEFAULT_SUPABASE_URL
+): SeedDataset {
 	const faker = new Faker({ locale: [es, en] });
 	faker.seed(randomSeed);
 	faker.setDefaultRefDate(referenceDate);
@@ -81,7 +116,7 @@ export function generateSeedDataset(counts: SeedCounts, randomSeed: number): See
 
 	const baseGames = Array.from({ length: counts.juegosBase }, (_, index) =>
 		juegoSchema.parse({
-			...gameDetails(faker, index, 'Base'),
+			...gameDetails(faker, index, 'Base', supabaseUrl),
 			idJuego: seedId(index),
 			tipo: 'Juego base',
 			idJuegoBase: null
@@ -89,7 +124,7 @@ export function generateSeedDataset(counts: SeedCounts, randomSeed: number): See
 	);
 	const expansions = Array.from({ length: counts.expansiones }, (_, index) =>
 		juegoSchema.parse({
-			...gameDetails(faker, index, 'Expansión'),
+			...gameDetails(faker, index, 'Expansión', supabaseUrl),
 			idJuego: seedId(baseGames.length + index),
 			tipo: 'Expansión',
 			idJuegoBase: baseGames[index % baseGames.length].idJuego
@@ -155,7 +190,16 @@ function createCargoPermisos(cargos: Cargo[], permisos: Permiso[], count: number
 	return combinations.slice(0, count).map((value) => cargoPermisoSchema.parse(value));
 }
 
-function gameDetails(faker: Faker, index: number, label: string) {
+function buildGameImageUrl(supabaseUrl: string, index: number): string {
+	const imageName = SAMPLE_GAME_IMAGES[index % SAMPLE_GAME_IMAGES.length] ?? SAMPLE_GAME_IMAGES[0];
+
+	return new URL(
+		`/storage/v1/object/public/${LUDOTECA_BUCKET}/${encodeURIComponent(imageName)}`,
+		supabaseUrl
+	).toString();
+}
+
+function gameDetails(faker: Faker, index: number, label: string, supabaseUrl: string) {
 	const playersMin = 1 + (index % 3);
 	return {
 		nombreJuego: `[SEED] ${label} ${pad(index + 1)}: ${faker.word.adjective()} ${faker.word.noun()}`,
@@ -165,7 +209,7 @@ function gameDetails(faker: Faker, index: number, label: string) {
 		duracion: 30 + (index % 8) * 15,
 		calificacion: Number((5 + (index % 50) / 10).toFixed(1)),
 		dificultad: difficulty[index % difficulty.length],
-		pathImagen: `/images/seed/juego-${pad(index + 1)}.webp`,
+		pathImagen: buildGameImageUrl(supabaseUrl, index),
 		manual: `https://example.test/manuales/seed-${index + 1}.pdf`,
 		video: `https://example.test/videos/seed-${index + 1}`
 	};
