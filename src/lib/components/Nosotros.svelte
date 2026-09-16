@@ -1,13 +1,29 @@
 <script lang="ts">
-	const members = [
-		{ name: 'Matías', role: 'Cronista', img: '/avatares/men-32.jpg' },
-		{ name: 'Valentina', role: 'Game Master', img: '/avatares/women-44.jpg' },
-		{ name: 'Sebastián', role: 'Estratega', img: '/avatares/men-75.jpg' },
-		{ name: 'Fernanda', role: 'Narradora', img: '/avatares/women-68.jpg' },
-		{ name: 'Cristóbal', role: 'Dador', img: '/avatares/men-22.jpg' },
-		{ name: 'Isidora', role: 'Guardiana', img: '/avatares/women-29.jpg' },
-		{ name: 'Benjamín', role: 'Cuidador', img: '/avatares/men-64.jpg' },
-		{ name: 'Antonia', role: 'Enigmista', img: '/avatares/women-12.jpg' }
+	const items = [
+		{
+			titulo: 'Club de Rol Sansano',
+			img: '/logos/cdrs-banner.png',
+			alt: 'Banner del Club de Rol Sansano',
+			cuadrado: true,
+			texto:
+				'El Club de Rol Sansano (CdRS) surge como iniciativa estudiantil de la UTFSM en 2015, con el propósito de generar un espacio de esparcimiento, de recreación e integración comunitaria a través de los juegos de mesa y de rol, dentro del marco de la cultura Geek.'
+		},
+		{
+			titulo: 'Misión',
+			img: '/logos/sticker_gradiente.webp',
+			alt: 'Sticker del club',
+			cuadrado: false,
+			texto:
+				'El CdRS tiene como misión promover y fomentar la cultura Geek a través de la creación de actividades, eventos y espacios que integren a la comunidad sansana con la región de Valparaíso. Nos comprometemos a trabajar con el nivel de calidad que caracteriza a la UTFSM, reflejando excelencia en cada una de nuestras acciones.'
+		},
+		{
+			titulo: 'Visión',
+			img: '/logos/sticker_solido.webp',
+			alt: 'Sticker del club',
+			cuadrado: false,
+			texto:
+				'Aspiramos a ser una iniciativa reconocida en la región por la creación de espacios para la cultura Geek, fortaleciendo los lazos entre la comunidad sansana y la región de Valparaiso. Además, buscamos fomentar el desarrollo integral de nuestros miembros mediante una sana convivencia, la colaboración y el trabajo en equipo.'
+		}
 	];
 </script>
 
@@ -16,26 +32,31 @@
 	class="relative flex scroll-mt-16 flex-col items-center justify-center gap-4 glass-border bg-surface-container-lowest p-12 px-6 py-24"
 >
 	<h2 class="font-display text-headline-lg font-semibold text-on-surface">Sobre nosotros</h2>
-	<p class="max-w-xl text-center text-body-md text-on-surface-variant">
-		El Club de Rol Sansano reúne a narradoras, estrategas y guardianes de dados. Estos son algunos
-		de sus integrantes.
-	</p>
 
-	<div class="mt-6 grid w-full max-w-2xl grid-cols-2 gap-x-6 gap-y-8 sm:grid-cols-4">
-		{#each members as member (member.name)}
-			<div class="flex flex-col items-center gap-2 text-center">
+	<div class="mt-10 flex w-full flex-col items-center gap-12">
+		{#each items as item, i (item.titulo)}
+			<div
+				class="flex w-full max-w-5xl flex-col items-center gap-6 md:flex-row md:gap-10 {i % 2 !== 0
+					? 'md:flex-row-reverse'
+					: ''}"
+			>
 				<img
-					src={member.img}
-					alt={`Avatar de ${member.name}`}
-					class="bg-surface-level-2 aspect-square w-24 rounded-full border border-primary/40 object-cover sm:w-28"
-					width="128"
-					height="128"
+					src={item.img}
+					alt={item.alt}
+					class={item.cuadrado
+						? 'aspect-square w-48 shrink-0 rounded-2xl border border-glass-border object-cover shadow-lg select-none md:w-52'
+						: 'w-40 shrink-0 drop-shadow-lg select-none md:w-52'}
+					style={item.cuadrado ? 'object-position: 25%' : undefined}
 					loading="lazy"
+					width="320"
+					height="320"
 				/>
-				<span class="font-display text-body-lg font-semibold text-on-surface">{member.name}</span>
-				<span class="font-mono text-label-md tracking-wider text-on-surface-variant uppercase"
-					>{member.role}</span
-				>
+				<div class="flex flex-col gap-2">
+					<h3 class="font-display text-headline-lg font-semibold text-on-surface md:text-left">
+						{item.titulo}
+					</h3>
+					<p class="text-body-lg text-on-surface-variant md:text-left">{item.texto}</p>
+				</div>
 			</div>
 		{/each}
 	</div>
