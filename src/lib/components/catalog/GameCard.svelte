@@ -4,9 +4,10 @@
 
 	interface Props {
 		juego: CatalogGame;
+		onPedir?: (juego: CatalogGame) => void;
 	}
 
-	let { juego }: Props = $props();
+	let { juego, onPedir }: Props = $props();
 	let imagenFallida = $state(false);
 
 	function formatearJugadores(minimo: number | null, maximo: number | null): string {
@@ -30,7 +31,7 @@
 	}
 </script>
 
-<article class="group flex flex-col text-left">
+{#snippet contenido()}
 	<div class="relative aspect-[3/4] overflow-hidden rounded-base bg-surface-container-lowest">
 		{#if juego.pathImagen && !imagenFallida}
 			<img
@@ -79,11 +80,7 @@
 				class="absolute top-2 right-2 inline-flex items-center gap-1 rounded-base surface-level-1 px-2 py-0.5 font-mono text-xs tracking-wider text-on-surface uppercase backdrop-blur-sm"
 				aria-label={`Valoración: ${juego.calificacion.toFixed(1)} de 10`}
 			>
-				<Star
-					class="h-3.5 w-3.5 fill-current text-primary"
-					strokeWidth={1.8}
-					aria-hidden="true"
-				/>
+				<Star class="h-3.5 w-3.5 fill-current text-primary" strokeWidth={1.8} aria-hidden="true" />
 				<span aria-hidden="true">{juego.calificacion.toFixed(1)}</span>
 			</span>
 		{/if}
@@ -102,4 +99,19 @@
 			· {juego.edadMinima === null ? 'Edad sin informar' : `${juego.edadMinima}+`}
 		</p>
 	</div>
-</article>
+{/snippet}
+
+{#if juego.disponible}
+	<button
+		type="button"
+		onclick={() => onPedir?.(juego)}
+		class="group flex cursor-pointer flex-col text-left"
+		aria-label={`Solicitar ${juego.nombreJuego}`}
+	>
+		{@render contenido()}
+	</button>
+{:else}
+	<article class="group flex flex-col text-left">
+		{@render contenido()}
+	</article>
+{/if}
