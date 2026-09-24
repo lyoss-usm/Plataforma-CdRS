@@ -89,7 +89,7 @@
 			{/each}
 
 			<a
-				href="#catalogo"
+				href={resolve("/catalogo")}
 				class="mt-2 rounded-base border border-primary/50 bg-primary/10 px-3 py-3 text-center font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow"
 				onclick={closeMenu}
 			>

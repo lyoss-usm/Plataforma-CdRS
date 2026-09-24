@@ -60,7 +60,7 @@
 			<div class="absolute inset-0 bg-primary/20"></div>
 
 			<span
-				class="absolute bottom-2 left-2 rounded-base bg-black/50 px-2 py-0.5 font-mono text-xs tracking-wider text-on-surface uppercase backdrop-blur-sm"
+				class="absolute bottom-2 left-2 rounded-base surface-level-1 px-2 py-0.5 font-mono text-xs tracking-wider text-on-surface uppercase backdrop-blur-sm"
 			>
 				No disponible
 			</span>
@@ -76,7 +76,7 @@
 
 		{#if juego.calificacion !== null}
 			<span
-				class="absolute top-2 right-2 inline-flex items-center gap-1 rounded-base bg-black/50 px-2 py-0.5 font-mono text-xs tracking-wider text-on-surface backdrop-blur-sm"
+				class="absolute top-2 right-2 inline-flex items-center gap-1 rounded-base surface-level-1 px-2 py-0.5 font-mono text-xs tracking-wider text-on-surface uppercase backdrop-blur-sm"
 				aria-label={`Valoración: ${juego.calificacion.toFixed(1)} de 10`}
 			>
 				<Star
