@@ -17,6 +17,10 @@
 	import type { Documento, Sansano } from '$lib/schemas';
 	import { notificaciones } from '$lib/stores/notificaciones.svelte';
 
+	type TipoCajero = 'general' | 'junta';
+
+	let { tipo = 'junta' }: { tipo?: TipoCajero } = $props();
+
 	const documentos: { value: Documento; label: string }[] = [
 		{ value: 'Carnet', label: 'Carnet' },
 		{ value: 'TNE', label: 'TNE' },
@@ -48,8 +52,11 @@
 		ficha ? meson.prestamoActivoPorEjemplar(ficha.ejemplar.idEjemplar) : null
 	);
 	const prestamoAterminar = $derived(prestamoPersona ?? prestamoFicha);
+	const requiereDocumento = $derived(tipo === 'junta');
 	const listo = $derived(
-		Boolean(ficha && prestable && sansano && documento && suspension === null)
+		Boolean(
+			ficha && prestable && sansano && (requiereDocumento ? documento : true) && suspension === null
+		)
 	);
 
 	function usarFicha(id: string) {
@@ -93,7 +100,7 @@
 		if (encontrado) {
 			const activo = meson.prestamoActivoDePersona(encontrado.rutSansano);
 
-			if (activo && documento === null) {
+			if (activo && requiereDocumento && documento === null) {
 				documento = activo.prestamo.tipoDocumento;
 			}
 		}
@@ -173,14 +180,14 @@
 	}
 
 	function iniciar() {
-		if (!ficha || !sansano || !documento) {
+		if (!ficha || !sansano || (requiereDocumento && !documento)) {
 			return;
 		}
 
-		const resultado = meson.crearPrestamoJunta({
+		const resultado = meson.crearPrestamoPresencial({
 			idEjemplar: ficha.ejemplar.idEjemplar,
 			rutSansano: sansano.rutSansano,
-			documento,
+			documento: requiereDocumento ? documento : null,
 			rutPrestador: RUT_STAFF
 		});
 
@@ -429,16 +436,25 @@
 		{/if}
 
 		<div class="mt-4">
-			<Dropdown
-				label="Documento retenido"
-				items={documentos}
-				value={documento}
-				onchange={(valor) => {
-					documento = valor as Documento;
-					errorIniciar = null;
-				}}
-				placeholder="Carnet · TNE · TUI · Otro"
-			/>
+			{#if requiereDocumento}
+				<Dropdown
+					label="Documento retenido"
+					items={documentos}
+					value={documento}
+					onchange={(valor) => {
+						documento = valor as Documento;
+						errorIniciar = null;
+					}}
+					placeholder="Carnet · TNE · TUI · Otro"
+				/>
+			{:else}
+				<div
+					class="text-body-sm flex items-start gap-2 rounded-base border border-glass-border bg-black/20 p-2.5 text-on-surface-variant"
+				>
+					<Icon name="info" class="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.8} />
+					<p>Identificación por RUT/ROL. No se retiene documento.</p>
+				</div>
+			{/if}
 		</div>
 	</section>
 
@@ -495,7 +511,7 @@
 					</span>
 				</li>
 				<li class="flex items-center gap-2">
-					{#if documento}
+					{#if requiereDocumento ? documento : true}
 						<Icon name="check" class="h-4 w-4 shrink-0" strokeWidth={2} />
 					{:else}
 						<Icon
@@ -506,7 +522,11 @@
 					{/if}
 					<span class="flex flex-wrap items-baseline gap-x-1">
 						<span class="text-on-surface-variant">Documento retenido:</span>
-						<span>{documento ?? 'Pendiente'}</span>
+						{#if requiereDocumento}
+							<span>{documento ?? 'Pendiente'}</span>
+						{:else}
+							<span>No se retiene · RUT/ROL</span>
+						{/if}
 					</span>
 				</li>
 			</ul>
@@ -540,7 +560,7 @@
 					<Icon name="circle-alert" class="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.8} />
 					<p>Falta identificar al solicitante para iniciar el préstamo.</p>
 				</div>
-			{:else if !documento}
+			{:else if requiereDocumento && !documento}
 				<div
 					class="text-body-sm mt-3 flex items-start gap-2 rounded-base border border-glass-border bg-black/20 p-3 text-on-surface-variant"
 				>

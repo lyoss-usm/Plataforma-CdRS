@@ -7,6 +7,7 @@ import type {
 	Solicitud,
 	Suspension
 } from '$lib/schemas';
+import { SvelteDate } from 'svelte/reactivity';
 
 export interface FichaBusqueda {
 	ejemplar: Ejemplar;
@@ -38,12 +39,43 @@ export type ResultadoPrestar =
 			motivo: string;
 	  };
 
+export interface SolicitudContexto {
+	solicitud: Solicitud;
+	sansano: Sansano;
+	juego: Juego;
+	ejemplar: Ejemplar;
+	copiasDisponibles: Ejemplar[];
+}
+
+export type ResultadoAtender =
+	| { ok: true; prestamo: Prestamo; solicitud: Solicitud }
+	| {
+			ok: false;
+			codigo:
+				| 'no_existe'
+				| 'no_pendiente'
+				| 'no_disponible'
+				| 'no_pertenece'
+				| 'suspendido'
+				| 'ya_activo';
+			motivo: string;
+	  };
+
 export const RUT_STAFF = 20554433;
 
 export const QR_DEMO_IDS = ['CAT-001', 'CAT-002', 'EXP-C01', 'DIX-003', 'COD-001'] as const;
 
 const ahora = () => new Date().toISOString();
-const hoy = () => new Date().toISOString().slice(0, 10);
+const aIsoLocal = (fecha: Date): string => {
+	const desplazamiento = fecha.getTimezoneOffset() * 60000;
+	return new Date(fecha.getTime() - desplazamiento).toISOString().slice(0, 10);
+};
+const hoy = () => aIsoLocal(new Date());
+const enDias = (n: number): string => {
+	const fecha = new SvelteDate();
+	fecha.setDate(fecha.getDate() + n);
+	return aIsoLocal(fecha);
+};
 
 export function parsearRut(entrada: string): { rut: number; digitoVerificador: number } | null {
 	const sinPuntos = entrada.trim().toLowerCase().replaceAll('.', '');
@@ -309,6 +341,17 @@ const tomas: Sansano = {
 	authUserId: null
 };
 
+const camila: Sansano = {
+	rutSansano: 11223344,
+	rolSansano: 4455667,
+	digitoVerificador: 5,
+	idCargo: null,
+	nombreSansano: 'Camila Fuentes',
+	telefono: 911223344,
+	correoInstitucional: 'camila.fuentes@usm.cl',
+	authUserId: null
+};
+
 const suspensionTomas: Suspension = {
 	idSuspencion: 1,
 	rutSansano: 98765432,
@@ -318,12 +361,101 @@ const suspensionTomas: Suspension = {
 	razon: 'No devolvió el préstamo anterior y no respondió los avisos del club.'
 };
 
+const solicitudesIniciales: Solicitud[] = [
+	{
+		idSolicitud: 1,
+		rutSansano: 12345678,
+		idEjemplar: 'CAT-001',
+		idExpansion: null,
+		fechaSolicitud: `${enDias(-1)}T18:23:00.000Z`,
+		fechaSeleccionada: enDias(2),
+		estadoSolicitud: 'Pendiente'
+	},
+	{
+		idSolicitud: 2,
+		rutSansano: 98765432,
+		idEjemplar: 'CAT-002',
+		idExpansion: null,
+		fechaSolicitud: `${enDias(-1)}T21:07:00.000Z`,
+		fechaSeleccionada: enDias(1),
+		estadoSolicitud: 'Pendiente'
+	},
+	{
+		idSolicitud: 3,
+		rutSansano: 12345678,
+		idEjemplar: 'CAT-002',
+		idExpansion: 'EXP-C01',
+		fechaSolicitud: `${enDias(0)}T09:41:00.000Z`,
+		fechaSeleccionada: enDias(5),
+		estadoSolicitud: 'Pendiente'
+	},
+	{
+		idSolicitud: 4,
+		rutSansano: 11223344,
+		idEjemplar: 'COD-001',
+		idExpansion: null,
+		fechaSolicitud: `${enDias(-6)}T14:02:00.000Z`,
+		fechaSeleccionada: enDias(-3),
+		estadoSolicitud: 'Aprobada'
+	},
+	{
+		idSolicitud: 5,
+		rutSansano: 12345678,
+		idEjemplar: 'SCH-001',
+		idExpansion: null,
+		fechaSolicitud: `${enDias(-2)}T11:15:00.000Z`,
+		fechaSeleccionada: enDias(-1),
+		estadoSolicitud: 'Pendiente'
+	},
+	{
+		idSolicitud: 6,
+		rutSansano: 11223344,
+		idEjemplar: 'DIX-003',
+		idExpansion: null,
+		fechaSolicitud: `${enDias(-3)}T16:48:00.000Z`,
+		fechaSeleccionada: enDias(-1),
+		estadoSolicitud: 'Pendiente'
+	},
+	{
+		idSolicitud: 7,
+		rutSansano: 98765432,
+		idEjemplar: 'PYR-008',
+		idExpansion: null,
+		fechaSolicitud: `${enDias(-4)}T10:30:00.000Z`,
+		fechaSeleccionada: enDias(1),
+		estadoSolicitud: 'Rechazada'
+	},
+	{
+		idSolicitud: 8,
+		rutSansano: 11223344,
+		idEjemplar: 'GLO-001',
+		idExpansion: null,
+		fechaSolicitud: `${enDias(-12)}T19:55:00.000Z`,
+		fechaSeleccionada: enDias(-10),
+		estadoSolicitud: 'Vencida'
+	}
+];
+
+const prestamoCamila: Prestamo = {
+	idPrestamo: 9001,
+	idSolicitud: 4,
+	rutPrestador: RUT_STAFF,
+	rutReceptor: null,
+	rutRevisor: null,
+	fechaRetiro: `${enDias(-3)}T12:00:00.000Z`,
+	fechaDevolucion: null,
+	fechaRevision: null,
+	tipoDocumento: null,
+	comentarios: null,
+	estadoPrestamo: 'Activo'
+};
+
 class Meson {
-	sansanos = $state<Sansano[]>([sofia, tomas]);
+	sansanos = $state<Sansano[]>([sofia, tomas, camila]);
 	suspensiones = $state<Suspension[]>([suspensionTomas]);
 	ejemplares = $state<Ejemplar[]>([...ejemplaresIniciales]);
-	prestamos = $state<Prestamo[]>([]);
-	solicitudes = $state<Solicitud[]>([]);
+	prestamos = $state<Prestamo[]>([prestamoCamila]);
+	solicitudes = $state<Solicitud[]>([...solicitudesIniciales]);
 
 	sansanoPorRut(rutSansano: number): Sansano | null {
 		return this.sansanos.find((s) => s.rutSansano === rutSansano) ?? null;
@@ -420,10 +552,10 @@ class Meson {
 		return nuevo;
 	}
 
-	crearPrestamoJunta(opts: {
+	crearPrestamoPresencial(opts: {
 		idEjemplar: string;
 		rutSansano: number;
-		documento: Documento;
+		documento: Documento | null;
 		rutPrestador?: number;
 	}): ResultadoPrestar {
 		const ficha = this.ejemplarConJuego(opts.idEjemplar);
@@ -506,6 +638,186 @@ class Meson {
 		this.prestamos.push(prestamo);
 
 		return { ok: true, solicitud, prestamo };
+	}
+
+	copiasDisponiblesDe(idJuego: number): Ejemplar[] {
+		return this.ejemplares.filter((e) => e.idJuego === idJuego && e.estadoEjemplar === 'En bodega');
+	}
+
+	solicitudesAdmin(): SolicitudContexto[] {
+		const contextos: SolicitudContexto[] = [];
+
+		for (const solicitud of this.solicitudes) {
+			const ficha = this.ejemplarConJuego(solicitud.idEjemplar);
+			const sansano = this.sansanoPorRut(solicitud.rutSansano);
+
+			if (!ficha || !sansano) {
+				continue;
+			}
+
+			contextos.push({
+				solicitud,
+				sansano,
+				juego: ficha.juego,
+				ejemplar: ficha.ejemplar,
+				copiasDisponibles: this.copiasDisponiblesDe(ficha.juego.idJuego)
+			});
+		}
+
+		contextos.sort((a, b) => b.solicitud.fechaSolicitud.localeCompare(a.solicitud.fechaSolicitud));
+
+		return contextos;
+	}
+
+	vencerSolicitudes(): number {
+		let vencidas = 0;
+
+		for (const solicitud of this.solicitudes) {
+			if (solicitud.estadoSolicitud === 'Pendiente' && solicitud.fechaSeleccionada < hoy()) {
+				solicitud.estadoSolicitud = 'Vencida';
+				vencidas += 1;
+			}
+		}
+
+		return vencidas;
+	}
+
+	atenderSolicitud(opts: {
+		idSolicitud: number;
+		idEjemplar?: string;
+		rutPrestador?: number;
+	}): ResultadoAtender {
+		const solicitud = this.solicitudes.find((s) => s.idSolicitud === opts.idSolicitud);
+
+		if (!solicitud) {
+			return { ok: false, codigo: 'no_existe', motivo: 'La solicitud no existe.' };
+		}
+
+		if (solicitud.estadoSolicitud !== 'Pendiente') {
+			return {
+				ok: false,
+				codigo: 'no_pendiente',
+				motivo: `La solicitud está «${solicitud.estadoSolicitud}» y no puede atenderse.`
+			};
+		}
+
+		if (solicitud.fechaSeleccionada < hoy()) {
+			return {
+				ok: false,
+				codigo: 'no_pendiente',
+				motivo: 'La fecha de retiro agendada ya pasó; la solicitud debe vencerse.'
+			};
+		}
+
+		const fichaAsignada = this.ejemplarConJuego(solicitud.idEjemplar);
+
+		if (!fichaAsignada) {
+			return { ok: false, codigo: 'no_existe', motivo: 'El ejemplar no existe en el catálogo.' };
+		}
+
+		const idEjemplar = opts.idEjemplar ?? solicitud.idEjemplar;
+		const ficha = this.ejemplarConJuego(idEjemplar);
+
+		if (!ficha) {
+			return { ok: false, codigo: 'no_existe', motivo: 'El ejemplar no existe en el catálogo.' };
+		}
+
+		if (ficha.juego.idJuego !== fichaAsignada.juego.idJuego) {
+			return {
+				ok: false,
+				codigo: 'no_pertenece',
+				motivo: `El ejemplar ${idEjemplar} no pertenece a «${fichaAsignada.juego.nombreJuego}».`
+			};
+		}
+
+		if (ficha.ejemplar.estadoEjemplar !== 'En bodega') {
+			return {
+				ok: false,
+				codigo: 'no_disponible',
+				motivo: `El ejemplar ${idEjemplar} está «${ficha.ejemplar.estadoEjemplar}» y no puede prestarse.`
+			};
+		}
+
+		if (solicitud.idExpansion) {
+			const expansion = this.ejemplares.find((e) => e.idEjemplar === solicitud.idExpansion);
+
+			if (!expansion) {
+				return {
+					ok: false,
+					codigo: 'no_existe',
+					motivo: 'La expansión de la solicitud no existe en el catálogo.'
+				};
+			}
+
+			if (expansion.estadoEjemplar !== 'En bodega') {
+				return {
+					ok: false,
+					codigo: 'no_disponible',
+					motivo: `La expansión ${solicitud.idExpansion} está «${expansion.estadoEjemplar}» y no puede prestarse.`
+				};
+			}
+		}
+
+		const suspension = this.suspensionActiva(solicitud.rutSansano);
+
+		if (suspension) {
+			return {
+				ok: false,
+				codigo: 'suspendido',
+				motivo: `Sansano suspendido: ${suspension.razon}`
+			};
+		}
+
+		const activoPersona = this.prestamoActivoDePersona(solicitud.rutSansano);
+
+		if (activoPersona) {
+			return {
+				ok: false,
+				codigo: 'ya_activo',
+				motivo: `${activoPersona.sansano.nombreSansano} ya tiene un préstamo activo: ${activoPersona.juego.nombreJuego} (${activoPersona.ejemplar.idEjemplar}).`
+			};
+		}
+
+		const idPrestamo = this.prestamos.length + 10000;
+		const prestamo: Prestamo = {
+			idPrestamo,
+			idSolicitud: solicitud.idSolicitud,
+			rutPrestador: opts.rutPrestador ?? RUT_STAFF,
+			rutReceptor: null,
+			rutRevisor: null,
+			fechaRetiro: `${solicitud.fechaSeleccionada}T12:00:00.000Z`,
+			fechaDevolucion: null,
+			fechaRevision: null,
+			tipoDocumento: null,
+			comentarios: null,
+			estadoPrestamo: 'Activo'
+		};
+
+		solicitud.estadoSolicitud = 'Aprobada';
+		ficha.ejemplar.estadoEjemplar = 'Prestado';
+		this.prestamos.push(prestamo);
+
+		if (solicitud.idExpansion) {
+			const expansion = this.ejemplares.find((e) => e.idEjemplar === solicitud.idExpansion);
+
+			if (expansion) {
+				expansion.estadoEjemplar = 'Prestado';
+			}
+		}
+
+		return { ok: true, prestamo, solicitud };
+	}
+
+	descartarSolicitud(idSolicitud: number): boolean {
+		const solicitud = this.solicitudes.find((s) => s.idSolicitud === idSolicitud);
+
+		if (!solicitud || solicitud.estadoSolicitud !== 'Pendiente') {
+			return false;
+		}
+
+		solicitud.estadoSolicitud = 'Rechazada';
+
+		return true;
 	}
 
 	terminarPrestamo(idPrestamo: number, rutReceptor: number): Prestamo | null {

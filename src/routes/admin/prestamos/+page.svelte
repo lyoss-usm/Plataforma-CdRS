@@ -2,7 +2,6 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import SectionPage from '$lib/components/admin/SectionPage.svelte';
-	import SectionPlaceholder from '$lib/components/admin/SectionPlaceholder.svelte';
 	import CajeroPos from '$lib/components/admin/cajero/CajeroPos.svelte';
 	import { loanRouteFor, loanTypeMeta, roleMeta, type LoanType } from '$lib/data/admin';
 	import { adminSession } from '$lib/stores/adminSession.svelte';
@@ -16,7 +15,7 @@
 		t === tipo ? 'bg-primary/15 text-primary' : 'text-on-surface-variant hover:text-on-surface';
 </script>
 
-<SectionPage title="Préstamos" description={loanTypeMeta[tipo].label}>
+<SectionPage title="Préstamos" description={loanTypeMeta[tipo].description}>
 	{#snippet actions()}
 		{#if roleMeta[role].allowed.length > 1}
 			<div
@@ -39,11 +38,5 @@
 		{/if}
 	{/snippet}
 
-	{#if tipo === 'junta'}
-		<CajeroPos />
-	{:else}
-		<SectionPlaceholder
-			description="Préstamos generales (externos e internos fuera de junta). Su maqueta aún no está disponible."
-		/>
-	{/if}
+	<CajeroPos {tipo} />
 </SectionPage>
