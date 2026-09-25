@@ -206,7 +206,7 @@
 	}
 </script>
 
-<div class="mx-auto flex w-full max-w-2xl flex-col gap-4">
+<div class="mx-auto flex w-full max-w-5xl flex-col gap-4">
 	<section class="rounded-base border border-glass-border surface-level-1 p-4 sm:p-5">
 		<div class="mb-3 flex items-center gap-2">
 			<span
