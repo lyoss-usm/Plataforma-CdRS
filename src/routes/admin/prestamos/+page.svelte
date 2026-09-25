@@ -3,6 +3,7 @@
 	import { page } from '$app/state';
 	import SectionPage from '$lib/components/admin/SectionPage.svelte';
 	import SectionPlaceholder from '$lib/components/admin/SectionPlaceholder.svelte';
+	import CajeroPos from '$lib/components/admin/cajero/CajeroPos.svelte';
 	import { loanRouteFor, loanTypeMeta, roleMeta, type LoanType } from '$lib/data/admin';
 	import { adminSession } from '$lib/stores/adminSession.svelte';
 
@@ -38,7 +39,11 @@
 		{/if}
 	{/snippet}
 
-	<SectionPlaceholder
-		description="Punto de venta: busca el juego, identifica al solicitante y crea o cierra el préstamo. Esta vista aún no tiene maqueta."
-	/>
+	{#if tipo === 'junta'}
+		<CajeroPos />
+	{:else}
+		<SectionPlaceholder
+			description="Préstamos generales (externos e internos fuera de junta). Su maqueta aún no está disponible."
+		/>
+	{/if}
 </SectionPage>

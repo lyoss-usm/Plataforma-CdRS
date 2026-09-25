@@ -1,5 +1,7 @@
 export type IconName =
+	| 'arrow-left-right'
 	| 'ban'
+	| 'book-open'
 	| 'box'
 	| 'boxes'
 	| 'camera'

@@ -1,6 +1,8 @@
 <script lang="ts">
 	import {
+		ArrowLeftRight,
 		Ban,
+		BookOpen,
 		Box,
 		Boxes,
 		Camera,
@@ -32,7 +34,9 @@
 	import type { IconName } from '$lib/icons';
 
 	const icons: Record<IconName, Component> = {
+		'arrow-left-right': ArrowLeftRight,
 		ban: Ban,
+		'book-open': BookOpen,
 		box: Box,
 		boxes: Boxes,
 		camera: Camera,
