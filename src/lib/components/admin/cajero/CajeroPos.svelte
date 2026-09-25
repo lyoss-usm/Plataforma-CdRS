@@ -234,7 +234,7 @@
 
 			{#if prestamoFicha}
 				<div
-					class="text-body-sm mt-2.5 flex items-start gap-2 rounded-base border border-primary/40 bg-primary/10 p-2.5 text-primary"
+					class="text-body-sm mt-2.5 flex items-start gap-2 rounded-base border border-glass-border bg-black/20 p-2.5 text-on-surface-variant"
 				>
 					<Icon name="book-open" class="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.8} />
 					<p class="min-w-0">
@@ -316,14 +316,14 @@
 				onclick={cargarSolicitanteDePrestamo}
 				class="mb-3 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-base border border-primary/50 bg-primary/10 px-6 py-3 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow"
 			>
-				<Icon name="book-open" class="h-5 w-5" strokeWidth={1.8} />
+				<Icon name="user-plus" class="h-5 w-5" strokeWidth={1.8} />
 				Cargar solicitante de este préstamo
 			</button>
 		{/if}
 
 		{#if sansano}
-			<div class="rounded-base border border-glass-border surface-level-1 p-3">
-				<div class="flex flex-wrap items-center justify-between gap-2">
+			<div class="relative rounded-base border border-glass-border surface-level-1 p-3">
+				<div class="flex flex-wrap items-center justify-between gap-2 pr-10 md:pr-0">
 					<div class="min-w-0">
 						<p class="font-display text-body-lg font-semibold text-on-surface">
 							{sansano.nombreSansano}
@@ -346,7 +346,7 @@
 							type="button"
 							onclick={limpiarSolicitante}
 							aria-label="Cambiar de solicitante"
-							class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-base border border-glass-border bg-surface-container-lowest text-on-surface-variant transition hover:bg-white/5 hover:text-on-surface"
+							class="absolute top-2 right-2 z-10 flex h-9 w-9 cursor-pointer items-center justify-center rounded-base border border-glass-border bg-surface-container-lowest text-on-surface-variant transition hover:bg-white/5 hover:text-on-surface md:relative md:top-auto md:right-auto md:z-auto"
 						>
 							<Icon name="x" class="h-4 w-4" strokeWidth={1.8} />
 						</button>
@@ -356,7 +356,7 @@
 
 			{#if prestamoPersona}
 				<div
-					class="text-body-sm mt-2.5 flex items-start gap-2 rounded-base border border-primary/40 bg-primary/10 p-2.5 text-primary"
+					class="text-body-sm mt-2.5 flex items-start gap-2 rounded-base border border-glass-border bg-black/20 p-2.5 text-on-surface-variant"
 				>
 					<Icon name="book-open" class="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.8} />
 					<p class="min-w-0">
