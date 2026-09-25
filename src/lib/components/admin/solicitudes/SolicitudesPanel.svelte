@@ -33,11 +33,11 @@
 
 	const columnas: DataColumn[] = [
 		{ id: 'solicitud', label: 'Solicitud' },
-		{ id: 'fecha', label: 'Recibida', mobileHidden: true },
+		{ id: 'fecha', label: 'Recibida' },
 		{ id: 'sansano', label: 'Sansano' },
-		{ id: 'juego', label: 'Juego', mobileHidden: true },
+		{ id: 'juego', label: 'Juego' },
 		{ id: 'estado', label: 'Estado' },
-		{ id: 'retiro', label: 'Retiro', mobileHidden: true },
+		{ id: 'retiro', label: 'Retiro' },
 		{ id: 'acciones', label: 'Acciones', align: 'right' }
 	];
 
@@ -126,6 +126,68 @@
 	</span>
 {/snippet}
 
+{#snippet tarjetaMovil(fila: SolicitudContexto)}
+	<div class="flex flex-col gap-2.5">
+		<div class="flex items-center justify-between gap-2">
+			<div class="flex min-w-0 items-baseline gap-2">
+				<span class="font-mono font-semibold text-on-surface">
+					#{fila.solicitud.idSolicitud}
+				</span>
+				<span class="truncate text-body-md font-medium text-on-surface">
+					{fila.sansano.nombreSansano}
+				</span>
+			</div>
+			<span class="shrink-0">
+				<StatusBadge tone={tonoEstado[fila.solicitud.estadoSolicitud]}>
+					{fila.solicitud.estadoSolicitud}
+				</StatusBadge>
+			</span>
+		</div>
+
+		<div class="min-w-0">
+			<p class="truncate text-body-md font-medium text-on-surface">{fila.juego.nombreJuego}</p>
+			<p class="flex flex-wrap items-center gap-x-1.5 font-mono text-xs text-on-surface-variant/80">
+				<span class="text-on-surface-variant">{fila.ejemplar.idEjemplar}</span>
+				{#if fila.solicitud.idExpansion}
+					<span class="text-secondary">+ {fila.solicitud.idExpansion}</span>
+				{/if}
+				<span>·</span>
+				<span>
+					Retiro {fechaCorta(fila.solicitud.fechaSeleccionada)} · Recibida
+					{fechaCorta(fila.solicitud.fechaSolicitud)}
+				</span>
+			</p>
+			<p class="font-mono text-xs text-on-surface-variant/70">
+				{formatearRut(fila.sansano.rutSansano, fila.sansano.digitoVerificador)} · Rol
+				{fila.sansano.rolSansano}
+			</p>
+		</div>
+
+		{#if fila.solicitud.estadoSolicitud === 'Pendiente'}
+			<div class="grid grid-cols-2 gap-2">
+				<button
+					type="button"
+					onclick={() => (detalle = fila)}
+					aria-label="Atender solicitud #{fila.solicitud.idSolicitud}"
+					class={`${claseBotonAtender} w-full justify-center`}
+				>
+					<Icon name="check" class="h-3.5 w-3.5" strokeWidth={2} />
+					Atender
+				</button>
+				<button
+					type="button"
+					onclick={() => (descartar = fila)}
+					aria-label="Descartar solicitud #{fila.solicitud.idSolicitud}"
+					class={`${claseBotonDescartar} w-full justify-center`}
+				>
+					<Icon name="ban" class="h-3.5 w-3.5" strokeWidth={2} />
+					Descartar
+				</button>
+			</div>
+		{/if}
+	</div>
+{/snippet}
+
 {#snippet cell(fila: SolicitudContexto, columna: DataColumn)}
 	{#if columna.id === 'solicitud'}
 		<span class="font-mono text-on-surface">#{fila.solicitud.idSolicitud}</span>
@@ -205,6 +267,7 @@
 			rows={paginados}
 			keyRow={(fila) => String(fila.solicitud.idSolicitud)}
 			{cell}
+			mobileCard={tarjetaMovil}
 			loading={cargando}
 			emptyMessage={vacioMensaje}
 			emptyDescription={vacioDescripcion}

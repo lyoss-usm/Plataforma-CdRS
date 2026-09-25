@@ -8,6 +8,7 @@
 		rows: T[];
 		keyRow: (row: T) => string;
 		cell: Snippet<[T, DataColumn]>;
+		mobileCard?: Snippet<[T]>;
 		loading?: boolean;
 		error?: string | null;
 		emptyMessage?: string;
@@ -20,6 +21,7 @@
 		rows,
 		keyRow,
 		cell,
+		mobileCard,
 		loading = false,
 		error = null,
 		emptyMessage = 'Sin resultados',
@@ -73,32 +75,7 @@
 			</p>
 			<p class="max-w-md text-body-md text-on-surface-variant">{error}</p>
 		</div>
-	{:else if loading}
-		<div class="overflow-x-auto" aria-busy="true" aria-label="Cargando datos">
-			<table class="w-full min-w-[560px] border-collapse text-left">
-				<thead>
-					<tr class="border-b border-glass-border bg-white/[0.03]">
-						{#each columns as column (column.id)}
-							<th scope="col" class={thClasses(column)}>{column.label}</th>
-						{/each}
-					</tr>
-				</thead>
-				<tbody>
-					{#each filasEsqueleto as indice (indice)}
-						<tr class="border-b border-glass-border last:border-b-0" aria-rowindex={indice + 1}>
-							{#each columns as column (column.id)}
-								<td class={`px-4 py-3.5 ${alignClasses[column.align ?? 'left']}`}>
-									<div
-										class={`h-3.5 w-3/5 animate-pulse rounded-full bg-on-surface/15 ${barraAncho(column)}`}
-									></div>
-								</td>
-							{/each}
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
-	{:else if rows.length === 0}
+	{:else if rows.length === 0 && !loading}
 		<div class="flex flex-col items-center gap-3 px-6 py-12 text-center">
 			<span
 				class="flex h-12 w-12 items-center justify-center rounded-full border border-glass-border bg-on-surface/10"
@@ -111,25 +88,83 @@
 			{/if}
 		</div>
 	{:else}
-		<div class="overflow-x-auto">
-			<table class="w-full min-w-[560px] border-collapse text-left">
-				<thead>
-					<tr class="border-b border-glass-border bg-white/[0.03]">
-						{#each columns as column (column.id)}
-							<th scope="col" class={thClasses(column)}>{column.label}</th>
-						{/each}
-					</tr>
-				</thead>
-				<tbody>
+		{#if mobileCard}
+			<div class="grid gap-3 p-3 md:hidden" aria-busy={loading || undefined}>
+				{#if loading}
+					{#each filasEsqueleto as indice (indice)}
+						<div class="rounded-base border border-glass-border surface-level-1 p-3.5">
+							<div
+								class="h-4 w-2/5 animate-pulse rounded-full bg-on-surface/15"
+								aria-hidden="true"
+							></div>
+							<div
+								class="mt-2 h-3 w-4/5 animate-pulse rounded-full bg-on-surface/15"
+								aria-hidden="true"
+							></div>
+							<div
+								class="mt-2 h-3 w-1/3 animate-pulse rounded-full bg-on-surface/15"
+								aria-hidden="true"
+							></div>
+						</div>
+					{/each}
+				{:else}
 					{#each rows as row (keyRow(row))}
-						<tr class="border-b border-glass-border transition last:border-b-0 hover:bg-white/5">
+						<div class="rounded-base border border-glass-border surface-level-1 p-3.5">
+							{@render mobileCard(row)}
+						</div>
+					{/each}
+				{/if}
+			</div>
+		{/if}
+
+		<div class="overflow-x-auto {mobileCard ? 'hidden md:block' : ''}">
+			{#if loading}
+				<table
+					class="w-full min-w-[560px] border-collapse text-left"
+					aria-busy="true"
+					aria-label="Cargando datos"
+				>
+					<thead>
+						<tr class="border-b border-glass-border bg-white/[0.03]">
 							{#each columns as column (column.id)}
-								<td class={tdClasses(column)}>{@render cell(row, column)}</td>
+								<th scope="col" class={thClasses(column)}>{column.label}</th>
 							{/each}
 						</tr>
-					{/each}
-				</tbody>
-			</table>
+					</thead>
+					<tbody>
+						{#each filasEsqueleto as indice (indice)}
+							<tr class="border-b border-glass-border last:border-b-0" aria-rowindex={indice + 1}>
+								{#each columns as column (column.id)}
+									<td class={`px-4 py-3.5 ${alignClasses[column.align ?? 'left']}`}>
+										<div
+											class={`h-3.5 w-3/5 animate-pulse rounded-full bg-on-surface/15 ${barraAncho(column)}`}
+										></div>
+									</td>
+								{/each}
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			{:else}
+				<table class="w-full min-w-[560px] border-collapse text-left">
+					<thead>
+						<tr class="border-b border-glass-border bg-white/[0.03]">
+							{#each columns as column (column.id)}
+								<th scope="col" class={thClasses(column)}>{column.label}</th>
+							{/each}
+						</tr>
+					</thead>
+					<tbody>
+						{#each rows as row (keyRow(row))}
+							<tr class="border-b border-glass-border transition last:border-b-0 hover:bg-white/5">
+								{#each columns as column (column.id)}
+									<td class={tdClasses(column)}>{@render cell(row, column)}</td>
+								{/each}
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			{/if}
 		</div>
 	{/if}
 </div>

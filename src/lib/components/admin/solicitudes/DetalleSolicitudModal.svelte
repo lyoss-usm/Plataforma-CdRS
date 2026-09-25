@@ -240,7 +240,7 @@
 			class="{claseBotonPrimario} disabled:cursor-not-allowed disabled:opacity-40"
 		>
 			<Icon name="check" class="h-4 w-4" strokeWidth={2} />
-			Confirmar préstamo
+			Confirmar
 		</button>
 	{/snippet}
 </Modal>
