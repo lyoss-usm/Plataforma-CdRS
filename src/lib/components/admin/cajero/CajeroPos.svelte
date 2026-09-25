@@ -15,6 +15,7 @@
 		type FichaBusqueda
 	} from '$lib/data/junta.svelte';
 	import type { Documento, Sansano } from '$lib/schemas';
+	import { notificaciones } from '$lib/stores/notificaciones.svelte';
 
 	const documentos: { value: Documento; label: string }[] = [
 		{ value: 'Carnet', label: 'Carnet' },
@@ -37,19 +38,6 @@
 	let altaAbierta = $state(false);
 
 	let errorIniciar = $state<string | null>(null);
-	let ultimoPrestamo = $state<{
-		idPrestamo: number;
-		idSolicitud: number;
-		idEjemplar: string;
-		nombreJuego: string;
-		nombreSansano: string;
-	} | null>(null);
-	let ultimoTerminado = $state<{
-		idPrestamo: number;
-		idEjemplar: string;
-		nombreJuego: string;
-		nombreSansano: string;
-	} | null>(null);
 
 	const suspension = $derived(sansano ? meson.suspensionActiva(sansano.rutSansano) : null);
 	const prestable = $derived(ficha !== null && ficha.ejemplar.estadoEjemplar === 'En bodega');
@@ -80,14 +68,12 @@
 			return;
 		}
 
-		ultimoPrestamo = null;
 		errorIniciar = null;
 		usarFicha(id);
 	}
 
 	function alEscaneado(id: string) {
 		qrAbierto = false;
-		ultimoPrestamo = null;
 		errorIniciar = null;
 		usarFicha(id);
 	}
@@ -173,13 +159,12 @@
 			return;
 		}
 
-		ultimoTerminado = {
-			idPrestamo: devuelto.idPrestamo,
-			idEjemplar: activo.ejemplar.idEjemplar,
-			nombreJuego: activo.juego.nombreJuego,
-			nombreSansano: activo.sansano.nombreSansano
-		};
-		ultimoPrestamo = null;
+		notificaciones.mostrar(
+			'info',
+			`Préstamo #${devuelto.idPrestamo} terminado`,
+			`${activo.ejemplar.idEjemplar} ${activo.juego.nombreJuego} terminó con ${activo.sansano.nombreSansano} y quedó «Para revisar». Escanea el juego nuevo para darle otro préstamo.`,
+			{ duracion: 8000 }
+		);
 		errorIniciar = null;
 
 		if (ficha && ficha.ejemplar.idEjemplar === activo.ejemplar.idEjemplar) {
@@ -204,14 +189,11 @@
 			return;
 		}
 
-		ultimoPrestamo = {
-			idPrestamo: resultado.prestamo.idPrestamo,
-			idSolicitud: resultado.solicitud.idSolicitud,
-			idEjemplar: ficha.ejemplar.idEjemplar,
-			nombreJuego: ficha.juego.nombreJuego,
-			nombreSansano: sansano.nombreSansano
-		};
-		ultimoTerminado = null;
+		notificaciones.mostrar(
+			'success',
+			`Préstamo #${resultado.prestamo.idPrestamo} iniciado`,
+			`Solicitud #${resultado.solicitud.idSolicitud} aprobada · ${ficha.ejemplar.idEjemplar} ${ficha.juego.nombreJuego} con ${sansano.nombreSansano}. El ejemplar quedó en «Prestado».`
+		);
 		errorIniciar = null;
 		ficha = null;
 		busqueda = '';
@@ -225,42 +207,6 @@
 </script>
 
 <div class="mx-auto flex w-full max-w-2xl flex-col gap-4">
-	{#if ultimoPrestamo}
-		<div
-			class="flex items-start gap-2 rounded-base border border-primary/40 bg-primary/10 p-4"
-			role="status"
-		>
-			<Icon name="check" class="mt-1 h-5 w-5 shrink-0 text-primary" strokeWidth={2} />
-			<div class="text-body-md text-primary">
-				<p class="font-semibold">Préstamo #{ultimoPrestamo.idPrestamo} iniciado</p>
-				<p>
-					Solicitud #{ultimoPrestamo.idSolicitud} aprobada ·
-					<span class="font-mono">{ultimoPrestamo.idEjemplar}</span>
-					{ultimoPrestamo.nombreJuego}
-					con {ultimoPrestamo.nombreSansano}. El ejemplar quedó en «Prestado».
-				</p>
-			</div>
-		</div>
-	{/if}
-
-	{#if ultimoTerminado}
-		<div
-			class="flex items-start gap-2 rounded-base border border-primary/40 bg-primary/10 p-4"
-			role="status"
-		>
-			<Icon name="arrow-left-right" class="mt-1 h-5 w-5 shrink-0 text-primary" strokeWidth={2} />
-			<div class="text-body-md text-primary">
-				<p class="font-semibold">Préstamo #{ultimoTerminado.idPrestamo} terminado</p>
-				<p>
-					<span class="font-mono">{ultimoTerminado.idEjemplar}</span>
-					{ultimoTerminado.nombreJuego}
-					terminó con {ultimoTerminado.nombreSansano} y quedó «Para revisar». Escanea el juego nuevo para
-					darle otro préstamo.
-				</p>
-			</div>
-		</div>
-	{/if}
-
 	<section class="rounded-base border border-glass-border surface-level-1 p-4 sm:p-5">
 		<div class="mb-3 flex items-center gap-2">
 			<span

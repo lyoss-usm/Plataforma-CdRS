@@ -12,6 +12,7 @@
 		type SidebarLink
 	} from '$lib/data/admin';
 	import { adminSession, type AdminRole } from '$lib/stores/adminSession.svelte';
+	import Toast from '$lib/components/admin/primitives/Toast.svelte';
 
 	const roles: AdminRole[] = ['junior', 'senior', 'directivo'];
 
@@ -216,3 +217,5 @@
 		</div>
 	</nav>
 </div>
+
+<Toast />
