@@ -12,9 +12,8 @@
 
 	let { contexto, onclose }: Props = $props();
 
-	const asignadaDisponible = $derived(contexto.ejemplar.estadoEjemplar === 'En bodega');
 	const opciones = $derived(
-		(asignadaDisponible ? [contexto.ejemplar] : []).concat(
+		(contexto.ejemplar.estadoEjemplar === 'En bodega' ? [contexto.ejemplar] : []).concat(
 			contexto.copiasDisponibles.filter((c) => c.idEjemplar !== contexto.ejemplar.idEjemplar)
 		)
 	);
@@ -33,6 +32,10 @@
 
 	let seleccion = $state<string | null>(seleccionInicial());
 	let error = $state<string | null>(null);
+
+	const copiaSeleccionada = $derived(
+		opciones.find((opcion) => opcion.idEjemplar === seleccion) ?? null
+	);
 
 	const claseBotonPrimario =
 		'inline-flex cursor-pointer items-center gap-2 rounded-base border border-primary/50 bg-primary/10 px-4 py-2 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow';
@@ -62,7 +65,7 @@
 
 <Modal title={`Atender solicitud #${contexto.solicitud.idSolicitud}`} {onclose}>
 	<div class="flex flex-col gap-4">
-		<div class="grid gap-4 sm:grid-cols-2">
+		<div class="flex flex-col gap-4">
 			<div class="rounded-base border border-glass-border p-4">
 				<p class="font-mono text-[10px] tracking-wider text-on-surface-variant/70 uppercase">
 					Solicitante
@@ -87,33 +90,57 @@
 			</div>
 
 			<div class="rounded-base border border-glass-border p-4">
-				<p class="font-mono text-[10px] tracking-wider text-on-surface-variant/70 uppercase">
-					Juego solicitado
-				</p>
-				<p class="mt-1 font-display text-body-lg font-semibold text-on-surface">
-					{contexto.juego.nombreJuego}
-				</p>
-				<p class="flex flex-wrap gap-1.5 font-mono text-xs text-on-surface-variant">
-					<span class="rounded-full border border-glass-border bg-on-surface/10 px-2 py-0.5">
-						{contexto.ejemplar.idEjemplar}
-					</span>
-					{#if contexto.solicitud.idExpansion}
-						<span
-							class="rounded-full border border-secondary/40 bg-secondary/10 px-2 py-0.5 text-secondary"
-						>
-							+ {contexto.solicitud.idExpansion}
-						</span>
-					{/if}
-				</p>
-				<p class="mt-1 text-xs text-on-surface-variant">
-					Retiro agendado:
-					{new Date(contexto.solicitud.fechaSeleccionada).toLocaleDateString('es-CL', {
-						weekday: 'short',
-						day: '2-digit',
-						month: 'short',
-						year: 'numeric'
-					})}
-				</p>
+				<div class="flex gap-4">
+					<div
+						class="relative h-28 w-24 shrink-0 overflow-hidden rounded-base bg-surface-container-lowest"
+					>
+						{#if contexto.juego.pathImagen}
+							<img
+								src={contexto.juego.pathImagen}
+								alt={`Portada de ${contexto.juego.nombreJuego}`}
+								class="h-full w-full object-cover"
+							/>
+						{:else}
+							<div
+								class="flex h-full items-center justify-center px-2 text-center font-mono text-xs text-on-surface-variant"
+								role="img"
+								aria-label={`Sin imagen para ${contexto.juego.nombreJuego}`}
+							>
+								Sin imagen
+							</div>
+						{/if}
+					</div>
+
+					<div class="min-w-0">
+						<p class="font-mono text-[10px] tracking-wider text-on-surface-variant/70 uppercase">
+							Juego solicitado
+						</p>
+						<p class="mt-1 font-display text-body-lg font-semibold text-on-surface">
+							{contexto.juego.nombreJuego}
+						</p>
+						<p class="flex flex-wrap gap-1.5 font-mono text-xs text-on-surface-variant">
+							<span class="rounded-full border border-glass-border bg-on-surface/10 px-2 py-0.5">
+								{contexto.ejemplar.idEjemplar}
+							</span>
+							{#if contexto.solicitud.idExpansion}
+								<span
+									class="rounded-full border border-secondary/40 bg-secondary/10 px-2 py-0.5 text-secondary"
+								>
+									+ {contexto.solicitud.idExpansion}
+								</span>
+							{/if}
+						</p>
+						<p class="mt-1 text-xs text-on-surface-variant">
+							Retiro agendado:
+							{new Date(contexto.solicitud.fechaSeleccionada).toLocaleDateString('es-CL', {
+								weekday: 'short',
+								day: '2-digit',
+								month: 'short',
+								year: 'numeric'
+							})}
+						</p>
+					</div>
+				</div>
 			</div>
 		</div>
 
@@ -131,36 +158,8 @@
 		{/if}
 
 		<section>
-			<h3 class="mb-2 font-mono text-[10px] tracking-wider text-on-surface-variant/70 uppercase">
-				Copia asignada
-			</h3>
-
-			{#if asignadaDisponible}
-				<p
-					class="text-body-sm rounded-base border border-glass-border bg-black/20 p-3 text-on-surface-variant"
-				>
-					La copia
-					<span class="font-mono font-semibold text-on-surface">{contexto.ejemplar.idEjemplar}</span
-					>
-					está disponible para el retiro.
-				</p>
-			{:else}
-				<p
-					class="text-body-sm flex items-start gap-2 rounded-base border border-error/40 bg-error/15 p-3 text-error"
-					role="alert"
-				>
-					<Icon name="circle-alert" class="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.8} />
-					<span>
-						La copia asignada
-						<span class="font-mono font-semibold">{contexto.ejemplar.idEjemplar}</span> ya no está
-						disponible («{contexto.ejemplar.estadoEjemplar}»). Elige otra copia del juego o descarta
-						la solicitud.
-					</span>
-				</p>
-			{/if}
-
 			{#if opciones.length > 1}
-				<fieldset class="mt-3">
+				<fieldset>
 					<legend
 						class="mb-2 font-mono text-[10px] tracking-wider text-on-surface-variant/70 uppercase"
 					>
@@ -188,12 +187,13 @@
 									{#if opcion.idEjemplar === contexto.solicitud.idEjemplar}
 										<span class="ml-2 text-xs text-on-surface-variant/70">asignada</span>
 									{/if}
-									{#if opcion.estadoCompletitud === 'Incompleto'}
-										<span class="ml-2 text-xs text-tertiary">Incompleto</span>
-									{/if}
 								</span>
 								<span class="ml-auto">
-									<StatusBadge tone="success">En bodega</StatusBadge>
+									{#if opcion.estadoCompletitud === 'Incompleto'}
+										<StatusBadge tone="warning">Incompleto</StatusBadge>
+									{:else}
+										<StatusBadge tone="neutral">Completo</StatusBadge>
+									{/if}
 								</span>
 							</label>
 						{/each}
@@ -203,11 +203,19 @@
 						disponible.
 					</p>
 				</fieldset>
-			{:else if !asignadaDisponible}
+			{/if}
+
+			{#if copiaSeleccionada?.comentarios}
 				<p
-					class="text-body-sm mt-3 rounded-base border border-glass-border bg-black/20 p-3 text-on-surface-variant"
+					class="text-body-sm mt-3 flex items-start gap-2 rounded-base border border-glass-border bg-black/20 p-3 text-on-surface-variant"
 				>
-					No hay otras copias «En bodega» de este juego disponibles.
+					<Icon name="info" class="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.8} />
+					<span>
+						<span class="font-mono font-semibold text-on-surface"
+							>{copiaSeleccionada.idEjemplar}</span
+						>
+						<span> · {copiaSeleccionada.comentarios}</span>
+					</span>
 				</p>
 			{/if}
 		</section>

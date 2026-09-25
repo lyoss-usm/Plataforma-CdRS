@@ -248,6 +248,16 @@ const ejemplaresIniciales: Ejemplar[] = [
 		estadoEjemplar: 'En bodega'
 	},
 	{
+		idEjemplar: 'CAT-003',
+		idJuego: 1,
+		esExterno: false,
+		estadoCompletitud: 'Incompleto',
+		situacion: null,
+		comentarios: 'Faltan 2 cartas de recurso.',
+		componentes: null,
+		estadoEjemplar: 'En bodega'
+	},
+	{
 		idEjemplar: 'EXP-C01',
 		idJuego: 2,
 		esExterno: false,
