@@ -33,11 +33,11 @@
 
 	const columnas: DataColumn[] = [
 		{ id: 'solicitud', label: 'Solicitud' },
-		{ id: 'fecha', label: 'Recibida' },
 		{ id: 'sansano', label: 'Sansano' },
 		{ id: 'juego', label: 'Juego' },
 		{ id: 'estado', label: 'Estado' },
 		{ id: 'retiro', label: 'Retiro' },
+		{ id: 'fecha', label: 'Recibida' },
 		{ id: 'acciones', label: 'Acciones', align: 'right' }
 	];
 
@@ -60,6 +60,21 @@
 			month: 'short',
 			year: 'numeric'
 		});
+	}
+
+	function haceTiempo(iso: string): string {
+		const minutos = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+
+		if (minutos < 1) return 'recién publicada';
+		if (minutos < 60) return `hace ${minutos} min`;
+
+		const horas = Math.floor(minutos / 60);
+
+		if (horas < 24) return `hace ${horas} hora${horas === 1 ? '' : 's'}`;
+
+		const dias = Math.floor(horas / 24);
+
+		return `hace ${dias} día${dias === 1 ? '' : 's'}`;
 	}
 
 	onMount(() => {
@@ -153,13 +168,10 @@
 				{/if}
 				<span>·</span>
 				<span>
-					Retiro {fechaCorta(fila.solicitud.fechaSeleccionada)} · Recibida
-					{fechaCorta(fila.solicitud.fechaSolicitud)}
+					Retiro {fechaCorta(fila.solicitud.fechaSeleccionada)} · {haceTiempo(
+						fila.solicitud.fechaSolicitud
+					)}
 				</span>
-			</p>
-			<p class="font-mono text-xs text-on-surface-variant/70">
-				{formatearRut(fila.sansano.rutSansano, fila.sansano.digitoVerificador)} · Rol
-				{fila.sansano.rolSansano}
 			</p>
 		</div>
 
@@ -192,7 +204,9 @@
 	{#if columna.id === 'solicitud'}
 		<span class="font-mono text-on-surface">#{fila.solicitud.idSolicitud}</span>
 	{:else if columna.id === 'fecha'}
-		<span class="text-on-surface-variant">{fechaCorta(fila.solicitud.fechaSolicitud)}</span>
+		<span class="text-on-surface-variant">
+			{haceTiempo(fila.solicitud.fechaSolicitud)}
+		</span>
 	{:else if columna.id === 'sansano'}
 		<span class="flex min-w-0 flex-col">
 			<span class="font-medium">{fila.sansano.nombreSansano}</span>
