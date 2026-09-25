@@ -65,14 +65,14 @@
 					<div
 						class="flex flex-col gap-3 rounded-base border border-dashed border-outline-variant p-5"
 					>
-						<div class="h-2.5 w-1/2 rounded-full bg-white/10"></div>
+						<div class="h-2.5 w-1/2 rounded-full bg-on-surface/15"></div>
 						<div class="flex h-20 items-end gap-1.5" aria-hidden="true">
 							{#each [40, 65, 50, 80, 60, 90, 70] as bar (bar)}
-								<div class="h-full w-full rounded-sm bg-white/5" style={`height: ${bar}%`}></div>
+								<div class="h-full w-full rounded-sm bg-on-surface/10" style={`height: ${bar}%`}></div>
 							{/each}
 						</div>
 						<span
-							class="self-start rounded-full border border-glass-border bg-white/5 px-3 py-1 font-mono text-xs tracking-wider text-on-surface-variant uppercase"
+							class="self-start rounded-full border border-glass-border bg-on-surface/10 px-3 py-1 font-mono text-xs tracking-wider text-on-surface-variant uppercase"
 						>
 							Por definir
 						</span>

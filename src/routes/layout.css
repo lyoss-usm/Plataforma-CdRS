@@ -90,6 +90,66 @@
 	--color-ice-glow: rgb(125 211 252 / 0.15);
 }
 
+/* ---------------------------------------------------------------------------
+ * Tema: Frozen (light) — la misma identidad, superficies claras
+ * ------------------------------------------------------------------------ */
+[data-theme='frozen-light'] {
+	color-scheme: light;
+
+	--color-surface: #edf5fa;
+	--color-surface-dim: #e2e9ee;
+	--color-surface-bright: #f4faff;
+	--color-surface-container-lowest: #fafcff;
+	--color-surface-container-low: #e7eff4;
+	--color-surface-container: #e2e9ee;
+	--color-surface-container-high: #dce4e9;
+	--color-surface-container-highest: #d6dee3;
+	--color-on-surface: #151d20;
+	--color-on-surface-variant: #46474a;
+	--color-inverse-surface: #22272e;
+	--color-inverse-on-surface: #e2e2e8;
+	--color-outline: #77777a;
+	--color-outline-variant: #d6dee3;
+	--color-surface-tint: #006686;
+	--color-primary: #006686;
+	--color-on-primary: #ffffff;
+	--color-primary-container: #c0e8ff;
+	--color-on-primary-container: #001e2b;
+	--color-inverse-primary: #7dd3fc;
+	--color-secondary: #555f71;
+	--color-on-secondary: #ffffff;
+	--color-secondary-container: #d9e3f8;
+	--color-on-secondary-container: #121c2b;
+	--color-tertiary: #835500;
+	--color-on-tertiary: #ffffff;
+	--color-tertiary-container: #ffddb5;
+	--color-on-tertiary-container: #2a1800;
+	--color-error: #ba1a1a;
+	--color-on-error: #ffffff;
+	--color-error-container: #ffdad6;
+	--color-on-error-container: #410002;
+	--color-primary-fixed: #c0e8ff;
+	--color-primary-fixed-dim: #7bd1fa;
+	--color-on-primary-fixed: #001e2b;
+	--color-on-primary-fixed-variant: #004d66;
+	--color-secondary-fixed: #d8e3fb;
+	--color-secondary-fixed-dim: #bcc7de;
+	--color-on-secondary-fixed: #111c2d;
+	--color-on-secondary-fixed-variant: #3c475a;
+	--color-tertiary-fixed: #ffddb5;
+	--color-tertiary-fixed-dim: #fcba5e;
+	--color-on-tertiary-fixed: #2a1800;
+	--color-on-tertiary-fixed-variant: #633f00;
+	--color-background: #eaf2f7;
+	--color-on-background: #151d20;
+	--color-surface-variant: #e2e9ee;
+
+	/* Efectos propios del lenguaje visual (refracción) en modo claro */
+	--color-glass-border: rgb(255 255 255 / 0.55);
+	--color-surface-overlay: rgb(255 255 255 / 0.62);
+	--color-ice-glow: rgb(125 211 252 / 0.4);
+}
+
 /* Expone la paleta del tema como utilidades Tailwind sin duplicar variables */
 @theme inline {
 	--color-surface: var(--color-surface);
