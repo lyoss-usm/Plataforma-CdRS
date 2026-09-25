@@ -10,7 +10,6 @@
 	import DescartarSolicitudModal from './DescartarSolicitudModal.svelte';
 	import { meson, formatearRut, type SolicitudContexto } from '$lib/data/junta.svelte';
 	import { adminSession } from '$lib/stores/adminSession.svelte';
-	import { notificaciones } from '$lib/stores/notificaciones.svelte';
 	import type { EstadoSolicitud } from '$lib/schemas';
 
 	const sizePagina = 8;
@@ -78,18 +77,7 @@
 	}
 
 	onMount(() => {
-		const vencidas = meson.vencerSolicitudes();
-
-		if (vencidas > 0) {
-			notificaciones.mostrar(
-				'info',
-				'Vencimiento automático',
-				`${vencidas} solicitud${vencidas === 1 ? '' : 'es'} con fecha de retiro pasada pasó${
-					vencidas === 1 ? ' ' : 'n '
-				}a «Vencidas».`,
-				{ duracion: 8000 }
-			);
-		}
+		meson.vencerSolicitudes();
 
 		const temporizador = setTimeout(() => {
 			cargando = false;
