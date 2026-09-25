@@ -5,7 +5,10 @@ import type {
 	Prestamo,
 	Sansano,
 	Solicitud,
-	Suspension
+	Suspension,
+	Cargo,
+	CargoPermiso,
+	Permiso
 } from '$lib/schemas';
 import { SvelteDate } from 'svelte/reactivity';
 
@@ -365,11 +368,216 @@ const camila: Sansano = {
 const suspensionTomas: Suspension = {
 	idSuspencion: 1,
 	rutSansano: 98765432,
-	rutModerador: 11111111,
+	rutModerador: RUT_STAFF,
 	fechaInicio: '2026-09-10T00:00:00.000Z',
 	fechaTermino: '2026-12-31T23:59:59.000Z',
 	razon: 'No devolvió el préstamo anterior y no respondió los avisos del club.'
 };
+
+const jorge: Sansano = {
+	rutSansano: 16677889,
+	rolSansano: 1667788,
+	digitoVerificador: 4,
+	idCargo: null,
+	nombreSansano: 'Jorge Núñez',
+	telefono: 977889900,
+	correoInstitucional: 'jorge.nunez@alumnos.usm.cl',
+	authUserId: null
+};
+
+const paulina: Sansano = {
+	rutSansano: 17788990,
+	rolSansano: 1778899,
+	digitoVerificador: 1,
+	idCargo: null,
+	nombreSansano: 'Paulina Carrasco',
+	telefono: 988990011,
+	correoInstitucional: 'paulina.carrasco@sansano.usm.cl',
+	authUserId: null
+};
+
+const suspensionJorge: Suspension = {
+	idSuspencion: 2,
+	rutSansano: 16677889,
+	rutModerador: RUT_STAFF,
+	fechaInicio: `${enDias(-12)}T10:00:00.000Z`,
+	fechaTermino: null,
+	razon: 'Daño reiterado a las cajas de juegos de mesa del club.'
+};
+
+const suspensionPaulina: Suspension = {
+	idSuspencion: 3,
+	rutSansano: 17788990,
+	rutModerador: RUT_STAFF,
+	fechaInicio: `${enDias(-40)}T09:30:00.000Z`,
+	fechaTermino: `${enDias(-25)}T18:00:00.000Z`,
+	razon: 'Atraso prolongado en la devolución de un préstamo.'
+};
+
+const daniela: Sansano = {
+	rutSansano: RUT_STAFF,
+	rolSansano: 2055443,
+	digitoVerificador: 3,
+	idCargo: 3,
+	nombreSansano: 'Daniela Contreras',
+	telefono: 933445566,
+	correoInstitucional: 'daniela.contreras@usm.cl',
+	authUserId: 'a1b2c3d4-0000-4000-8000-000000000001'
+};
+
+const marcelo: Sansano = {
+	rutSansano: 21098765,
+	rolSansano: 2109876,
+	digitoVerificador: 4,
+	idCargo: 2,
+	nombreSansano: 'Marcelo Rivas',
+	telefono: 955667788,
+	correoInstitucional: 'marcelo.rivas@usm.cl',
+	authUserId: 'a1b2c3d4-0000-4000-8000-000000000002'
+};
+
+const ignacia: Sansano = {
+	rutSansano: 21876543,
+	rolSansano: 2187654,
+	digitoVerificador: 2,
+	idCargo: 2,
+	nombreSansano: 'Ignacia Soto',
+	telefono: 966778899,
+	correoInstitucional: 'ignacia.soto@usm.cl',
+	authUserId: 'a1b2c3d4-0000-4000-8000-000000000003'
+};
+
+const fernanda: Sansano = {
+	rutSansano: 23456789,
+	rolSansano: 2345678,
+	digitoVerificador: 0,
+	idCargo: 1,
+	nombreSansano: 'Fernanda Alarcón',
+	telefono: 977889900,
+	correoInstitucional: 'fernanda.alarcon@sansano.usm.cl',
+	authUserId: 'a1b2c3d4-0000-4000-8000-000000000004'
+};
+
+const martin: Sansano = {
+	rutSansano: 22987654,
+	rolSansano: 2298765,
+	digitoVerificador: 3,
+	idCargo: 1,
+	nombreSansano: 'Martín Lagos',
+	telefono: 988990011,
+	correoInstitucional: 'martin.lagos@alumnos.usm.cl',
+	authUserId: 'a1b2c3d4-0000-4000-8000-000000000005'
+};
+
+const renato: Sansano = {
+	rutSansano: 22876543,
+	rolSansano: 2287654,
+	digitoVerificador: 5,
+	idCargo: 1,
+	nombreSansano: 'Renato Cid',
+	telefono: 966778899,
+	correoInstitucional: 'renato.cid@sansano.usm.cl',
+	authUserId: null
+};
+
+const felipe: Sansano = {
+	rutSansano: 22223344,
+	rolSansano: 2222334,
+	digitoVerificador: 6,
+	idCargo: 3,
+	nombreSansano: 'Felipe Guzmán',
+	telefono: 955667788,
+	correoInstitucional: 'felipe.guzman@usm.cl',
+	authUserId: null
+};
+
+const cargosIniciales: Cargo[] = [
+	{
+		idCargo: 1,
+		nombreCargo: 'Junior',
+		descripcionCargo: 'Opera el mesón en juntas y recibe devoluciones.'
+	},
+	{
+		idCargo: 2,
+		nombreCargo: 'Senior',
+		descripcionCargo: 'Atiende solicitudes web, préstamos generales e inventario.'
+	},
+	{
+		idCargo: 3,
+		nombreCargo: 'Directivo',
+		descripcionCargo: 'Gestiona el staff, la moderación y los permisos del club.'
+	}
+];
+
+const permisosIniciales: Permiso[] = [
+	{
+		idPermiso: 1,
+		nombrePermiso: 'prestamos:junta',
+		descripcionPermiso: 'Cobrar préstamos en juntas masivas (cajero).'
+	},
+	{
+		idPermiso: 2,
+		nombrePermiso: 'prestamos:general',
+		descripcionPermiso: 'Realizar préstamos generales del catálogo.'
+	},
+	{
+		idPermiso: 3,
+		nombrePermiso: 'solicitudes:atender',
+		descripcionPermiso: 'Atender solicitudes del formulario web.'
+	},
+	{
+		idPermiso: 4,
+		nombrePermiso: 'inventario:editar',
+		descripcionPermiso: 'Alta y edición de juegos y ejemplares.'
+	},
+	{
+		idPermiso: 5,
+		nombrePermiso: 'inventario:eliminar',
+		descripcionPermiso: 'Eliminación física de juegos y ejemplares.'
+	},
+	{
+		idPermiso: 6,
+		nombrePermiso: 'prestamos:devolver',
+		descripcionPermiso: 'Recibir devoluciones y revisarlas.'
+	},
+	{
+		idPermiso: 7,
+		nombrePermiso: 'usuarios:gestionar',
+		descripcionPermiso: 'Invitar, editar y dar de baja al staff.'
+	},
+	{
+		idPermiso: 8,
+		nombrePermiso: 'moderacion:suspender',
+		descripcionPermiso: 'Aplicar, levantar y consultar suspensiones.'
+	},
+	{
+		idPermiso: 9,
+		nombrePermiso: 'catalogo:leer',
+		descripcionPermiso: 'Leer el catálogo público y la nómina del club.'
+	}
+];
+
+const cargoPermisosIniciales: CargoPermiso[] = [
+	{ idCargo: 1, idPermiso: 1 },
+	{ idCargo: 1, idPermiso: 6 },
+	{ idCargo: 1, idPermiso: 9 },
+	{ idCargo: 2, idPermiso: 1 },
+	{ idCargo: 2, idPermiso: 2 },
+	{ idCargo: 2, idPermiso: 3 },
+	{ idCargo: 2, idPermiso: 4 },
+	{ idCargo: 2, idPermiso: 5 },
+	{ idCargo: 2, idPermiso: 6 },
+	{ idCargo: 2, idPermiso: 9 },
+	{ idCargo: 3, idPermiso: 1 },
+	{ idCargo: 3, idPermiso: 2 },
+	{ idCargo: 3, idPermiso: 3 },
+	{ idCargo: 3, idPermiso: 4 },
+	{ idCargo: 3, idPermiso: 5 },
+	{ idCargo: 3, idPermiso: 6 },
+	{ idCargo: 3, idPermiso: 7 },
+	{ idCargo: 3, idPermiso: 8 },
+	{ idCargo: 3, idPermiso: 9 }
+];
 
 const solicitudesIniciales: Solicitud[] = [
 	{
@@ -461,8 +669,24 @@ const prestamoCamila: Prestamo = {
 };
 
 class Meson {
-	sansanos = $state<Sansano[]>([sofia, tomas, camila]);
-	suspensiones = $state<Suspension[]>([suspensionTomas]);
+	sansanos = $state<Sansano[]>([
+		sofia,
+		tomas,
+		camila,
+		daniela,
+		marcelo,
+		ignacia,
+		fernanda,
+		martin,
+		renato,
+		felipe,
+		jorge,
+		paulina
+	]);
+	suspensiones = $state<Suspension[]>([suspensionTomas, suspensionJorge, suspensionPaulina]);
+	cargos = $state<Cargo[]>([...cargosIniciales]);
+	permisos = $state<Permiso[]>([...permisosIniciales]);
+	cargoPermisos = $state<CargoPermiso[]>([...cargoPermisosIniciales]);
 	ejemplares = $state<Ejemplar[]>([...ejemplaresIniciales]);
 	prestamos = $state<Prestamo[]>([prestamoCamila]);
 	solicitudes = $state<Solicitud[]>([...solicitudesIniciales]);
@@ -484,14 +708,14 @@ class Meson {
 	}
 
 	suspensionActiva(rutSansano: number): Suspension | null {
-		const hoyIso = hoy();
+		const ahoraIso = ahora();
 
 		return (
 			this.suspensiones.find(
 				(s) =>
 					s.rutSansano === rutSansano &&
-					s.fechaInicio <= hoyIso &&
-					(s.fechaTermino === null || s.fechaTermino >= hoyIso)
+					s.fechaInicio <= ahoraIso &&
+					(s.fechaTermino === null || s.fechaTermino > ahoraIso)
 			) ?? null
 		);
 	}
@@ -560,6 +784,171 @@ class Meson {
 		this.sansanos.push(nuevo);
 
 		return nuevo;
+	}
+
+	cargoDe(idCargo: number): Cargo | null {
+		return this.cargos.find((c) => c.idCargo === idCargo) ?? null;
+	}
+
+	permisosDeCargo(idCargo: number | null): Permiso[] {
+		if (idCargo === null) {
+			return [];
+		}
+
+		const ids = this.cargoPermisos.filter((cp) => cp.idCargo === idCargo).map((cp) => cp.idPermiso);
+
+		return this.permisos.filter((p) => ids.includes(p.idPermiso));
+	}
+
+	invitarSansano(
+		datos: DatosAltaSansano,
+		idCargo: number
+	): { ok: boolean; sansano: Sansano | null; motivo: string } {
+		const porRut = this.sansanoPorRut(datos.rut);
+
+		if (porRut) {
+			if (porRut.idCargo !== null) {
+				return {
+					ok: false,
+					sansano: null,
+					motivo: 'El RUT ya pertenece al staff con un cargo asignado.'
+				};
+			}
+
+			porRut.idCargo = idCargo;
+
+			return { ok: true, sansano: porRut, motivo: '' };
+		}
+
+		const porCorreo = this.sansanos.find((s) => s.correoInstitucional === datos.correo);
+
+		if (porCorreo) {
+			return {
+				ok: false,
+				sansano: null,
+				motivo: `El correo ya está registrado en ${porCorreo.nombreSansano}.`
+			};
+		}
+
+		const nuevo: Sansano = {
+			rutSansano: datos.rut,
+			rolSansano: datos.rol,
+			digitoVerificador: datos.digitoVerificador,
+			idCargo,
+			nombreSansano: datos.nombre,
+			telefono: datos.telefono,
+			correoInstitucional: datos.correo,
+			authUserId: null
+		};
+
+		this.sansanos.push(nuevo);
+
+		return { ok: true, sansano: nuevo, motivo: '' };
+	}
+
+	actualizarSansano(
+		rutSansano: number,
+		cambios: Partial<
+			Pick<Sansano, 'nombreSansano' | 'telefono' | 'correoInstitucional' | 'idCargo'>
+		>
+	): Sansano | null {
+		const sansano = this.sansanoPorRut(rutSansano);
+
+		if (!sansano) {
+			return null;
+		}
+
+		Object.assign(sansano, cambios);
+
+		return sansano;
+	}
+
+	darBajaSansano(rutSansano: number): Sansano | null {
+		return this.actualizarSansano(rutSansano, { idCargo: null });
+	}
+
+	eliminarSansano(rutSansano: number): { ok: boolean; motivo: string } {
+		const tieneHistorial =
+			this.solicitudes.some((s) => s.rutSansano === rutSansano) ||
+			this.prestamos.some(
+				(p) =>
+					p.rutPrestador === rutSansano ||
+					p.rutReceptor === rutSansano ||
+					p.rutRevisor === rutSansano
+			) ||
+			this.suspensiones.some((s) => s.rutSansano === rutSansano);
+
+		if (tieneHistorial) {
+			return {
+				ok: false,
+				motivo:
+					'El registro conserva historial (solicitudes, préstamos o suspensiones). Aplica la baja por cargo.'
+			};
+		}
+
+		const indice = this.sansanos.findIndex((s) => s.rutSansano === rutSansano);
+
+		if (indice === -1) {
+			return { ok: false, motivo: 'El sansano no existe.' };
+		}
+
+		this.sansanos.splice(indice, 1);
+
+		return { ok: true, motivo: '' };
+	}
+
+	suspensionesDe(rutSansano: number): Suspension[] {
+		return this.suspensiones
+			.filter((s) => s.rutSansano === rutSansano)
+			.sort((a, b) => b.fechaInicio.localeCompare(a.fechaInicio));
+	}
+
+	estadoSuspension(rutSansano: number): 'permanente' | 'temporal' | 'historial' | 'integro' {
+		const activa = this.suspensionActiva(rutSansano);
+
+		if (activa) {
+			return activa.fechaTermino === null ? 'permanente' : 'temporal';
+		}
+
+		return this.suspensionesDe(rutSansano).length > 0 ? 'historial' : 'integro';
+	}
+
+	crearSuspension(opts: {
+		rutSansano: number;
+		fechaTermino: string | null;
+		razon: string;
+		rutModerador: number;
+	}): Suspension {
+		const idSuspencion = this.suspensiones.reduce((max, s) => Math.max(max, s.idSuspencion), 0) + 1;
+
+		const suspension: Suspension = {
+			idSuspencion,
+			rutSansano: opts.rutSansano,
+			rutModerador: opts.rutModerador,
+			fechaInicio: ahora(),
+			fechaTermino: opts.fechaTermino,
+			razon: opts.razon
+		};
+
+		this.suspensiones.push(suspension);
+
+		return suspension;
+	}
+
+	levantarSuspension(idSuspencion: number): boolean {
+		const suspension = this.suspensiones.find((s) => s.idSuspencion === idSuspencion);
+
+		if (!suspension) {
+			return false;
+		}
+
+		if (suspension.fechaTermino !== null && suspension.fechaTermino <= ahora()) {
+			return false;
+		}
+
+		suspension.fechaTermino = ahora();
+
+		return true;
 	}
 
 	crearPrestamoPresencial(opts: {

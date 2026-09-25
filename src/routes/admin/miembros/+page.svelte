@@ -3,7 +3,8 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import SectionPage from '$lib/components/admin/SectionPage.svelte';
-	import SectionPlaceholder from '$lib/components/admin/SectionPlaceholder.svelte';
+	import MiembrosPanel from '$lib/components/admin/miembros/MiembrosPanel.svelte';
+	import ModeracionPanel from '$lib/components/admin/moderacion/ModeracionPanel.svelte';
 	import { moderacionRoute } from '$lib/data/admin';
 	import { adminSession } from '$lib/stores/adminSession.svelte';
 
@@ -58,12 +59,8 @@
 	{/snippet}
 
 	{#if tab === 'moderacion'}
-		<SectionPlaceholder
-			description="Permisos y baneos de usuarios. Esta vista aún no tiene maqueta."
-		/>
+		<ModeracionPanel />
 	{:else}
-		<SectionPlaceholder
-			description="Nómina de miembros y staff del club. Esta vista aún no tiene maqueta."
-		/>
+		<MiembrosPanel />
 	{/if}
 </SectionPage>
