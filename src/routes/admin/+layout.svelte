@@ -12,6 +12,7 @@
 		type SidebarLink
 	} from '$lib/data/admin';
 	import { adminSession, type AdminRole } from '$lib/stores/adminSession.svelte';
+	import Toast from '$lib/components/admin/primitives/Toast.svelte';
 
 	const roles: AdminRole[] = ['junior', 'senior', 'directivo'];
 
@@ -101,6 +102,13 @@
 			</a>
 
 			<div class="flex items-center gap-3">
+				<span
+					class="hidden items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-2.5 py-1 font-mono text-[10px] tracking-wider text-primary uppercase select-none sm:inline-flex"
+				>
+					<Icon name="info" class="h-3 w-3" strokeWidth={2} />
+					Vista previa
+				</span>
+
 				<div
 					class="flex items-center rounded-base border border-glass-border bg-white/5 p-0.5"
 					role="group"
@@ -209,3 +217,5 @@
 		</div>
 	</nav>
 </div>
+
+<Toast />

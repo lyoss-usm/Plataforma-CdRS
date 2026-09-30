@@ -49,9 +49,17 @@ export const roleMeta: Record<
 	}
 };
 
-export const loanTypeMeta: Record<LoanType, { label: string }> = {
-	general: { label: 'Generales' },
-	junta: { label: 'Juntas' }
+export const loanTypeMeta: Record<LoanType, { label: string; description: string }> = {
+	general: {
+		label: 'Generales',
+		description:
+			'Préstamos presenciales fuera de junta: identificación por RUT/ROL, sin retención de documento.'
+	},
+	junta: {
+		label: 'Juntas',
+		description:
+			'Préstamos presenciales en Juntas Masivas: se retiene un documento del solicitante.'
+	}
 };
 
 export interface NavSlot {
@@ -179,7 +187,7 @@ export const quickActions: QuickAction[] = [
 	{
 		id: 'juntas',
 		label: 'Juntas',
-		description: 'Registro de préstamos en Juntas Masivas',
+		description: 'Registro de préstamos en Juntas Masivas, con documento retenido',
 		href: loanRouteFor.junta,
 		icon: 'boxes',
 		roles: ['junior', 'senior', 'directivo']
@@ -187,7 +195,7 @@ export const quickActions: QuickAction[] = [
 	{
 		id: 'prestamos-generales',
 		label: 'Préstamos Generales',
-		description: 'Préstamos externos e internos fuera de junta',
+		description: 'Presenciales sin retención de documento, por RUT/ROL',
 		href: loanRouteFor.general,
 		icon: 'box',
 		roles: ['senior', 'directivo']

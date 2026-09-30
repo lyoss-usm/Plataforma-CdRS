@@ -1,17 +1,68 @@
 <script lang="ts">
-	import { Box, Boxes, Download, Globe, House, Shapes, ShieldCheck, Users } from '@lucide/svelte';
+	import {
+		ArrowLeftRight,
+		Ban,
+		BookOpen,
+		Box,
+		Boxes,
+		Camera,
+		Check,
+		ChevronDown,
+		ChevronLeft,
+		ChevronRight,
+		CircleAlert,
+		Download,
+		FileDown,
+		Filter,
+		Globe,
+		House,
+		Info,
+		Pencil,
+		Plus,
+		QrCode,
+		RefreshCw,
+		ScanLine,
+		Search,
+		Shapes,
+		ShieldCheck,
+		Trash2,
+		UserPlus,
+		Users,
+		X
+	} from '@lucide/svelte';
 	import type { Component } from 'svelte';
 	import type { IconName } from '$lib/icons';
 
 	const icons: Record<IconName, Component> = {
+		'arrow-left-right': ArrowLeftRight,
+		ban: Ban,
+		'book-open': BookOpen,
 		box: Box,
 		boxes: Boxes,
+		camera: Camera,
+		check: Check,
+		'chevron-down': ChevronDown,
+		'chevron-left': ChevronLeft,
+		'chevron-right': ChevronRight,
+		'circle-alert': CircleAlert,
 		download: Download,
+		'file-down': FileDown,
+		filter: Filter,
 		globe: Globe,
 		home: House,
+		info: Info,
+		pencil: Pencil,
+		plus: Plus,
+		'qr-code': QrCode,
+		'refresh-cw': RefreshCw,
+		'scan-line': ScanLine,
+		search: Search,
 		shapes: Shapes,
 		'shield-check': ShieldCheck,
-		users: Users
+		'trash-2': Trash2,
+		'user-plus': UserPlus,
+		users: Users,
+		x: X
 	};
 
 	let {

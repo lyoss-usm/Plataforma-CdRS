@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { onDestroy, untrack } from 'svelte';
+	import { SvelteURLSearchParams } from 'svelte/reactivity';
 	import CatalogFilters from './CatalogFilters.svelte';
 	import GameCard from './GameCard.svelte';
-	import type { CatalogFilterValues, CatalogPage } from '$lib/schemas';
+	import SolicitudModal from './SolicitudModal.svelte';
+	import type { CatalogFilterValues, CatalogGame, CatalogPage } from '$lib/schemas';
 
 	interface Props {
 		paginaInicial: CatalogPage;
@@ -28,10 +30,12 @@
 	let solicitudActual: AbortController | null = null;
 	let temporizadorActual: number | null = null;
 
+	let juegoSeleccionado = $state<CatalogGame | null>(null);
+
 	const juegosRestantes = $derived(Math.max(pagina.total - pagina.juegos.length, 0));
 
 	function crearParametros(filtros: CatalogFilterValues, offset: number): URLSearchParams {
-		const parametros = new URLSearchParams();
+		const parametros = new SvelteURLSearchParams();
 
 		if (filtros.nombre !== '') {
 			parametros.set('nombre', filtros.nombre);
@@ -152,6 +156,10 @@
 		await consultarCatalogo(filtrosActuales, pagina.juegos.length, true);
 	}
 
+	function abrirSolicitud(juego: CatalogGame): void {
+		juegoSeleccionado = juego;
+	}
+
 	onDestroy(() => {
 		if (temporizadorActual !== null) {
 			window.clearTimeout(temporizadorActual);
@@ -216,7 +224,7 @@
 			class="grid w-full max-w-6xl grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
 		>
 			{#each pagina.juegos as juego (juego.idJuego)}
-				<GameCard {juego} />
+				<GameCard {juego} onPedir={abrirSolicitud} />
 			{/each}
 		</div>
 	{/if}
@@ -232,3 +240,7 @@
 		</button>
 	{/if}
 </section>
+
+{#if juegoSeleccionado}
+	<SolicitudModal juego={juegoSeleccionado} onclose={() => (juegoSeleccionado = null)} />
+{/if}

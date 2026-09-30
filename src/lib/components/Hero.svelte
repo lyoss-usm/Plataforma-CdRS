@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import LogoCoin from '$lib/components/LogoCoin.svelte';
 	import StarField from '$lib/components/StarField.svelte';
 
@@ -127,7 +128,7 @@
 
 		<div class="mt-8 flex flex-wrap justify-center gap-4">
 			<a
-				href="#catalogo"
+				href={resolve("/catalogo")}
 				class="rounded-base border border-primary/50 bg-primary/10 px-6 py-3 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow"
 				>Ver catálogo</a
 			>
