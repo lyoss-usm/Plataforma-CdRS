@@ -106,7 +106,7 @@ export function formatearRut(rut: number, digitoVerificador: number): string {
 	return `${cuerpo}-${digito}`;
 }
 
-const juegos: Juego[] = [
+const juegosIniciales: Juego[] = [
 	{
 		idJuego: 1,
 		tipo: 'Juego base',
@@ -316,7 +316,7 @@ const ejemplaresIniciales: Ejemplar[] = [
 		esExterno: true,
 		estadoCompletitud: 'Completo',
 		situacion: 'Copia del propietario.',
-		comentarios: null,
+		comentarios: 'Dueño: Benjamín Carvajal.',
 		componentes: null,
 		estadoEjemplar: 'Con su dueño'
 	},
@@ -690,6 +690,9 @@ class Meson {
 	ejemplares = $state<Ejemplar[]>([...ejemplaresIniciales]);
 	prestamos = $state<Prestamo[]>([prestamoCamila]);
 	solicitudes = $state<Solicitud[]>([...solicitudesIniciales]);
+	juegos = $state<Juego[]>([...juegosIniciales]);
+	// Convención temporal (wiki §2.3, columna de dueño pendiente): el dueño de un
+	// ejemplar externo se indica en Ejemplar.comentarios hasta definir el campo definitivo.
 
 	sansanoPorRut(rutSansano: number): Sansano | null {
 		return this.sansanos.find((s) => s.rutSansano === rutSansano) ?? null;
@@ -702,7 +705,7 @@ class Meson {
 			return null;
 		}
 
-		const juego = juegos.find((j) => j.idJuego === ejemplar.idJuego);
+		const juego = this.juegos.find((j) => j.idJuego === ejemplar.idJuego);
 
 		return juego ? { ejemplar, juego } : null;
 	}
