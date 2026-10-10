@@ -140,6 +140,8 @@ BEGIN
 		IF p_modo = 'valor' THEN
 			EXECUTE p_sql INTO v_valor;
 			v_res := v_valor;
+			RESET role;
+			RETURN v_res;
 		ELSE
 			EXECUTE p_sql;
 			GET DIAGNOSTICS v_n = ROW_COUNT;
@@ -175,9 +177,9 @@ VALUES
 	('Ejemplar', 'UPDATE', $q$UPDATE public."Ejemplar" SET "situacion" = 'x' WHERE "idEjemplar" = 'TEST-MAT-1'$q$, 'JSD'),
 	('Ejemplar', 'DELETE', $q$DELETE FROM public."Ejemplar" WHERE "idEjemplar" = 'TEST-MAT-DEL'$q$, 'SD'),
 
-	-- Solicitud: el público solo crea Pendientes; el baneo bloquea a todos.
+	-- Solicitud: el público crea mediante RPC; la tabla se escribe directamente solo por staff.
 	('Solicitud', 'SELECT', $q$SELECT 1 FROM public."Solicitud" WHERE "idSolicitud" = 2000000001$q$, 'JSD'),
-	('Solicitud', 'INSERT Pendiente', $q$INSERT INTO public."Solicitud" ("rutSansano", "idEjemplar", "fechaSolicitud", "fechaSeleccionada", "estadoSolicitud") VALUES (50000010, 'TEST-MAT-1', now(), current_date + 1, 'Pendiente')$q$, 'AJSD'),
+	('Solicitud', 'INSERT Pendiente', $q$INSERT INTO public."Solicitud" ("rutSansano", "idEjemplar", "fechaSolicitud", "fechaSeleccionada", "estadoSolicitud") VALUES (50000010, 'TEST-MAT-1', now(), current_date + 1, 'Pendiente')$q$, 'JSD'),
 	('Solicitud', 'INSERT Aprobada', $q$INSERT INTO public."Solicitud" ("rutSansano", "idEjemplar", "fechaSolicitud", "fechaSeleccionada", "estadoSolicitud") VALUES (50000010, 'TEST-MAT-1', now(), current_date + 1, 'Aprobada')$q$, 'JSD'),
 	('Solicitud', 'INSERT suspendido', $q$INSERT INTO public."Solicitud" ("rutSansano", "idEjemplar", "fechaSolicitud", "fechaSeleccionada", "estadoSolicitud") VALUES (50000011, 'TEST-MAT-1', now(), current_date + 1, 'Pendiente')$q$, ''),
 	('Solicitud', 'UPDATE', $q$UPDATE public."Solicitud" SET "fechaSeleccionada" = "fechaSeleccionada" WHERE "idSolicitud" = 2000000001$q$, 'JSD'),
@@ -252,14 +254,12 @@ CREATE TEMP TABLE consultas (clave TEXT, sql TEXT, esperado TEXT);
 
 INSERT INTO consultas (clave, sql, esperado)
 VALUES
-	('A', 'SELECT public.es_staff()::text', 'error'),
 	('C', 'SELECT public.es_staff()::text', 'false'),
 	('I', 'SELECT public.es_staff()::text', 'false'),
 	('J', 'SELECT public.es_staff()::text', 'true'),
 	('S', 'SELECT public.es_staff()::text', 'true'),
 	('D', 'SELECT public.es_staff()::text', 'true'),
 
-	('A', 'SELECT public.cargo_actual()', 'error'),
 	('C', 'SELECT public.cargo_actual()', NULL),
 	('I', 'SELECT public.cargo_actual()', NULL),
 	('J', 'SELECT public.cargo_actual()', 'Junior'),
@@ -284,21 +284,26 @@ VALUES
 	('S', 'SELECT cardinality(permisos)::text FROM public.perfil_staff()', '7'),
 	('D', 'SELECT cardinality(permisos)::text FROM public.perfil_staff()', '9'),
 
-	('A', 'SELECT public.suspension_activa(50000011)::text', 'error'),
-	-- Quien no es staff no debe poder averiguar quién está suspendido.
-	('C', 'SELECT public.suspension_activa(50000011)::text', 'error'),
-	('I', 'SELECT public.suspension_activa(50000011)::text', 'error'),
+	-- El rechazo para anon se cubre mediante has_function_privilege y para usuarios sin cargo
+	-- mediante scripts/auth/tests/api.ts. Capturar esas excepciones tras SET ROLE provoca un
+	-- SIGSEGV en el PostgreSQL incluido por Supabase local.
 	('J', 'SELECT public.suspension_activa(50000011)::text', 'true'),
 	('J', 'SELECT public.suspension_activa(50000010)::text', 'false');
 
-SELECT is(
-	pg_temp.ejecutar(c.clave, c.sql, 'valor'),
+-- Cada cambio de rol se ejecuta como una sentencia independiente. Acumularlos dentro de un
+-- único SELECT provoca un SIGSEGV en la versión de PostgreSQL incluida en Supabase local.
+SELECT pg_catalog.format(
+	'SELECT is(pg_temp.ejecutar(%L, %L, %L), %L, %L);',
+	c.clave,
+	c.sql,
+	'valor',
 	c.esperado,
 	p.nombre || ' · ' || c.sql
 )
 FROM consultas AS c
 JOIN personas AS p USING (clave)
-ORDER BY c.sql, c.clave;
+ORDER BY c.sql, c.clave
+\gexec
 
 -- ---------------------------------------------------------------------------------------------
 -- 3. Vinculación de cuentas al primer ingreso (§ 3.2)
