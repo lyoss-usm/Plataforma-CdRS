@@ -1,4 +1,6 @@
 import type {
+	CreateEjemplarDto,
+	CreateJuegoDto,
 	Documento,
 	Ejemplar,
 	Juego,
@@ -6,6 +8,8 @@ import type {
 	Sansano,
 	Solicitud,
 	Suspension,
+	UpdateEjemplarDto,
+	UpdateJuegoDto,
 	Cargo,
 	CargoPermiso,
 	Permiso
@@ -1044,6 +1048,222 @@ class Meson {
 
 	copiasDisponiblesDe(idJuego: number): Ejemplar[] {
 		return this.ejemplares.filter((e) => e.idJuego === idJuego && e.estadoEjemplar === 'En bodega');
+	}
+
+	juegoDe(idJuego: number): Juego | null {
+		return this.juegos.find((j) => j.idJuego === idJuego) ?? null;
+	}
+
+	ejemplaresDeJuego(idJuego: number): Ejemplar[] {
+		return this.ejemplares.filter((e) => e.idJuego === idJuego);
+	}
+
+	disponibleDe(idJuego: number): boolean {
+		return this.copiasDisponiblesDe(idJuego).length > 0;
+	}
+
+	crearJuego(datos: CreateJuegoDto): { ok: boolean; juego: Juego | null; motivo: string } {
+		const duplicado = this.juegos.some(
+			(j) => j.nombreJuego.toLowerCase() === datos.nombreJuego.trim().toLowerCase()
+		);
+
+		if (duplicado) {
+			return { ok: false, juego: null, motivo: 'Ya existe un juego con ese nombre.' };
+		}
+
+		if (datos.tipo === 'Expansión') {
+			const base = this.juegoDe(datos.idJuegoBase);
+
+			if (!base || base.tipo !== 'Juego base') {
+				return { ok: false, juego: null, motivo: 'La expansión debe apuntar a un juego base.' };
+			}
+		}
+
+		const idJuego = this.juegos.reduce((max, j) => Math.max(max, j.idJuego), 0) + 1;
+		const juego = { idJuego, ...datos } as Juego;
+
+		this.juegos.push(juego);
+
+		return { ok: true, juego, motivo: '' };
+	}
+
+	actualizarJuego(
+		idJuego: number,
+		cambios: UpdateJuegoDto
+	): { ok: boolean; juego: Juego | null; motivo: string } {
+		const juego = this.juegoDe(idJuego);
+
+		if (!juego) {
+			return { ok: false, juego: null, motivo: 'El juego no existe.' };
+		}
+
+		if (cambios.nombreJuego !== undefined) {
+			const duplicado = this.juegos.some(
+				(j) =>
+					j.idJuego !== idJuego &&
+					j.nombreJuego.toLowerCase() === cambios.nombreJuego?.trim().toLowerCase()
+			);
+
+			if (duplicado) {
+				return { ok: false, juego: null, motivo: 'Ya existe otro juego con ese nombre.' };
+			}
+		}
+
+		if (cambios.tipo === 'Juego base' && juego.tipo === 'Expansión') {
+			// Al pasar a base se limpia la referencia (el formulario envía idJuegoBase: null).
+		}
+
+		if (juego.tipo === 'Juego base' && cambios.tipo === 'Expansión') {
+			return {
+				ok: false,
+				juego: null,
+				motivo: 'No se puede convertir a expansión un juego base con este flujo.'
+			};
+		}
+
+		if (cambios.idJuegoBase !== undefined && juego.tipo === 'Expansión') {
+			if (cambios.idJuegoBase === null) {
+				return { ok: false, juego: null, motivo: 'El juego base indicado no es válido.' };
+			}
+
+			const base = this.juegoDe(cambios.idJuegoBase);
+
+			if (!base || base.tipo !== 'Juego base' || base.idJuego === idJuego) {
+				return { ok: false, juego: null, motivo: 'El juego base indicado no es válido.' };
+			}
+		}
+
+		Object.assign(juego, cambios);
+
+		return { ok: true, juego, motivo: '' };
+	}
+
+	eliminarJuego(idJuego: number): { ok: boolean; motivo: string } {
+		const juego = this.juegoDe(idJuego);
+
+		if (!juego) {
+			return { ok: false, motivo: 'El juego no existe.' };
+		}
+
+		const ejemplares = this.ejemplaresDeJuego(idJuego);
+
+		if (ejemplares.length > 0) {
+			return {
+				ok: false,
+				motivo: `Tiene ${ejemplares.length} ejemplar(es) asociado(s). Elimínalos primero o conserva el historial.`
+			};
+		}
+
+		const expansiones = this.juegos.filter((j) => j.idJuegoBase === idJuego);
+
+		if (expansiones.length > 0) {
+			return {
+				ok: false,
+				motivo: `Es base de ${expansiones.length} expansión(es). Elimina esa referencia primero.`
+			};
+		}
+
+		const indice = this.juegos.findIndex((j) => j.idJuego === idJuego);
+
+		if (indice === -1) {
+			return { ok: false, motivo: 'El juego no existe.' };
+		}
+
+		this.juegos.splice(indice, 1);
+
+		return { ok: true, motivo: '' };
+	}
+
+	crearEjemplar(
+		idJuego: number,
+		datos: Omit<CreateEjemplarDto, 'idEjemplar' | 'idJuego'>
+	): { ok: boolean; ejemplar: Ejemplar | null; motivo: string } {
+		const juego = this.juegoDe(idJuego);
+
+		if (!juego) {
+			return { ok: false, ejemplar: null, motivo: 'El juego no existe.' };
+		}
+
+		if (datos.esExterno && (datos.comentarios === null || datos.comentarios.trim() === '')) {
+			return {
+				ok: false,
+				ejemplar: null,
+				motivo: 'Indica el dueño en los comentarios del ejemplar externo.'
+			};
+		}
+
+		const prefijo = juego.nombreJuego
+			.replace(/[^a-zA-Z0-9]/g, '')
+			.slice(0, 3)
+			.toUpperCase()
+			.padEnd(3, 'X');
+		let secuencia = this.ejemplaresDeJuego(idJuego).length + 1;
+		let idEjemplar = `${prefijo}-${String(secuencia).padStart(3, '0')}`;
+
+		while (this.ejemplares.some((e) => e.idEjemplar === idEjemplar)) {
+			secuencia += 1;
+			idEjemplar = `${prefijo}-${String(secuencia).padStart(3, '0')}`;
+		}
+
+		const ejemplar: Ejemplar = { idEjemplar, idJuego, ...datos };
+
+		this.ejemplares.push(ejemplar);
+
+		return { ok: true, ejemplar, motivo: '' };
+	}
+
+	actualizarEjemplar(
+		idEjemplar: string,
+		cambios: UpdateEjemplarDto
+	): { ok: boolean; motivo: string } {
+		const ejemplar = this.ejemplares.find((e) => e.idEjemplar === idEjemplar);
+
+		if (!ejemplar) {
+			return { ok: false, motivo: 'El ejemplar no existe.' };
+		}
+
+		if (cambios.estadoEjemplar === 'Prestado') {
+			return {
+				ok: false,
+				motivo: 'El estado «Prestado» solo lo asignan los flujos de préstamo, no el inventario.'
+			};
+		}
+
+		const esExterno = cambios.esExterno ?? ejemplar.esExterno;
+		const comentarios =
+			cambios.comentarios !== undefined ? cambios.comentarios : ejemplar.comentarios;
+
+		if (esExterno && (comentarios === null || comentarios.trim() === '')) {
+			return { ok: false, motivo: 'Indica el dueño en los comentarios del ejemplar externo.' };
+		}
+
+		Object.assign(ejemplar, cambios);
+
+		return { ok: true, motivo: '' };
+	}
+
+	eliminarEjemplar(idEjemplar: string): { ok: boolean; motivo: string } {
+		const enlazado = this.solicitudes.some(
+			(s) => s.idEjemplar === idEjemplar || s.idExpansion === idEjemplar
+		);
+
+		if (enlazado) {
+			return {
+				ok: false,
+				motivo:
+					'Conserva historial (solicitudes o préstamos). Márcalo «Perdido» o «Con su dueño» en vez de borrarlo.'
+			};
+		}
+
+		const indice = this.ejemplares.findIndex((e) => e.idEjemplar === idEjemplar);
+
+		if (indice === -1) {
+			return { ok: false, motivo: 'El ejemplar no existe.' };
+		}
+
+		this.ejemplares.splice(indice, 1);
+
+		return { ok: true, motivo: '' };
 	}
 
 	solicitudesAdmin(): SolicitudContexto[] {
