@@ -6,21 +6,15 @@ export interface AdminUser {
 	role: AdminRole;
 }
 
-const previewUsers: Record<AdminRole, Omit<AdminUser, 'role'>> = {
-	junior: { name: 'Valentina Rojas', avatar: '/avatares/women-29.jpg' },
-	senior: { name: 'Manuel Pizarro', avatar: '/avatares/men-32.jpg' },
-	directivo: { name: 'Camila Vergara', avatar: '/avatares/women-68.jpg' }
-};
+const avatarPorDefecto = '/logos/logo.webp';
 
 class AdminSession {
-	user = $state<AdminUser>({
-		name: previewUsers.senior.name,
-		avatar: previewUsers.senior.avatar,
-		role: 'senior'
-	});
+	// Valor inicial mínimo: el layout de /admin lo reemplaza con el staff real antes de renderizar.
+	user = $state<AdminUser>({ name: '', avatar: avatarPorDefecto, role: 'junior' });
 
-	switchRole(role: AdminRole) {
-		this.user = { role, ...previewUsers[role] };
+	/** Fija el staff autenticado (lo llama el layout de /admin con los datos del guard). */
+	iniciar(staff: { nombre: string; rol: AdminRole }) {
+		this.user = { name: staff.nombre, avatar: avatarPorDefecto, role: staff.rol };
 	}
 }
 

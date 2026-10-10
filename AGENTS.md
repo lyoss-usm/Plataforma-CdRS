@@ -50,8 +50,13 @@ no formatear archivos ajenos a la tarea.
 - Svelte 5 con runes (`$state`, `$derived`, `$props`) y snippets tipados (`import type { Snippet }`);
   sin API legacy. Referencia: `src/lib/components/admin/SectionPage.svelte`.
 - Dominio en español: `Sansano`, `Solicitud`, `Ejemplar`, `Prestamo`, `Suspension`, `Cargo`, `Permiso`.
-- Admin: roles (junior/senior/directivo), sidebar/quickActions/guards en `src/lib/data/admin.ts`; sesión
-  mock en `src/lib/stores/adminSession.svelte.ts`. Respetar visibilidad por rol.
+- Admin: roles (junior/senior/directivo), sidebar/quickActions en `src/lib/data/admin.ts`; sesión
+  real en `locals.staff` (guard en `src/hooks.server.ts`, 403 por ruta en
+  `src/routes/admin/+layout.server.ts`) reflejada en `src/lib/stores/adminSession.svelte.ts`.
+  Respetar visibilidad por rol.
+- Seguridad: la autoridad es la RLS (`supabase/migrations/*_add_auth_rls.sql`; permisos
+  `recurso:accion` vía `tiene_permiso()`). Leer/escribir con `locals.supabase` (sesión del
+  usuario), nunca con service role desde el cliente. Pruebas: `make test-db`.
 - Design tokens: usar las utilities de `src/routes/layout.css` (`surface-level-1/2/3`, `glass-border`,
   `ice-glow`) y tokens de color/tipografía; no inventar clases.
 - Formularios: validación por campo (`validarCampo`/`mostrarError` + `tocado`/`intentoEnvio`),
