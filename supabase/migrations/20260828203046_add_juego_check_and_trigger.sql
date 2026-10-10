@@ -15,15 +15,15 @@ DECLARE
     v_tipo_expansion  TIPO;
     v_idJuegoBaseExp  INTEGER;
 BEGIN
-    -- 1. El idEjemplar debe corresponder a un Juego base
+-- 1. El idEjemplar debe corresponder a un Juego base o a una Expansión (permite préstamo directo)
     SELECT j."tipo", j."idJuego"
       INTO v_tipo_base, v_idJuegoBase
       FROM "Ejemplar" e
       JOIN "Juego" j ON j."idJuego" = e."idJuego"
      WHERE e."idEjemplar" = NEW."idEjemplar";
 
-    IF v_tipo_base IS DISTINCT FROM 'Juego base' THEN
-        RAISE EXCEPTION 'El ejemplar % no corresponde a un juego base', NEW."idEjemplar";
+    IF v_tipo_base IS DISTINCT FROM 'Juego base' AND v_tipo_base IS DISTINCT FROM 'Expansión' THEN
+        RAISE EXCEPTION 'El ejemplar % no corresponde a un juego base ni a una expansión', NEW."idEjemplar";
     END IF;
 
     -- 2. Si se pide expansión, debe ser tipo Expansión y del mismo juego base
