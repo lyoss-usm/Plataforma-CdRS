@@ -17,7 +17,7 @@ export const dominiosCorreoInstitucional = [
 	'externos.usm.cl'
 ] as const;
 
-const correoInstitucionalSchema = z
+export const correoInstitucionalSchema = z
 	.string()
 	.trim()
 	.email()

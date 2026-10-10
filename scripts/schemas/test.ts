@@ -4,11 +4,14 @@ import {
 	catalogGameSchema,
 	catalogPageSchema,
 	catalogQuerySchema,
+	calcularDigitoVerificador,
+	crearSolicitudWebSchema,
 	createEjemplarSchema,
 	createJuegoSchema,
 	createPrestamoSchema,
 	createSansanoSchema,
 	createSolicitudSchema,
+	formatearIdentificador,
 	juegoSchema,
 	permisoSchema,
 	suspensionSchema,
@@ -21,6 +24,20 @@ const authUserId = '550e8400-e29b-41d4-a716-446655440002';
 const rutSansano = 12345678;
 const rutStaff = 87654321;
 const fechaRetiro = '2026-05-21T18:30:00-04:00';
+
+const solicitudWebSchema = crearSolicitudWebSchema(['2026-10-13', '2026-10-15']);
+
+const solicitudWebValida = {
+	idJuego: '1',
+	idJuegoExpansion: '2',
+	nombreSansano: '  Ada   Lovelace  ',
+	rut: '18585543-0',
+	rol: '202612345-0',
+	telefono: '1234 5678',
+	correoInstitucional: 'ada.lovelace@alumnos.usm.cl',
+	fechaSeleccionada: '2026-10-13',
+	aceptaTerminos: 'on'
+};
 
 const catalogGame = {
 	idJuego: 1,
@@ -176,6 +193,11 @@ const cases = [
 			total: 1,
 			hayMas: false
 		}
+	},
+	{
+		name: 'Formulario público de solicitud',
+		schema: solicitudWebSchema,
+		value: solicitudWebValida
 	}
 ];
 
@@ -227,6 +249,46 @@ const invalidCases = [
 		name: 'Identificador de ejemplar vacío',
 		schema: createEjemplarSchema,
 		value: { ...cases[1].value, idEjemplar: '   ' }
+	},
+	{
+		name: 'Formulario con RUT inválido',
+		schema: solicitudWebSchema,
+		value: {
+			...solicitudWebValida,
+			rut: '18585543-1'
+		}
+	},
+	{
+		name: 'Formulario con DV diferente entre RUT y ROL',
+		schema: solicitudWebSchema,
+		value: {
+			...solicitudWebValida,
+			rol: '202612345-9'
+		}
+	},
+	{
+		name: 'Formulario con teléfono inválido',
+		schema: solicitudWebSchema,
+		value: {
+			...solicitudWebValida,
+			telefono: '1234567'
+		}
+	},
+	{
+		name: 'Formulario con fecha no permitida',
+		schema: solicitudWebSchema,
+		value: {
+			...solicitudWebValida,
+			fechaSeleccionada: '2026-10-14'
+		}
+	},
+	{
+		name: 'Formulario sin aceptación de términos',
+		schema: solicitudWebSchema,
+		value: {
+			...solicitudWebValida,
+			aceptaTerminos: undefined
+		}
 	}
 ];
 
@@ -255,6 +317,16 @@ for (const testCase of invalidCases) {
 	}
 
 	console.log(`${testCase.name}: inválido según lo esperado`);
+}
+
+if (calcularDigitoVerificador('18585543') !== '0') {
+	hasErrors = true;
+	console.error('El cálculo del dígito verificador no produjo el resultado esperado');
+}
+
+if (formatearIdentificador('18.585.5430') !== '18585543-0') {
+	hasErrors = true;
+	console.error('El autoformato del identificador no produjo el resultado esperado');
 }
 
 if (hasErrors) {
