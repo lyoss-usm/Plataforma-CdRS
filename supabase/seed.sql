@@ -1,6 +1,7 @@
 -- Cuentas de staff SOLO para desarrollo local (se cargan con `supabase db reset`).
 -- Contraseña de las tres cuentas: cdrs-dev
 --   dev.junior@usm.cl · dev.senior@usm.cl · dev.directivo@usm.cl
+--   dev.comun@usm.cl (autenticado sin cargo: no es staff, sirve para probar restricciones)
 -- RUT/teléfono fuera de los rangos del seed faker (RUT 70M+, teléfono 10M+).
 
 INSERT INTO auth.users (
@@ -40,7 +41,8 @@ FROM (
 	VALUES
 		('00000000-0000-4000-8000-000000000001'::uuid, 'dev.junior@usm.cl'),
 		('00000000-0000-4000-8000-000000000002'::uuid, 'dev.senior@usm.cl'),
-		('00000000-0000-4000-8000-000000000003'::uuid, 'dev.directivo@usm.cl')
+		('00000000-0000-4000-8000-000000000003'::uuid, 'dev.directivo@usm.cl'),
+		('00000000-0000-4000-8000-000000000004'::uuid, 'dev.comun@usm.cl')
 ) AS cuenta (id, email)
 ON CONFLICT (id) DO NOTHING;
 
@@ -64,7 +66,7 @@ SELECT
 	now(),
 	now()
 FROM auth.users AS u
-WHERE u.email IN ('dev.junior@usm.cl', 'dev.senior@usm.cl', 'dev.directivo@usm.cl')
+WHERE u.email IN ('dev.junior@usm.cl', 'dev.senior@usm.cl', 'dev.directivo@usm.cl', 'dev.comun@usm.cl')
 ON CONFLICT DO NOTHING;
 
 INSERT INTO public."Sansano" (
@@ -90,7 +92,8 @@ FROM (
 	VALUES
 		(60000001, 202500001, 2, 'Junior', 'Valentina Rojas (dev)', 90000001, 'dev.junior@usm.cl', '00000000-0000-4000-8000-000000000001'::uuid),
 		(60000002, 202500002, 0, 'Senior', 'Manuel Pizarro (dev)', 90000002, 'dev.senior@usm.cl', '00000000-0000-4000-8000-000000000002'::uuid),
-		(60000003, 202500003, 9, 'Directivo', 'Camila Vergara (dev)', 90000003, 'dev.directivo@usm.cl', '00000000-0000-4000-8000-000000000003'::uuid)
+		(60000003, 202500003, 9, 'Directivo', 'Camila Vergara (dev)', 90000003, 'dev.directivo@usm.cl', '00000000-0000-4000-8000-000000000003'::uuid),
+		(60000004, 202500004, 7, NULL, 'Pedro Soto (dev, sin cargo)', 90000004, 'dev.comun@usm.cl', '00000000-0000-4000-8000-000000000004'::uuid)
 ) AS staff (rut, rol, dv, cargo, nombre, telefono, correo, auth_id)
-JOIN public."Cargo" AS c ON c."nombreCargo" = staff.cargo
+LEFT JOIN public."Cargo" AS c ON c."nombreCargo" = staff.cargo
 ON CONFLICT ("rutSansano") DO NOTHING;

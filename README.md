@@ -49,10 +49,14 @@ tres cuentas de prueba (contraseña `cdrs-dev`):
 | `dev.junior@usm.cl` | Junior |
 | `dev.senior@usm.cl` | Senior |
 | `dev.directivo@usm.cl` | Directivo |
+| `dev.comun@usm.cl` | Ninguno (cuenta sin acceso al panel) |
 
 Ingresa en [http://localhost:5173/login](http://localhost:5173/login). Si tu base local es
 anterior a esta configuración, ejecuta `make reset-seed` para aplicar las migraciones y crear las
-cuentas. Las pruebas de RLS se ejecutan con `make test-db`.
+cuentas. Para comprobar las restricciones por rol (sin cargo, Junior, Senior, Directivo) hay tres
+capas de pruebas, todas contra Supabase local: `make test-db` (RLS en SQL), `make test-auth` (API de
+Supabase y servidor web, requiere `.env`) y `make test-security` (ambas). Si cambias
+`supabase/config.toml`, reinicia Supabase (`make stop` y luego `pnpx supabase start`) para que Auth lo aplique.
 
 ## Documentación de la API
 

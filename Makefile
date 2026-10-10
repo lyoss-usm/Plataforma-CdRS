@@ -1,4 +1,4 @@
-.PHONY: all init start stop clean test-schemas seed-small seed-medium seed-large seed-clean reset-seed test-seed test-seed-integration test-db help
+.PHONY: all init start stop clean test-schemas seed-small seed-medium seed-large seed-clean reset-seed test-seed test-seed-integration test-db test-auth test-security help
 
 all: init start
 
@@ -18,6 +18,8 @@ help:
 	@echo "  test-seed - Valida configuración y factories sin usar la base de datos."
 	@echo "  test-seed-integration - Prueba el seed contra Supabase local."
 	@echo "  test-db - Ejecuta las pruebas pgTAP de RLS (supabase/tests) contra Supabase local."
+	@echo "  test-auth - Prueba la autorización por rol en la API de Supabase y en el servidor web (hace build)."
+	@echo "  test-security - Ejecuta test-db y test-auth."
 	@echo "  clean  - Limpia todos los contenedores, imágenes y volúmenes de Docker."
 	@echo ""
 
@@ -64,6 +66,13 @@ test-seed-integration:
 
 test-db:
 	@pnpx supabase test db
+
+test-auth:
+	@pnpm build
+	@pnpm test:auth:api
+	@pnpm test:auth:web
+
+test-security: test-db test-auth
 
 clean:
 	@sudo docker system prune -a --volumes -f
