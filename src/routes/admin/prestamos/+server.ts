@@ -14,7 +14,6 @@ const devolucionSchema = z.object({
     estadoFinal: z.enum(['Para revisar', 'En bodega', 'De baja'])
 });
 
-
 function getSupabaseConfig() {
     if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
         throw new Error('Faltan SUPABASE_URL o SUPABASE_ANON_KEY.');
@@ -26,23 +25,21 @@ function getSupabaseConfig() {
     };
 }
 
-
-
-export const POST: RequestHandler = async ({ request, url }) => {
+export const POST: RequestHandler = async ({ request, url, locals }) => {
     const tipo = url.searchParams.get('tipo');
     if (tipo !== 'junta') {
         return json({ error: 'Endpoint configurado solo para préstamos de junta' }, { status: 400 });
     }
 
+    const staff = locals.staff;
+    if (!staff) {
+        return json({ error: 'No autorizado' }, { status: 401 });
+    }
+
     try {
         const body = await request.json();
-        
         const datos = prestamoJuntaSchema.parse(body);
-
-        // OJO: Como tu proyecto maneja la sesión con un store de Svelte (adminSession), 
-        // temporalmente pondremos un RUT de prueba para que pase. 
-        // Luego deberás leer el token de autorización del request.
-        const rutStaff = 12345678; 
+        const rutStaff = staff.rut; 
 
         const { url: supabaseUrl, anonKey } = getSupabaseConfig();
 
@@ -50,7 +47,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
             method: 'POST',
             headers: {
                 apikey: anonKey,
-                Authorization: `Bearer ${anonKey}`, // Idealmente, aquí va el Bearer Token del admin autenticado
+                Authorization: `Bearer ${anonKey}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
@@ -80,16 +77,21 @@ export const POST: RequestHandler = async ({ request, url }) => {
     }
 };
 
-export const PATCH: RequestHandler = async ({ request }) => {
+export const PATCH: RequestHandler = async ({ request, locals }) => {
+    const staff = locals.staff;
+    if (!staff) {
+        return json({ error: 'No autorizado' }, { status: 401 });
+    }
+
     try {
         const body = await request.json();
         const datos = devolucionSchema.parse(body);
         
-        const rutStaff = 12345678; // Mock temporal
+        const rutStaff = staff.rut; 
         const { url: supabaseUrl, anonKey } = getSupabaseConfig();
 
         const response = await fetch(`${supabaseUrl}/rest/v1/rpc/devolver_prestamo`, {
-            method: 'POST', // Supabase expone los RPC internamente mediante POST
+            method: 'POST',
             headers: {
                 apikey: anonKey,
                 Authorization: `Bearer ${anonKey}`,

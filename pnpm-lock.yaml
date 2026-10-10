@@ -27,6 +27,9 @@ importers:
       '@types/three':
         specifier: ^0.185.4
         version: 0.185.4
+      html5-qrcode:
+        specifier: ^2.3.8
+        version: 2.3.8
       swagger-ui:
         specifier: ^5.32.15
         version: 5.32.15(debug@4.4.3)
@@ -1197,6 +1200,9 @@ packages:
 
   highlightjs-vue@1.0.0:
     resolution: {integrity: sha512-PDEfEF102G23vHmPhLyPboFCD+BkMGu+GuJe2d9/eH4FsCwvgBpnc9n0pGE+ffKdph38s6foEZiEjdgHdzp+IA==}
+
+  html5-qrcode@2.3.8:
+    resolution: {integrity: sha512-jsr4vafJhwoLVEDW3n1KvPnCCXWaQfRng0/EEYk1vNcQGcG/htAdhJX0be8YyqMoSz7+hZvOZSTAepsabiuhiQ==}
 
   https-proxy-agent@5.0.1:
     resolution: {integrity: sha512-dFcAjpTQFgoLMzC2VwU+C/CbS7uRL0lWmxDITmqm7C+7F0Odmj6s9l6alZc6AELXhrnggM2CeWSXHGOdX2YtwA==}
@@ -3461,6 +3467,8 @@ snapshots:
   highlight.js@10.7.3: {}
 
   highlightjs-vue@1.0.0: {}
+
+  html5-qrcode@2.3.8: {}
 
   https-proxy-agent@5.0.1:
     dependencies:
