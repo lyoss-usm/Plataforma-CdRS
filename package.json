@@ -16,7 +16,9 @@
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"test:seed": "node --experimental-strip-types scripts/seed/tests/unit.ts",
-		"test:seed:integration": "node --experimental-strip-types scripts/seed/tests/integration.ts"
+		"test:seed:integration": "node --experimental-strip-types scripts/seed/tests/integration.ts",
+		"test:auth:api": "node --env-file=.env --experimental-strip-types scripts/auth/tests/api.ts",
+		"test:auth:web": "node --env-file=.env --experimental-strip-types scripts/auth/tests/web.ts"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^2.0.5",
@@ -50,6 +52,8 @@
 	},
 	"dependencies": {
 		"@lucide/svelte": "^1.35.0",
+		"@supabase/ssr": "^0.12.7",
+		"@supabase/supabase-js": "^2.117.3",
 		"@threlte/core": "^8.6.0",
 		"@types/three": "^0.185.4",
 		"swagger-ui": "^5.32.15",
