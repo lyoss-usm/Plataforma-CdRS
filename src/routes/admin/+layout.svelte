@@ -11,12 +11,16 @@
 		type AdminRoute,
 		type SidebarLink
 	} from '$lib/data/admin';
-	import { adminSession, type AdminRole } from '$lib/stores/adminSession.svelte';
+	import { adminSession } from '$lib/stores/adminSession.svelte';
 	import Toast from '$lib/components/admin/primitives/Toast.svelte';
+	import type { LayoutProps } from './$types';
 
-	const roles: AdminRole[] = ['junior', 'senior', 'directivo'];
+	let { children, data }: LayoutProps = $props();
 
-	let { children } = $props();
+	// Sesión real del guard: se fija antes del primer render (SSR) y se mantiene sincronizada.
+	// svelte-ignore state_referenced_locally
+	adminSession.iniciar(data.staff);
+	$effect.pre(() => adminSession.iniciar(data.staff));
 
 	const role = $derived(adminSession.user.role);
 	const bottomSlots = $derived(bottomSlotsByRole[role]);
@@ -79,9 +83,6 @@
 	function childOf(parent: SidebarLink) {
 		return parent.children ?? [];
 	}
-
-	const switchClasses = (r: AdminRole) =>
-		r === role ? roleMeta[r].switchActive : 'text-on-surface-variant hover:text-on-surface';
 </script>
 
 <div class="min-h-screen bg-background text-on-background">
@@ -102,32 +103,6 @@
 			</a>
 
 			<div class="flex items-center gap-3">
-				<span
-					class="hidden items-center gap-1.5 rounded-full border border-primary/40 bg-primary/10 px-2.5 py-1 font-mono text-[10px] tracking-wider text-primary uppercase select-none sm:inline-flex"
-				>
-					<Icon name="info" class="h-3 w-3" strokeWidth={2} />
-					Vista previa
-				</span>
-
-				<div
-					class="flex items-center rounded-base border border-glass-border bg-white/5 p-0.5"
-					role="group"
-					aria-label="Cambiar rol de vista previa"
-				>
-					{#each roles as currentRole (currentRole)}
-						<button
-							type="button"
-							aria-pressed={role === currentRole}
-							onclick={() => adminSession.switchRole(currentRole)}
-							class="rounded-base px-2.5 py-1 font-mono text-[11px] tracking-wider uppercase transition {switchClasses(
-								currentRole
-							)}"
-						>
-							{roleMeta[currentRole].label}
-						</button>
-					{/each}
-				</div>
-
 				<div class="flex items-center gap-2.5">
 					<img
 						src={adminSession.user.avatar}
@@ -145,6 +120,15 @@
 						</span>
 					</div>
 				</div>
+
+				<form method="POST" action="/logout">
+					<button
+						type="submit"
+						class="rounded-base border border-glass-border px-2.5 py-1.5 font-mono text-[11px] tracking-wider text-on-surface-variant uppercase transition hover:bg-white/5 hover:text-on-surface"
+					>
+						Salir
+					</button>
+				</form>
 			</div>
 		</div>
 	</header>

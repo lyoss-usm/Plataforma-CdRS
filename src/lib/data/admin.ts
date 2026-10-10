@@ -24,28 +24,25 @@ export const moderacionRoute: AdminRoute = '/admin/miembros?tab=moderacion';
 
 export const roleMeta: Record<
 	AdminRole,
-	{ label: string; defaultTipo: LoanType; allowed: LoanType[]; badge: string; switchActive: string }
+	{ label: string; defaultTipo: LoanType; allowed: LoanType[]; badge: string }
 > = {
 	junior: {
 		label: 'Junior',
 		defaultTipo: 'junta',
 		allowed: ['junta'],
-		badge: 'border-primary/40 bg-primary/10 text-primary',
-		switchActive: 'bg-primary/15 text-primary'
+		badge: 'border-primary/40 bg-primary/10 text-primary'
 	},
 	senior: {
 		label: 'Senior',
 		defaultTipo: 'general',
 		allowed: ['general', 'junta'],
-		badge: 'border-secondary/40 bg-secondary/10 text-secondary',
-		switchActive: 'bg-secondary/15 text-secondary'
+		badge: 'border-secondary/40 bg-secondary/10 text-secondary'
 	},
 	directivo: {
 		label: 'Directivo',
 		defaultTipo: 'general',
 		allowed: ['general', 'junta'],
-		badge: 'border-tertiary/40 bg-tertiary/10 text-tertiary',
-		switchActive: 'bg-tertiary/15 text-tertiary'
+		badge: 'border-tertiary/40 bg-tertiary/10 text-tertiary'
 	}
 };
 

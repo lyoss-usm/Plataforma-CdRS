@@ -50,6 +50,8 @@
 	},
 	"dependencies": {
 		"@lucide/svelte": "^1.35.0",
+		"@supabase/ssr": "^0.12.7",
+		"@supabase/supabase-js": "^2.117.3",
 		"@threlte/core": "^8.6.0",
 		"@types/three": "^0.185.4",
 		"swagger-ui": "^5.32.15",
