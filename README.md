@@ -38,6 +38,22 @@ Este repositorio es para el **Sistema de Gestion de Prestamos e Inventario** dis
 > make help
 > ```
 
+## Panel administrativo y autenticación
+
+`/admin/*` exige una sesión de staff (Supabase Auth, solo por invitación) y cada operación se
+valida con políticas RLS en la base de datos. Para desarrollo local, `supabase db reset` carga
+tres cuentas de prueba (contraseña `cdrs-dev`):
+
+| Correo | Cargo |
+|---|---|
+| `dev.junior@usm.cl` | Junior |
+| `dev.senior@usm.cl` | Senior |
+| `dev.directivo@usm.cl` | Directivo |
+
+Ingresa en [http://localhost:5173/login](http://localhost:5173/login). Si tu base local es
+anterior a esta configuración, ejecuta `make reset-seed` para aplicar las migraciones y crear las
+cuentas. Las pruebas de RLS se ejecutan con `make test-db`.
+
 ## Documentación de la API
 
 Con el servidor de desarrollo en ejecución, la documentación interactiva está disponible en:
