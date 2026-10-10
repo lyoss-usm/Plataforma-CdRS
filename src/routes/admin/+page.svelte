@@ -3,10 +3,13 @@
 	import Icon from '$lib/components/Icon.svelte';
 	import { quickActions } from '$lib/data/admin';
 	import { adminSession } from '$lib/stores/adminSession.svelte';
+	import ExportarDatos from '$lib/components/exportar/ExportarDatos.svelte';
 
 	const role = $derived(adminSession.user.role);
 	const actions = $derived(quickActions.filter((action) => action.roles.includes(role)));
 	const showsDataPanels = $derived(role === 'directivo');
+
+
 </script>
 
 <div class="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6">
@@ -47,18 +50,12 @@
 
 	{#if showsDataPanels}
 		<section class="mt-10">
-			<div class="flex flex-wrap items-center justify-between gap-3">
-				<h2 class="font-display text-headline-md font-semibold tracking-tight text-on-surface">
-					Datos
-				</h2>
-				<button
-					type="button"
-					class="flex items-center gap-2 rounded-base border border-primary/50 bg-primary/10 px-4 py-2 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow"
-				>
-					<Icon name="download" class="h-5 w-5" />
-					Exportar
-				</button>
-			</div>
+			<div class="flex flex-wrap items-start justify-between gap-3">
+			<h2 class="font-display text-headline-md font-semibold tracking-tight text-on-surface">
+				Exportar
+			</h2>
+			<ExportarDatos />
+		</div>
 
 			<div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
 				{#each [1, 2, 3, 4] as metric (metric)}

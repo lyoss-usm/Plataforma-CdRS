@@ -21,6 +21,9 @@ importers:
       '@types/three':
         specifier: ^0.185.4
         version: 0.185.4
+      fflate:
+        specifier: ^0.8.3
+        version: 0.8.3
       swagger-ui:
         specifier: ^5.32.15
         version: 5.32.15(debug@4.4.3)
