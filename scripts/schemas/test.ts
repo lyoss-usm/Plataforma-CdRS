@@ -13,6 +13,7 @@ import {
 	createSolicitudSchema,
 	formatearIdentificador,
 	juegoSchema,
+	opcionesSolicitudWebSchema,
 	permisoSchema,
 	suspensionSchema,
 	updateJuegoSchema
@@ -198,6 +199,23 @@ const cases = [
 		name: 'Formulario público de solicitud',
 		schema: solicitudWebSchema,
 		value: solicitudWebValida
+	},
+	{
+		name: 'Opciones del formulario de solicitud',
+		schema: opcionesSolicitudWebSchema,
+		value: {
+			fechas: [
+				{
+					fechaSeleccionada: '2026-10-13',
+					etiqueta: 'Martes Bloque Libre (12:30 - 13:40)'
+				},
+				{
+					fechaSeleccionada: '2026-10-15',
+					etiqueta: 'Jueves Bloque Libre (12:30 - 13:40)'
+				}
+			],
+			expansiones: [{ idJuego: 2, nombreJuego: 'Navegantes de Catan' }]
+		}
 	}
 ];
 
@@ -288,6 +306,19 @@ const invalidCases = [
 		value: {
 			...solicitudWebValida,
 			aceptaTerminos: undefined
+		}
+	},
+	{
+		name: 'Opciones de solicitud con una sola fecha',
+		schema: opcionesSolicitudWebSchema,
+		value: {
+			fechas: [
+				{
+					fechaSeleccionada: '2026-10-13',
+					etiqueta: 'Martes Bloque Libre (12:30 - 13:40)'
+				}
+			],
+			expansiones: []
 		}
 	}
 ];

@@ -197,3 +197,21 @@ export function crearSolicitudWebSchema(fechasPermitidas: readonly string[]) {
 
 export type SolicitudWebInput = z.input<ReturnType<typeof crearSolicitudWebSchema>>;
 export type SolicitudWebData = z.output<ReturnType<typeof crearSolicitudWebSchema>>;
+
+export const fechaRetiroDisponibleSchema = z.object({
+	fechaSeleccionada: dateSchema,
+	etiqueta: z.string().min(1)
+});
+export type FechaRetiroDisponible = z.infer<typeof fechaRetiroDisponibleSchema>;
+
+export const expansionSolicitudSchema = z.object({
+	idJuego: integerIdSchema,
+	nombreJuego: z.string().min(1)
+});
+export type ExpansionSolicitud = z.infer<typeof expansionSolicitudSchema>;
+
+export const opcionesSolicitudWebSchema = z.object({
+	fechas: z.array(fechaRetiroDisponibleSchema).length(2),
+	expansiones: z.array(expansionSolicitudSchema)
+});
+export type OpcionesSolicitudWeb = z.infer<typeof opcionesSolicitudWebSchema>;

@@ -15,7 +15,8 @@ VALUES
 	(2100000002, '[TEST SOLICITUD WEB] Otro base', 'Juego base', NULL),
 	(2100000003, '[TEST SOLICITUD WEB] Expansión compatible', 'Expansión', 2100000001),
 	(2100000004, '[TEST SOLICITUD WEB] Expansión incompatible', 'Expansión', 2100000002),
-	(2100000005, '[TEST SOLICITUD WEB] Sin ejemplares', 'Juego base', NULL);
+	(2100000005, '[TEST SOLICITUD WEB] Sin ejemplares', 'Juego base', NULL),
+	(2100000006, '[TEST SOLICITUD WEB] Expansión sin ejemplares', 'Expansión', 2100000001);
 
 INSERT INTO public."Ejemplar" (
 	"idEjemplar",
@@ -159,6 +160,15 @@ SELECT ok(
 );
 
 SELECT ok(
+	has_function_privilege(
+		'anon',
+		'public.expansiones_disponibles(integer)',
+		'EXECUTE'
+	),
+	'anon puede consultar las expansiones disponibles'
+);
+
+SELECT ok(
 	NOT has_function_privilege(
 		'anon',
 		'public.fn_fechas_retiro_permitidas(timestamp with time zone)',
@@ -193,6 +203,29 @@ SELECT ok(
 		END
 	),
 	'cada fecha pública tiene la etiqueta correspondiente a su día'
+);
+
+SELECT results_eq(
+	$$
+		SELECT "idJuego", "nombreJuego"
+		FROM public.expansiones_disponibles(2100000001)
+	$$,
+	$$
+		VALUES (
+			2100000003,
+			'[TEST SOLICITUD WEB] Expansión compatible'::TEXT
+		)
+	$$,
+	'lista solo expansiones compatibles con ejemplares en bodega'
+);
+
+SELECT is(
+	(
+		SELECT pg_catalog.count(*)
+		FROM public.expansiones_disponibles(2100000002)
+	),
+	1::BIGINT,
+	'cada juego base recibe solamente sus propias expansiones'
 );
 
 SELECT throws_ok(
