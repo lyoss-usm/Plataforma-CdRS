@@ -55,6 +55,9 @@
 	let opciones = $state<OpcionesSolicitudWeb | null>(null);
 	let cargandoOpciones = $state(true);
 	let errorOpciones = $state<string | null>(null);
+	let terminos = $state('');
+	let cargandoTerminos = $state(true);
+	let errorTerminos = $state<string | null>(null);
 	let erroresServidor = $state<Partial<Record<CampoValidable, string>>>({});
 	let errorGeneral = $state<string | null>(null);
 	let intentoEnvio = $state(false);
@@ -62,6 +65,7 @@
 	let enviado = $state(false);
 	let identificadorEnEdicion = $state<'rut' | 'rol' | null>(null);
 	let controladorOpciones: AbortController | null = null;
+	let controladorTerminos: AbortController | null = null;
 
 	let tocado = $state<Record<CampoValidable, boolean>>({
 		nombreSansano: false,
@@ -136,11 +140,18 @@
 			? MENSAJE_DIGITO_VERIFICADOR_DISTINTO
 			: undefined
 	);
+	const terminosDisponibles = $derived(
+		!cargandoTerminos && errorTerminos === null && terminos !== ''
+	);
 
 	onMount(() => {
 		void cargarOpciones();
+		void cargarTerminos();
 
-		return () => controladorOpciones?.abort();
+		return () => {
+			controladorOpciones?.abort();
+			controladorTerminos?.abort();
+		};
 	});
 
 	function esCampoValidable(valor: string): valor is CampoValidable {
@@ -231,6 +242,47 @@
 			if (controladorOpciones === controlador) {
 				controladorOpciones = null;
 				cargandoOpciones = false;
+			}
+		}
+	}
+
+	async function cargarTerminos() {
+		controladorTerminos?.abort();
+		const controlador = new AbortController();
+		controladorTerminos = controlador;
+		cargandoTerminos = true;
+		errorTerminos = null;
+		terminos = '';
+		aceptaTerminos = false;
+
+		try {
+			const response = await fetch('/legal/terminos-y-condiciones.html', {
+				signal: controlador.signal,
+				cache: 'no-cache'
+			});
+
+			if (!response.ok) {
+				throw new Error(`No se pudieron cargar los términos: HTTP ${response.status}.`);
+			}
+
+			const contenido = (await response.text()).trim();
+
+			if (contenido === '') {
+				throw new Error('El archivo de términos y condiciones está vacío.');
+			}
+
+			terminos = contenido;
+		} catch (error) {
+			if (controlador.signal.aborted) {
+				return;
+			}
+
+			console.error('No se pudieron cargar los términos y condiciones:', error);
+			errorTerminos = 'No pudimos cargar los términos y condiciones.';
+		} finally {
+			if (controladorTerminos === controlador) {
+				controladorTerminos = null;
+				cargandoTerminos = false;
 			}
 		}
 	}
@@ -686,12 +738,39 @@
 					{/if}
 				</fieldset>
 
-				<details class="rounded-base border border-glass-border bg-surface-container-lowest px-4">
+				<details
+					class="rounded-base border border-glass-border bg-surface-container-lowest px-4"
+					aria-busy={cargandoTerminos}
+				>
 					<summary
 						class="cursor-pointer py-3 font-mono text-label-md tracking-wider text-on-surface-variant uppercase select-none hover:text-on-surface"
 						>Términos y Condiciones</summary
 					>
-					<p class="text-body-sm pb-4 text-on-surface-variant">Términos y condiciones</p>
+
+					<div class="pb-4">
+						{#if cargandoTerminos}
+							<p class="text-body-sm text-on-surface-variant" role="status">Cargando términos…</p>
+						{:else if errorTerminos}
+							<div role="alert">
+								<p class="text-body-sm text-error">{errorTerminos}</p>
+								<button
+									type="button"
+									onclick={cargarTerminos}
+									class="text-body-sm mt-2 cursor-pointer font-semibold text-primary hover:underline"
+								>
+									Reintentar
+								</button>
+							</div>
+						{:else}
+							<!-- El HTML proviene exclusivamente del archivo estático controlado por el repositorio. -->
+							<div
+								class="text-body-sm text-on-surface-variant [&_h3]:mb-4 [&_h3]:text-body-lg [&_h3]:font-semibold [&_h3]:text-on-surface [&_li]:pl-1 [&_ol]:mb-4 [&_ol]:list-decimal [&_ol]:space-y-1 [&_ol]:pl-6 [&_strong]:font-semibold [&_strong]:text-on-surface [&_ul]:mb-4 [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-6"
+							>
+								<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+								{@html terminos}
+							</div>
+						{/if}
+					</div>
 				</details>
 
 				<div>
@@ -700,13 +779,14 @@
 							name="aceptaTerminos"
 							type="checkbox"
 							bind:checked={aceptaTerminos}
+							disabled={!terminosDisponibles}
 							onchange={() => {
 								marcarTocado('aceptaTerminos');
 								limpiarError('aceptaTerminos');
 							}}
 							aria-invalid={errores.aceptaTerminos !== undefined}
 							aria-describedby={errores.aceptaTerminos ? 'solicitud-terminos-error' : undefined}
-							class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-primary"
+							class="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-primary disabled:cursor-not-allowed disabled:opacity-60"
 						/>
 						<span>He leído y acepto los términos y condiciones del préstamo.</span>
 					</label>
@@ -728,7 +808,7 @@
 
 				<button
 					type="submit"
-					disabled={cargandoOpciones || opciones === null || enviando}
+					disabled={cargandoOpciones || opciones === null || !terminosDisponibles || enviando}
 					aria-busy={enviando}
 					class="mt-1 flex w-full cursor-pointer items-center justify-center gap-2 rounded-base border border-primary/50 bg-primary/10 px-6 py-2.5 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-primary/10"
 				>
