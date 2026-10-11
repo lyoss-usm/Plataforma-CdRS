@@ -179,8 +179,8 @@ paths:
         - Solicitudes
       summary: Obtener las opciones del formulario de solicitud
       description: |
-        Retorna los dos próximos bloques de retiro y las expansiones del
-        juego base que tienen al menos un ejemplar en bodega.
+        Retorna las expansiones del juego base que tienen al menos un
+        ejemplar en bodega.
       security: []
       parameters:
         - name: idJuego
@@ -218,8 +218,9 @@ paths:
       summary: Crear una solicitud de préstamo
       description: |
         Valida los datos personales y registra una solicitud pendiente. El
-        servidor selecciona los ejemplares más aptos; sus identificadores no
-        se exponen en la respuesta.
+        servidor traduce el bloque elegido a una fecha vigente y selecciona
+        los ejemplares más aptos; sus identificadores no se exponen en la
+        respuesta.
       security: []
       requestBody:
         required: true
@@ -263,20 +264,6 @@ paths:
 
 components:
   schemas:
-    FechaRetiroDisponible:
-      type: object
-      additionalProperties: false
-      required:
-        - fechaSeleccionada
-        - etiqueta
-      properties:
-        fechaSeleccionada:
-          type: string
-          format: date
-        etiqueta:
-          type: string
-          example: Martes Bloque Libre (12:30 - 13:40)
-
     ExpansionSolicitud:
       type: object
       additionalProperties: false
@@ -295,15 +282,8 @@ components:
       type: object
       additionalProperties: false
       required:
-        - fechas
         - expansiones
       properties:
-        fechas:
-          type: array
-          minItems: 2
-          maxItems: 2
-          items:
-            $ref: '#/components/schemas/FechaRetiroDisponible'
         expansiones:
           type: array
           items:
@@ -319,7 +299,7 @@ components:
         - rol
         - telefono
         - correoInstitucional
-        - fechaSeleccionada
+        - bloqueRetiro
         - aceptaTerminos
       properties:
         idJuego:
@@ -349,9 +329,12 @@ components:
         correoInstitucional:
           type: string
           format: email
-        fechaSeleccionada:
+        bloqueRetiro:
           type: string
-          format: date
+          enum:
+            - martes
+            - jueves
+          description: Día elegido; el servidor lo traduce a la próxima fecha permitida
         aceptaTerminos:
           type: string
           enum:

@@ -11,10 +11,13 @@ import {
 	createPrestamoSchema,
 	createSansanoSchema,
 	createSolicitudSchema,
+	digitosVerificadoresCoinciden,
 	formatearIdentificador,
 	juegoSchema,
 	opcionesSolicitudWebSchema,
 	permisoSchema,
+	respuestaErrorSolicitudWebSchema,
+	solicitudWebCreadaSchema,
 	suspensionSchema,
 	updateJuegoSchema
 } from '../../src/lib/schemas/index.ts';
@@ -26,7 +29,7 @@ const rutSansano = 12345678;
 const rutStaff = 87654321;
 const fechaRetiro = '2026-05-21T18:30:00-04:00';
 
-const solicitudWebSchema = crearSolicitudWebSchema(['2026-10-13', '2026-10-15']);
+const solicitudWebSchema = crearSolicitudWebSchema();
 
 const solicitudWebValida = {
 	idJuego: '1',
@@ -36,7 +39,7 @@ const solicitudWebValida = {
 	rol: '202612345-0',
 	telefono: '1234 5678',
 	correoInstitucional: 'ada.lovelace@alumnos.usm.cl',
-	fechaSeleccionada: '2026-10-13',
+	bloqueRetiro: 'martes',
 	aceptaTerminos: 'on'
 };
 
@@ -204,17 +207,20 @@ const cases = [
 		name: 'Opciones del formulario de solicitud',
 		schema: opcionesSolicitudWebSchema,
 		value: {
-			fechas: [
-				{
-					fechaSeleccionada: '2026-10-13',
-					etiqueta: 'Martes Bloque Libre (12:30 - 13:40)'
-				},
-				{
-					fechaSeleccionada: '2026-10-15',
-					etiqueta: 'Jueves Bloque Libre (12:30 - 13:40)'
-				}
-			],
 			expansiones: [{ idJuego: 2, nombreJuego: 'Navegantes de Catan' }]
+		}
+	},
+	{
+		name: 'Respuesta de solicitud creada',
+		schema: solicitudWebCreadaSchema,
+		value: { idSolicitud: 1 }
+	},
+	{
+		name: 'Error del formulario de solicitud',
+		schema: respuestaErrorSolicitudWebSchema,
+		value: {
+			message: 'Revisa los datos del formulario.',
+			issues: [{ path: ['rut'], message: 'Ingresa un RUT válido' }]
 		}
 	}
 ];
@@ -293,11 +299,11 @@ const invalidCases = [
 		}
 	},
 	{
-		name: 'Formulario con fecha no permitida',
+		name: 'Formulario sin bloque de retiro',
 		schema: solicitudWebSchema,
 		value: {
 			...solicitudWebValida,
-			fechaSeleccionada: '2026-10-14'
+			bloqueRetiro: ''
 		}
 	},
 	{
@@ -306,19 +312,6 @@ const invalidCases = [
 		value: {
 			...solicitudWebValida,
 			aceptaTerminos: undefined
-		}
-	},
-	{
-		name: 'Opciones de solicitud con una sola fecha',
-		schema: opcionesSolicitudWebSchema,
-		value: {
-			fechas: [
-				{
-					fechaSeleccionada: '2026-10-13',
-					etiqueta: 'Martes Bloque Libre (12:30 - 13:40)'
-				}
-			],
-			expansiones: []
 		}
 	}
 ];
@@ -350,6 +343,40 @@ for (const testCase of invalidCases) {
 	console.log(`${testCase.name}: inválido según lo esperado`);
 }
 
+const formularioConCorreoInvalido = solicitudWebSchema.safeParse({
+	...solicitudWebValida,
+	correoInstitucional: 'correo-invalido'
+});
+
+if (
+	formularioConCorreoInvalido.success ||
+	!formularioConCorreoInvalido.error.issues.some(
+		(issue) =>
+			issue.path[0] === 'correoInstitucional' &&
+			issue.message === 'Ingresa un correo electrónico válido'
+	)
+) {
+	hasErrors = true;
+	console.error('El correo inválido no produjo el mensaje esperado en español');
+}
+
+const formularioSinBloque = solicitudWebSchema.safeParse({
+	...solicitudWebValida,
+	bloqueRetiro: ''
+});
+
+if (
+	formularioSinBloque.success ||
+	!formularioSinBloque.error.issues.some(
+		(issue) =>
+			issue.path[0] === 'bloqueRetiro' &&
+			issue.message === 'Selecciona uno de los bloques de retiro disponibles'
+	)
+) {
+	hasErrors = true;
+	console.error('El bloque vacío no produjo el mensaje esperado en español');
+}
+
 if (calcularDigitoVerificador('18585543') !== '0') {
 	hasErrors = true;
 	console.error('El cálculo del dígito verificador no produjo el resultado esperado');
@@ -358,6 +385,21 @@ if (calcularDigitoVerificador('18585543') !== '0') {
 if (formatearIdentificador('18.585.5430') !== '18585543-0') {
 	hasErrors = true;
 	console.error('El autoformato del identificador no produjo el resultado esperado');
+}
+
+if (digitosVerificadoresCoinciden('18585543-0', '202612345-9') !== false) {
+	hasErrors = true;
+	console.error('No se detectaron dígitos verificadores distintos en RUT y ROL completos');
+}
+
+if (digitosVerificadoresCoinciden('18585543-0', '202612345-0') !== true) {
+	hasErrors = true;
+	console.error('No se reconocieron dígitos verificadores coincidentes en RUT y ROL');
+}
+
+if (digitosVerificadoresCoinciden('18585543-0', '') !== null) {
+	hasErrors = true;
+	console.error('La comparación de dígitos se ejecutó con un identificador incompleto');
 }
 
 if (hasErrors) {

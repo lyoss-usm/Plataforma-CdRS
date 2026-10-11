@@ -34,6 +34,9 @@ interface IdentificadorNormalizado {
 
 const MAX_RUT_DATABASE = 2_147_483_647;
 
+export const MENSAJE_DIGITO_VERIFICADOR_DISTINTO =
+	'El RUT y el ROL deben tener el mismo dígito verificador';
+
 export function calcularDigitoVerificador(numero: string): string {
 	let suma = 0;
 	let multiplicador = 2;
@@ -93,6 +96,21 @@ export function formatearIdentificador(valor: string): string {
 	const numero = limpio.slice(0, -1).replaceAll('K', '');
 
 	return `${numero}-${digitoVerificador}`;
+}
+
+export function digitosVerificadoresCoinciden(rutIngresado: string, rolIngresado: string) {
+	const rut = descomponerIdentificador(rutIngresado, MAX_RUT_DATABASE);
+	const rol = descomponerIdentificador(rolIngresado, Number.MAX_SAFE_INTEGER);
+
+	if (
+		rut === null ||
+		rol === null ||
+		calcularDigitoVerificador(rut.numeroTexto) !== rut.digitoVerificadorTexto
+	) {
+		return null;
+	}
+
+	return rut.digitoVerificador === rol.digitoVerificador;
 }
 
 const rutFormularioSchema = z.string().transform((valor, contexto) => {
@@ -160,9 +178,23 @@ const aceptaTerminosSchema = z
 	})
 	.transform(() => true as const);
 
-export function crearSolicitudWebSchema(fechasPermitidas: readonly string[]) {
-	const fechasValidas = new Set(fechasPermitidas.map((fecha) => dateSchema.parse(fecha)));
+export const BLOQUES_RETIRO = [
+	{
+		valor: 'martes',
+		etiqueta: 'Martes Bloque Libre (12:30 - 13:40)'
+	},
+	{
+		valor: 'jueves',
+		etiqueta: 'Jueves Bloque Libre (12:30 - 13:40)'
+	}
+] as const;
 
+export const bloqueRetiroSchema = z.enum(['martes', 'jueves'], {
+	error: 'Selecciona uno de los bloques de retiro disponibles'
+});
+export type BloqueRetiro = z.infer<typeof bloqueRetiroSchema>;
+
+export function crearSolicitudWebSchema() {
 	return z
 		.object({
 			idJuego: z.coerce.number().int().positive(),
@@ -172,10 +204,7 @@ export function crearSolicitudWebSchema(fechasPermitidas: readonly string[]) {
 			rol: rolFormularioSchema,
 			telefono: telefonoFormularioSchema,
 			correoInstitucional: correoInstitucionalSchema,
-			fechaSeleccionada: dateSchema.refine(
-				(fecha) => fechasValidas.has(fecha),
-				'Selecciona uno de los bloques de retiro disponibles'
-			),
+			bloqueRetiro: bloqueRetiroSchema,
 			aceptaTerminos: aceptaTerminosSchema
 		})
 		.superRefine((datos, contexto) => {
@@ -183,7 +212,7 @@ export function crearSolicitudWebSchema(fechasPermitidas: readonly string[]) {
 				contexto.addIssue({
 					code: 'custom',
 					path: ['rol'],
-					message: 'El RUT y el ROL deben tener el mismo dígito verificador'
+					message: MENSAJE_DIGITO_VERIFICADOR_DISTINTO
 				});
 			}
 		})
@@ -211,7 +240,25 @@ export const expansionSolicitudSchema = z.object({
 export type ExpansionSolicitud = z.infer<typeof expansionSolicitudSchema>;
 
 export const opcionesSolicitudWebSchema = z.object({
-	fechas: z.array(fechaRetiroDisponibleSchema).length(2),
 	expansiones: z.array(expansionSolicitudSchema)
 });
 export type OpcionesSolicitudWeb = z.infer<typeof opcionesSolicitudWebSchema>;
+
+export const solicitudWebCreadaSchema = z.object({
+	idSolicitud: integerIdSchema
+});
+export type SolicitudWebCreada = z.infer<typeof solicitudWebCreadaSchema>;
+
+export const respuestaErrorSolicitudWebSchema = z.object({
+	message: z.string().min(1),
+	field: z.string().optional(),
+	issues: z
+		.array(
+			z.object({
+				path: z.array(z.union([z.string(), z.number()])),
+				message: z.string().min(1)
+			})
+		)
+		.optional()
+});
+export type RespuestaErrorSolicitudWeb = z.infer<typeof respuestaErrorSolicitudWebSchema>;

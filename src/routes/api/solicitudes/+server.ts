@@ -2,7 +2,8 @@ import { crearSolicitudWebSchema } from '$lib/schemas';
 import {
 	ErrorSolicitudWeb,
 	obtenerFechasRetiro,
-	registrarSolicitudWeb
+	registrarSolicitudWeb,
+	traducirBloqueRetiro
 } from '$lib/server/solicitudes';
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
@@ -40,7 +41,7 @@ const erroresConocidos: Record<string, ErrorPublicoSolicitud> = {
 		status: 409,
 		message:
 			'El bloque seleccionado ya no está disponible. Recarga las opciones e inténtalo nuevamente.',
-		field: 'fechaSeleccionada'
+		field: 'bloqueRetiro'
 	},
 	juego_base_invalido: {
 		status: 400,
@@ -83,9 +84,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	try {
 		const formulario = await request.formData();
 		const fechas = await obtenerFechasRetiro(locals.supabase);
-		const validacion = crearSolicitudWebSchema(
-			fechas.map((opcion) => opcion.fechaSeleccionada)
-		).safeParse(Object.fromEntries(formulario));
+		const validacion = crearSolicitudWebSchema().safeParse(Object.fromEntries(formulario));
 
 		if (!validacion.success) {
 			return json(
@@ -97,7 +96,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 			);
 		}
 
-		const idSolicitud = await registrarSolicitudWeb(locals.supabase, validacion.data);
+		const { bloqueRetiro, ...datosSolicitud } = validacion.data;
+		const fechaSeleccionada = traducirBloqueRetiro(fechas, bloqueRetiro);
+		const idSolicitud = await registrarSolicitudWeb(locals.supabase, {
+			...datosSolicitud,
+			fechaSeleccionada
+		});
 		return json({ idSolicitud }, { status: 201 });
 	} catch (error) {
 		if (error instanceof ErrorSolicitudWeb) {
