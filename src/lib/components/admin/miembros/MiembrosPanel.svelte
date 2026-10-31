@@ -13,7 +13,13 @@
 	import FichaStaffModal from './FichaStaffModal.svelte';
 	import InvitarStaffModal from './InvitarStaffModal.svelte';
 	import { formatearRut } from '$lib/data/junta.svelte';
-	import { STAFF_PAGE_SIZE, type StaffFila, type StaffPage, type StaffQuery } from '$lib/schemas';
+	import {
+		STAFF_PAGE_SIZE,
+		formatearTelefono,
+		type StaffFila,
+		type StaffPage,
+		type StaffQuery
+	} from '$lib/schemas';
 
 	interface Props {
 		staffPage: StaffPage;
@@ -196,7 +202,8 @@
 	{:else if columna.id === 'correo'}
 		<span class="font-mono text-sm text-on-surface-variant">{fila.correoInstitucional}</span>
 	{:else if columna.id === 'contacto'}
-		<span class="font-mono text-sm text-on-surface-variant">+56 {fila.telefono}</span>
+		<span class="font-mono text-sm text-on-surface-variant">{formatearTelefono(fila.telefono)}</span
+		>
 	{:else}
 		<span class="flex items-center justify-end">
 			<button

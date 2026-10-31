@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { Check, X } from '@lucide/svelte';
 	import { onMount } from 'svelte';
+	import IdentificadorInput from '$lib/components/forms/IdentificadorInput.svelte';
+	import TelefonoInput from '$lib/components/forms/TelefonoInput.svelte';
 	import {
 		BLOQUES_RETIRO,
 		crearSolicitudWebSchema,
-		digitosVerificadoresCoinciden,
-		formatearIdentificador,
-		MENSAJE_DIGITO_VERIFICADOR_DISTINTO,
+		LARGO_ROL,
+		LARGO_RUT,
 		opcionesSolicitudWebSchema,
 		respuestaErrorSolicitudWebSchema,
 		solicitudWebCreadaSchema,
@@ -63,7 +64,6 @@
 	let intentoEnvio = $state(false);
 	let enviando = $state(false);
 	let enviado = $state(false);
-	let identificadorEnEdicion = $state<'rut' | 'rol' | null>(null);
 	let controladorOpciones: AbortController | null = null;
 	let controladorTerminos: AbortController | null = null;
 
@@ -122,24 +122,13 @@
 
 		for (const campo of camposValidables) {
 			if (tocado[campo] || intentoEnvio) {
-				const errorLocal = erroresLocales[campo];
-				const esErrorConjunto =
-					campo === 'rol' && errorLocal === MENSAJE_DIGITO_VERIFICADOR_DISTINTO;
-
-				visibles[campo] = erroresServidor[campo] ?? (esErrorConjunto ? undefined : errorLocal);
+				visibles[campo] = erroresServidor[campo] ?? erroresLocales[campo];
 			}
 		}
 
 		return visibles;
 	});
 
-	const errorDigitoVerificador = $derived(
-		digitosVerificadoresCoinciden(rut, rol) === false &&
-			identificadorEnEdicion === null &&
-			(intentoEnvio || (tocado.rut && tocado.rol))
-			? MENSAJE_DIGITO_VERIFICADOR_DISTINTO
-			: undefined
-	);
 	const terminosDisponibles = $derived(
 		!cargandoTerminos && errorTerminos === null && terminos !== ''
 	);
@@ -170,38 +159,12 @@
 		tocado[campo] = true;
 	}
 
-	function comenzarEdicionIdentificador(campo: 'rut' | 'rol') {
-		identificadorEnEdicion = campo;
-	}
-
-	function terminarEdicionIdentificador(campo: 'rut' | 'rol') {
-		marcarTocado(campo);
-		identificadorEnEdicion = null;
-	}
-
 	function limpiarError(campo: CampoValidable) {
 		if (erroresServidor[campo]) {
 			const restantes = { ...erroresServidor };
 			delete restantes[campo];
 			erroresServidor = restantes;
 		}
-	}
-
-	function actualizarIdentificador(campo: 'rut' | 'rol', valor: string) {
-		const valorFormateado = formatearIdentificador(valor);
-
-		if (campo === 'rut') {
-			rut = valorFormateado;
-		} else {
-			rol = valorFormateado;
-		}
-
-		limpiarError(campo);
-	}
-
-	function actualizarTelefono(valor: string) {
-		telefono = valor.replace(/\D/g, '').slice(0, 8);
-		limpiarError('telefono');
 	}
 
 	async function leerRespuesta(response: Response): Promise<unknown> {
@@ -318,7 +281,6 @@
 		}
 
 		intentoEnvio = true;
-		identificadorEnEdicion = null;
 		erroresServidor = {};
 		errorGeneral = null;
 
@@ -524,24 +486,17 @@
 								class="font-mono text-label-md tracking-wider text-on-surface-variant uppercase"
 								>RUT</label
 							>
-							<input
+							<IdentificadorInput
 								id="solicitud-rut"
 								name="rut"
-								type="text"
-								value={rut}
-								onfocus={() => comenzarEdicionIdentificador('rut')}
-								oninput={(evento) => actualizarIdentificador('rut', evento.currentTarget.value)}
-								onblur={() => terminarEdicionIdentificador('rut')}
+								bind:value={rut}
+								largoMaximo={LARGO_RUT}
+								oninput={() => limpiarError('rut')}
+								onblur={() => marcarTocado('rut')}
 								placeholder="12345678-9"
-								aria-invalid={errores.rut !== undefined || errorDigitoVerificador !== undefined}
-								aria-describedby={errores.rut
-									? `solicitud-rut-error${errorDigitoVerificador ? ' solicitud-dv-error' : ''}`
-									: errorDigitoVerificador
-										? 'solicitud-dv-error'
-										: undefined}
-								class={errores.rut || errorDigitoVerificador
-									? claseInputInvalido
-									: claseInputValido}
+								aria-invalid={errores.rut !== undefined}
+								aria-describedby={errores.rut ? 'solicitud-rut-error' : undefined}
+								class={errores.rut ? claseInputInvalido : claseInputValido}
 							/>
 							{#if errores.rut}
 								<p class="text-body-sm mt-0.5 font-medium text-error" id="solicitud-rut-error">
@@ -556,24 +511,17 @@
 								class="font-mono text-label-md tracking-wider text-on-surface-variant uppercase"
 								>ROL</label
 							>
-							<input
+							<IdentificadorInput
 								id="solicitud-rol"
 								name="rol"
-								type="text"
-								value={rol}
-								onfocus={() => comenzarEdicionIdentificador('rol')}
-								oninput={(evento) => actualizarIdentificador('rol', evento.currentTarget.value)}
-								onblur={() => terminarEdicionIdentificador('rol')}
-								placeholder="202612345-9"
-								aria-invalid={errores.rol !== undefined || errorDigitoVerificador !== undefined}
-								aria-describedby={errores.rol
-									? `solicitud-rol-error${errorDigitoVerificador ? ' solicitud-dv-error' : ''}`
-									: errorDigitoVerificador
-										? 'solicitud-dv-error'
-										: undefined}
-								class={errores.rol || errorDigitoVerificador
-									? claseInputInvalido
-									: claseInputValido}
+								bind:value={rol}
+								largoMaximo={LARGO_ROL}
+								oninput={() => limpiarError('rol')}
+								onblur={() => marcarTocado('rol')}
+								placeholder="202012345-4"
+								aria-invalid={errores.rol !== undefined}
+								aria-describedby={errores.rol ? 'solicitud-rol-error' : undefined}
+								class={errores.rol ? claseInputInvalido : claseInputValido}
 							/>
 							{#if errores.rol}
 								<p class="text-body-sm mt-0.5 font-medium text-error" id="solicitud-rol-error">
@@ -582,16 +530,6 @@
 							{/if}
 						</div>
 					</div>
-
-					{#if errorDigitoVerificador}
-						<p
-							id="solicitud-dv-error"
-							class="text-body-sm mt-0.5 font-medium text-error"
-							role="alert"
-						>
-							{errorDigitoVerificador}
-						</p>
-					{/if}
 				</div>
 
 				<div class="flex flex-col gap-1.5">
@@ -626,27 +564,15 @@
 						class="font-mono text-label-md tracking-wider text-on-surface-variant uppercase"
 						>Teléfono</label
 					>
-					<div class="flex">
-						<span
-							class="flex items-center rounded-l-base border border-r-0 border-glass-border bg-surface-container px-3 text-body-md text-on-surface-variant"
-							>+569</span
-						>
-						<input
-							id="solicitud-telefono"
-							name="telefono"
-							type="tel"
-							inputmode="numeric"
-							autocomplete="tel-national"
-							value={telefono}
-							oninput={(evento) => actualizarTelefono(evento.currentTarget.value)}
-							onblur={() => marcarTocado('telefono')}
-							placeholder="12345678"
-							aria-label="Ocho dígitos posteriores a más cinco seis nueve"
-							aria-invalid={errores.telefono !== undefined}
-							aria-describedby={errores.telefono ? 'solicitud-telefono-error' : undefined}
-							class={`${errores.telefono ? claseInputInvalido : claseInputValido} rounded-l-none`}
-						/>
-					</div>
+					<TelefonoInput
+						id="solicitud-telefono"
+						bind:value={telefono}
+						inputClass={errores.telefono ? claseInputInvalido : claseInputValido}
+						oninput={() => limpiarError('telefono')}
+						onblur={() => marcarTocado('telefono')}
+						invalid={errores.telefono !== undefined}
+						describedby={errores.telefono ? 'solicitud-telefono-error' : undefined}
+					/>
 					{#if errores.telefono}
 						<p class="text-body-sm mt-0.5 font-medium text-error" id="solicitud-telefono-error">
 							{errores.telefono}

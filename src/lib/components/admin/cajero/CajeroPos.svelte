@@ -6,6 +6,8 @@
 	import FichaJuego from './FichaJuego.svelte';
 	import QrEscaneoModal from './QrEscaneoModal.svelte';
 	import AltaSansanoModal from './AltaSansanoModal.svelte';
+	import IdentificadorInput from '$lib/components/forms/IdentificadorInput.svelte';
+	import { LARGO_RUT } from '$lib/schemas';
 	import { parsearRut, formatearRut, type DatosAltaSansano } from '$lib/data/junta.svelte';
 	import type {
 		AltaSansanoDto,
@@ -493,11 +495,10 @@
 				error={errorRut}
 			>
 				<div class="flex gap-2">
-					<input
+					<IdentificadorInput
 						id="cajero-rut"
-						type="text"
-						inputmode="numeric"
 						bind:value={rutEntrada}
+						largoMaximo={LARGO_RUT}
 						oninput={() => {
 							errorRut = null;
 							noExiste = false;

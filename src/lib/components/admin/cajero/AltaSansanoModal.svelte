@@ -2,7 +2,10 @@
 	import Icon from '$lib/components/Icon.svelte';
 	import Modal from '../primitives/Modal.svelte';
 	import FormField from '../primitives/FormField.svelte';
-	import { dominiosCorreoInstitucional, parsearRol } from '$lib/schemas/sansano';
+	import IdentificadorInput from '$lib/components/forms/IdentificadorInput.svelte';
+	import TelefonoInput from '$lib/components/forms/TelefonoInput.svelte';
+	import { LARGO_ROL, LARGO_RUT, errorRol, parsearRol } from '$lib/schemas';
+	import { dominiosCorreoInstitucional } from '$lib/schemas/sansano';
 	import { parsearRut } from '$lib/data/junta.svelte';
 	import type { DatosAltaSansano } from '$lib/data/junta.svelte';
 
@@ -19,7 +22,9 @@
 
 	type Campo = 'nombre' | 'rut' | 'rol' | 'telefono' | 'correo';
 
-	const formatoTelefono = /^9\d{8}$/;
+	const formatoTelefono = /^\d{8}$/;
+	const claseInput =
+		'w-full rounded-base border border-glass-border bg-surface-container-lowest px-3 py-2.5 font-mono text-body-md text-on-surface transition outline-none placeholder:text-on-surface-variant/60 focus:border-primary/50';
 
 	let nombre = $state('');
 	let rut = $state('');
@@ -62,7 +67,7 @@
 					return 'Ingresa el rol.';
 				}
 
-				return parsearRol(rol) === null ? 'Formato inválido. Usa el formato 202012345-6.' : null;
+				return errorRol(rol);
 			case 'telefono':
 				if (telefono.trim() === '') {
 					return 'Ingresa el teléfono.';
@@ -70,7 +75,7 @@
 
 				return formatoTelefono.test(telefono.trim())
 					? null
-					: 'Ingresa un teléfono válido (9 dígitos).';
+					: 'Ingresa los 8 dígitos posteriores a +56 9.';
 			case 'correo': {
 				if (correo.trim() === '') {
 					return 'Ingresa el correo institucional.';
@@ -145,16 +150,15 @@
 			hint="Formato 12345678-9"
 			error={tocado.rut || intentoEnvio ? validarCampo('rut') : null}
 		>
-			<input
+			<IdentificadorInput
 				id="alta-rut"
-				type="text"
-				inputmode="numeric"
 				bind:value={rut}
+				largoMaximo={LARGO_RUT}
 				onblur={() => marcarTocado('rut')}
 				placeholder="12345678-9"
 				aria-invalid={tocado.rut || intentoEnvio ? validarCampo('rut') !== null : undefined}
 				aria-describedby={tocado.rut || intentoEnvio ? 'alta-rut-error' : undefined}
-				class="w-full rounded-base border border-glass-border bg-surface-container-lowest px-3 py-2.5 font-mono text-body-md text-on-surface transition outline-none placeholder:text-on-surface-variant/60 focus:border-primary/50"
+				class={claseInput}
 			/>
 		</FormField>
 
@@ -162,19 +166,18 @@
 			<FormField
 				label="Rol (matrícula)"
 				htmlFor="alta-rol"
-				hint="Formato 202012345-6"
+				hint="Formato 202012345-4"
 				error={tocado.rol || intentoEnvio ? validarCampo('rol') : null}
 			>
-				<input
+				<IdentificadorInput
 					id="alta-rol"
-					type="text"
-					inputmode="numeric"
 					bind:value={rol}
+					largoMaximo={LARGO_ROL}
 					onblur={() => marcarTocado('rol')}
-					placeholder="202012345-6"
+					placeholder="202012345-4"
 					aria-invalid={tocado.rol || intentoEnvio ? validarCampo('rol') !== null : undefined}
 					aria-describedby={tocado.rol || intentoEnvio ? 'alta-rol-error' : undefined}
-					class="w-full rounded-base border border-glass-border bg-surface-container-lowest px-3 py-2.5 font-mono text-body-md text-on-surface transition outline-none placeholder:text-on-surface-variant/60 focus:border-primary/50"
+					class={claseInput}
 				/>
 			</FormField>
 
@@ -183,18 +186,14 @@
 				htmlFor="alta-telefono"
 				error={tocado.telefono || intentoEnvio ? validarCampo('telefono') : null}
 			>
-				<input
+				<TelefonoInput
 					id="alta-telefono"
-					type="tel"
-					inputmode="numeric"
+					name="telefono"
 					bind:value={telefono}
+					inputClass={claseInput}
 					onblur={() => marcarTocado('telefono')}
-					placeholder="912345678"
-					aria-invalid={tocado.telefono || intentoEnvio
-						? validarCampo('telefono') !== null
-						: undefined}
-					aria-describedby={tocado.telefono || intentoEnvio ? 'alta-telefono-error' : undefined}
-					class="w-full rounded-base border border-glass-border bg-surface-container-lowest px-3 py-2.5 font-mono text-body-md text-on-surface transition outline-none placeholder:text-on-surface-variant/60 focus:border-primary/50"
+					invalid={tocado.telefono || intentoEnvio ? validarCampo('telefono') !== null : false}
+					describedby={tocado.telefono || intentoEnvio ? 'alta-telefono-error' : undefined}
 				/>
 			</FormField>
 		</div>

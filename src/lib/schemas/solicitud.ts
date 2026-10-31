@@ -7,6 +7,7 @@ import {
 	timestampSchema
 } from './common.ts';
 import { estadoSolicitudSchema } from './enums.ts';
+import { calcularDigitoVerificador, errorRol, parsearRol } from './identificador.ts';
 import { correoInstitucionalSchema } from './sansano.ts';
 
 const solicitudShape = {
@@ -34,31 +35,6 @@ interface IdentificadorNormalizado {
 
 const MAX_RUT_DATABASE = 2_147_483_647;
 
-export const MENSAJE_DIGITO_VERIFICADOR_DISTINTO =
-	'El RUT y el ROL deben tener el mismo dígito verificador';
-
-export function calcularDigitoVerificador(numero: string): string {
-	let suma = 0;
-	let multiplicador = 2;
-
-	for (let indice = numero.length - 1; indice >= 0; indice -= 1) {
-		suma += Number(numero[indice]) * multiplicador;
-		multiplicador = multiplicador === 7 ? 2 : multiplicador + 1;
-	}
-
-	const resto = suma % 11;
-
-	if (resto === 0) {
-		return '0';
-	}
-
-	if (resto === 1) {
-		return 'K';
-	}
-
-	return String(11 - resto);
-}
-
 function descomponerIdentificador(valor: string, maximo: number): IdentificadorNormalizado | null {
 	const limpio = valor
 		.trim()
@@ -85,34 +61,6 @@ function descomponerIdentificador(valor: string, maximo: number): IdentificadorN
 	};
 }
 
-export function formatearIdentificador(valor: string): string {
-	const limpio = valor.toUpperCase().replace(/[^0-9K]/g, '');
-
-	if (limpio.length <= 1) {
-		return limpio;
-	}
-
-	const digitoVerificador = limpio.at(-1)!;
-	const numero = limpio.slice(0, -1).replaceAll('K', '');
-
-	return `${numero}-${digitoVerificador}`;
-}
-
-export function digitosVerificadoresCoinciden(rutIngresado: string, rolIngresado: string) {
-	const rut = descomponerIdentificador(rutIngresado, MAX_RUT_DATABASE);
-	const rol = descomponerIdentificador(rolIngresado, Number.MAX_SAFE_INTEGER);
-
-	if (
-		rut === null ||
-		rol === null ||
-		calcularDigitoVerificador(rut.numeroTexto) !== rut.digitoVerificadorTexto
-	) {
-		return null;
-	}
-
-	return rut.digitoVerificador === rol.digitoVerificador;
-}
-
 const rutFormularioSchema = z.string().transform((valor, contexto) => {
 	const rut = descomponerIdentificador(valor, MAX_RUT_DATABASE);
 
@@ -129,18 +77,15 @@ const rutFormularioSchema = z.string().transform((valor, contexto) => {
 });
 
 const rolFormularioSchema = z.string().transform((valor, contexto) => {
-	const rol = descomponerIdentificador(valor, Number.MAX_SAFE_INTEGER);
+	const mensaje = errorRol(valor);
 
-	if (rol === null) {
-		contexto.addIssue({
-			code: 'custom',
-			message: 'Ingresa un ROL válido'
-		});
+	if (mensaje !== null) {
+		contexto.addIssue({ code: 'custom', message: mensaje });
 
 		return z.NEVER;
 	}
 
-	return rol;
+	return parsearRol(valor)!;
 });
 
 const nombreFormularioSchema = z
@@ -156,7 +101,7 @@ const telefonoFormularioSchema = z.string().transform((valor, contexto) => {
 	if (!/^\d{8}$/.test(telefonoNormalizado)) {
 		contexto.addIssue({
 			code: 'custom',
-			message: 'Ingresa los 8 dígitos posteriores a +569'
+			message: 'Ingresa los 8 dígitos posteriores a +56 9'
 		});
 
 		return z.NEVER;
@@ -207,19 +152,10 @@ export function crearSolicitudWebSchema() {
 			bloqueRetiro: bloqueRetiroSchema,
 			aceptaTerminos: aceptaTerminosSchema
 		})
-		.superRefine((datos, contexto) => {
-			if (datos.rut.digitoVerificador !== datos.rol.digitoVerificador) {
-				contexto.addIssue({
-					code: 'custom',
-					path: ['rol'],
-					message: MENSAJE_DIGITO_VERIFICADOR_DISTINTO
-				});
-			}
-		})
 		.transform(({ rut, rol, ...datos }) => ({
 			...datos,
 			rutSansano: rut.numero,
-			rolSansano: rol.numero,
+			rolSansano: rol,
 			digitoVerificador: rut.digitoVerificador
 		}));
 }

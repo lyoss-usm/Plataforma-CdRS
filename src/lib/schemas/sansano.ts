@@ -47,17 +47,6 @@ export type Sansano = z.infer<typeof sansanoSchema>;
 export const createSansanoSchema = z.object(sansanoShape);
 export type CreateSansanoDto = z.infer<typeof createSansanoSchema>;
 
-/**
- * Rol USM: 9 dígitos + dígito verificador, con o sin guion (`202012345-6` o `2020123456`).
- * Devuelve el rol sin verificador, que es lo que guarda `Sansano.rolSansano`.
- * Se exigen los 9 dígitos para no confundir un rol sin verificador con uno que lo trae pegado.
- */
-export function parsearRol(entrada: string): number | null {
-	const coincidencia = /^(\d{9})-?[\dk]$/i.exec(entrada.trim());
-
-	return coincidencia ? Number(coincidencia[1]) : null;
-}
-
 /** Alta rápida desde el cajero (§ 1.3): sansano común, sin cargo ni cuenta. */
 export const altaSansanoSchema = createSansanoSchema.omit({ idCargo: true, authUserId: true });
 export type AltaSansanoDto = z.infer<typeof altaSansanoSchema>;

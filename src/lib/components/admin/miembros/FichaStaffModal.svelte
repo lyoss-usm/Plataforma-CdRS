@@ -5,7 +5,9 @@
 	import StatusBadge from '$lib/components/admin/primitives/StatusBadge.svelte';
 	import Dropdown from '$lib/components/admin/primitives/Dropdown.svelte';
 	import FormField from '$lib/components/admin/primitives/FormField.svelte';
+	import TelefonoInput from '$lib/components/forms/TelefonoInput.svelte';
 	import { formatearRut } from '$lib/data/junta.svelte';
+	import { formatearTelefono } from '$lib/schemas';
 	import { notificaciones } from '$lib/stores/notificaciones.svelte';
 	import { dominiosCorreoInstitucional } from '$lib/schemas/sansano';
 	import type { StaffFila } from '$lib/schemas';
@@ -26,7 +28,7 @@
 
 	let { ficha: sansano, cargos, permisos, puedeGestionar: gestiona, onclose }: Props = $props();
 
-	const formatoTelefono = /^[0-9 +-]{8,20}$/;
+	const formatoTelefono = /^\d{8}$/;
 	// Campo del formulario del servidor → campo local.
 	const campoLocal: Record<string, CampoValidable> = {
 		nombreSansano: 'nombre',
@@ -111,7 +113,7 @@
 				return telefono.trim() === ''
 					? 'Ingresa el teléfono.'
 					: !formatoTelefono.test(telefono.trim())
-						? 'Ingresa un teléfono válido.'
+						? 'Ingresa los 8 dígitos posteriores a +56 9.'
 						: null;
 			case 'correo': {
 				if (correo.trim() === '') {
@@ -284,15 +286,13 @@
 				</FormField>
 
 				<FormField label="Teléfono" htmlFor="staff-telefono" error={errores.telefono}>
-					<input
+					<TelefonoInput
 						id="staff-telefono"
-						name="telefono"
-						type="tel"
 						bind:value={telefono}
+						inputClass={errores.telefono ? claseInputInvalido : claseInputValido}
 						onblur={() => marcarTocado('telefono')}
-						aria-invalid={errores.telefono !== null}
-						aria-describedby={errores.telefono ? 'staff-telefono-error' : undefined}
-						class={errores.telefono ? claseInputInvalido : claseInputValido}
+						invalid={errores.telefono !== null}
+						describedby={errores.telefono ? 'staff-telefono-error' : undefined}
 					/>
 				</FormField>
 			</div>
@@ -353,7 +353,9 @@
 					<p class="text-body-sm break-all text-on-surface-variant">
 						{sansano.correoInstitucional}
 					</p>
-					<p class="font-mono text-sm text-on-surface-variant">+56 {sansano.telefono}</p>
+					<p class="font-mono text-sm text-on-surface-variant">
+						{formatearTelefono(sansano.telefono)}
+					</p>
 					<div class="mt-2 flex flex-wrap items-center gap-2">
 						<StatusBadge tone={toneCargo(sansano.nombreCargo)}>
 							{sansano.nombreCargo}

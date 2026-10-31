@@ -11,10 +11,12 @@ import {
 	createPrestamoSchema,
 	createSansanoSchema,
 	createSolicitudSchema,
-	digitosVerificadoresCoinciden,
+	errorRol,
 	formatearIdentificador,
 	juegoSchema,
 	opcionesSolicitudWebSchema,
+	normalizarTelefono,
+	parsearRol,
 	permisoSchema,
 	respuestaErrorSolicitudWebSchema,
 	solicitudWebCreadaSchema,
@@ -36,7 +38,7 @@ const solicitudWebValida = {
 	idJuegoExpansion: '2',
 	nombreSansano: '  Ada   Lovelace  ',
 	rut: '18585543-0',
-	rol: '202612345-0',
+	rol: '202612345-6',
 	telefono: '1234 5678',
 	correoInstitucional: 'ada.lovelace@alumnos.usm.cl',
 	bloqueRetiro: 'martes',
@@ -283,7 +285,7 @@ const invalidCases = [
 		}
 	},
 	{
-		name: 'Formulario con DV diferente entre RUT y ROL',
+		name: 'Formulario con dígito verificador de ROL inválido',
 		schema: solicitudWebSchema,
 		value: {
 			...solicitudWebValida,
@@ -387,19 +389,29 @@ if (formatearIdentificador('18.585.5430') !== '18585543-0') {
 	console.error('El autoformato del identificador no produjo el resultado esperado');
 }
 
-if (digitosVerificadoresCoinciden('18585543-0', '202612345-9') !== false) {
+if (parsearRol('202612345-6') !== 202612345 || parsearRol('2026123456') !== 202612345) {
 	hasErrors = true;
-	console.error('No se detectaron dígitos verificadores distintos en RUT y ROL completos');
+	console.error('No se reconoció un ROL válido con y sin guion');
 }
 
-if (digitosVerificadoresCoinciden('18585543-0', '202612345-0') !== true) {
+if (parsearRol('202612345-9') !== null || errorRol('202612345-9') === null) {
 	hasErrors = true;
-	console.error('No se reconocieron dígitos verificadores coincidentes en RUT y ROL');
+	console.error('No se rechazó un ROL con dígito verificador inválido');
 }
 
-if (digitosVerificadoresCoinciden('18585543-0', '') !== null) {
+if (parsearRol('12345-6') !== null || errorRol('12345-6') === null) {
 	hasErrors = true;
-	console.error('La comparación de dígitos se ejecutó con un identificador incompleto');
+	console.error('No se rechazó un ROL con menos de 9 dígitos');
+}
+
+if (formatearIdentificador('2026.12345-6', 10) !== '202612345-6') {
+	hasErrors = true;
+	console.error('El autoformato del ROL no produjo el resultado esperado');
+}
+
+if (normalizarTelefono('+56 9 1234 5678') !== '12345678') {
+	hasErrors = true;
+	console.error('La normalización del teléfono no dejó solo los 8 dígitos finales');
 }
 
 if (hasErrors) {

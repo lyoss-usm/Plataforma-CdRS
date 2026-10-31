@@ -440,7 +440,9 @@ paths:
                   minLength: 1
                 telefono:
                   type: integer
-                  minimum: 1
+                  minimum: 10000000
+                  maximum: 99999999
+                  description: Ocho dígitos posteriores al prefijo +56 9
                 correoInstitucional:
                   type: string
                   format: email
@@ -450,7 +452,7 @@ paths:
               digitoVerificador: 5
               rolSansano: 202412345
               nombreSansano: Ana Pérez
-              telefono: 912345678
+              telefono: 12345678
               correoInstitucional: ana.perez@usm.cl
       responses:
         '201':
@@ -811,12 +813,12 @@ components:
           example: 18585543-0
         rol:
           type: string
-          description: ROL con el mismo dígito verificador del RUT
+          description: ROL USM de 9 dígitos con su dígito verificador (módulo 11); el guion es opcional
           example: 202610101-0
         telefono:
           type: string
           pattern: '^\d{8}$'
-          description: Ocho dígitos posteriores al prefijo +569
+          description: Ocho dígitos posteriores al prefijo +56 9
         correoInstitucional:
           type: string
           format: email

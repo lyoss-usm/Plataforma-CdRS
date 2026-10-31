@@ -9,7 +9,7 @@ import {
 	staffQuerySchema,
 	type StaffFila
 } from '$lib/schemas';
-import { parsearRol } from '$lib/schemas/sansano';
+import { parsearRol } from '$lib/schemas';
 import { enviarInvitacion } from '$lib/server/supabaseAdmin';
 import type { Actions, PageServerLoad } from './$types';
 

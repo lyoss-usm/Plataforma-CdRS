@@ -6,7 +6,10 @@
 	import FormField from '$lib/components/admin/primitives/FormField.svelte';
 	import { parsearRut } from '$lib/data/junta.svelte';
 	import { notificaciones } from '$lib/stores/notificaciones.svelte';
-	import { dominiosCorreoInstitucional, parsearRol } from '$lib/schemas/sansano';
+	import IdentificadorInput from '$lib/components/forms/IdentificadorInput.svelte';
+	import TelefonoInput from '$lib/components/forms/TelefonoInput.svelte';
+	import { LARGO_ROL, LARGO_RUT, errorRol } from '$lib/schemas';
+	import { dominiosCorreoInstitucional } from '$lib/schemas/sansano';
 	import type { SubmitFunction } from '@sveltejs/kit';
 
 	interface Props {
@@ -19,7 +22,7 @@
 	let { cargos, onclose }: Props = $props();
 
 	const formatoRut = /^\d{1,8}-[0-9kK]$/;
-	const formatoTelefono = /^[0-9 +-]{8,20}$/;
+	const formatoTelefono = /^\d{8}$/;
 	// Campo del servidor → campo local.
 	const campoLocal: Record<string, CampoValidable> = {
 		correoInstitucional: 'correo',
@@ -101,11 +104,7 @@
 					return 'Ingresa el ROL USM.';
 				}
 
-				if (parsearRol(rol) === null) {
-					return 'Formato inválido. Usa el formato 202012345-6.';
-				}
-
-				return null;
+				return errorRol(rol);
 			case 'telefono':
 				if (!fichaIniciada && telefono.trim() === '') {
 					return null;
@@ -116,7 +115,7 @@
 				}
 
 				if (!formatoTelefono.test(telefono.trim())) {
-					return 'Ingresa un teléfono válido.';
+					return 'Ingresa los 8 dígitos posteriores a +56 9.';
 				}
 
 				return null;
@@ -278,12 +277,11 @@
 				</FormField>
 
 				<FormField label="RUT" htmlFor="invite-rut" error={errores.rut}>
-					<input
+					<IdentificadorInput
 						id="invite-rut"
 						name="rut"
-						type="text"
-						inputmode="numeric"
 						bind:value={rut}
+						largoMaximo={LARGO_RUT}
 						onblur={() => marcarTocado('rut')}
 						placeholder="12345678-9"
 						aria-invalid={errores.rut !== null}
@@ -293,14 +291,13 @@
 				</FormField>
 
 				<FormField label="ROL USM" htmlFor="invite-rol" error={errores.rol}>
-					<input
+					<IdentificadorInput
 						id="invite-rol"
 						name="rolSansano"
-						type="text"
-						inputmode="numeric"
 						bind:value={rol}
+						largoMaximo={LARGO_ROL}
 						onblur={() => marcarTocado('rol')}
-						placeholder="202012345-6"
+						placeholder="202012345-4"
 						aria-invalid={errores.rol !== null}
 						aria-describedby={errores.rol ? 'invite-rol-error' : undefined}
 						class={errores.rol ? claseInputInvalido : claseInputValido}
@@ -308,16 +305,13 @@
 				</FormField>
 
 				<FormField label="Teléfono" htmlFor="invite-telefono" error={errores.telefono}>
-					<input
+					<TelefonoInput
 						id="invite-telefono"
-						name="telefono"
-						type="tel"
 						bind:value={telefono}
+						inputClass={errores.telefono ? claseInputInvalido : claseInputValido}
 						onblur={() => marcarTocado('telefono')}
-						placeholder="9 1234 5678"
-						aria-invalid={errores.telefono !== null}
-						aria-describedby={errores.telefono ? 'invite-telefono-error' : undefined}
-						class={errores.telefono ? claseInputInvalido : claseInputValido}
+						invalid={errores.telefono !== null}
+						describedby={errores.telefono ? 'invite-telefono-error' : undefined}
 					/>
 				</FormField>
 			</div>

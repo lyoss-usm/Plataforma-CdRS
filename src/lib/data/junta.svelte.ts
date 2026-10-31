@@ -338,7 +338,7 @@ const sofia: Sansano = {
 	digitoVerificador: 9,
 	idCargo: null,
 	nombreSansano: 'Sofía Muñoz',
-	telefono: 912345678,
+	telefono: 12345678,
 	correoInstitucional: 'sofia.munoz@alumnos.usm.cl',
 	authUserId: null
 };
@@ -349,7 +349,7 @@ const tomas: Sansano = {
 	digitoVerificador: 1,
 	idCargo: null,
 	nombreSansano: 'Tomás Herrera',
-	telefono: 987654321,
+	telefono: 87654321,
 	correoInstitucional: 'tomas.herrera@usm.cl',
 	authUserId: null
 };
@@ -360,7 +360,7 @@ const camila: Sansano = {
 	digitoVerificador: 5,
 	idCargo: null,
 	nombreSansano: 'Camila Fuentes',
-	telefono: 911223344,
+	telefono: 11223344,
 	correoInstitucional: 'camila.fuentes@usm.cl',
 	authUserId: null
 };
@@ -380,7 +380,7 @@ const jorge: Sansano = {
 	digitoVerificador: 4,
 	idCargo: null,
 	nombreSansano: 'Jorge Núñez',
-	telefono: 977889900,
+	telefono: 77889900,
 	correoInstitucional: 'jorge.nunez@alumnos.usm.cl',
 	authUserId: null
 };
@@ -391,7 +391,7 @@ const paulina: Sansano = {
 	digitoVerificador: 1,
 	idCargo: null,
 	nombreSansano: 'Paulina Carrasco',
-	telefono: 988990011,
+	telefono: 88990011,
 	correoInstitucional: 'paulina.carrasco@sansano.usm.cl',
 	authUserId: null
 };
@@ -420,7 +420,7 @@ const daniela: Sansano = {
 	digitoVerificador: 3,
 	idCargo: 3,
 	nombreSansano: 'Daniela Contreras',
-	telefono: 933445566,
+	telefono: 33445566,
 	correoInstitucional: 'daniela.contreras@usm.cl',
 	authUserId: 'a1b2c3d4-0000-4000-8000-000000000001'
 };
@@ -431,7 +431,7 @@ const marcelo: Sansano = {
 	digitoVerificador: 4,
 	idCargo: 2,
 	nombreSansano: 'Marcelo Rivas',
-	telefono: 955667788,
+	telefono: 55667788,
 	correoInstitucional: 'marcelo.rivas@usm.cl',
 	authUserId: 'a1b2c3d4-0000-4000-8000-000000000002'
 };
@@ -442,7 +442,7 @@ const ignacia: Sansano = {
 	digitoVerificador: 2,
 	idCargo: 2,
 	nombreSansano: 'Ignacia Soto',
-	telefono: 966778899,
+	telefono: 66778899,
 	correoInstitucional: 'ignacia.soto@usm.cl',
 	authUserId: 'a1b2c3d4-0000-4000-8000-000000000003'
 };
@@ -453,7 +453,7 @@ const fernanda: Sansano = {
 	digitoVerificador: 0,
 	idCargo: 1,
 	nombreSansano: 'Fernanda Alarcón',
-	telefono: 977889900,
+	telefono: 77889900,
 	correoInstitucional: 'fernanda.alarcon@sansano.usm.cl',
 	authUserId: 'a1b2c3d4-0000-4000-8000-000000000004'
 };
@@ -464,7 +464,7 @@ const martin: Sansano = {
 	digitoVerificador: 3,
 	idCargo: 1,
 	nombreSansano: 'Martín Lagos',
-	telefono: 988990011,
+	telefono: 88990011,
 	correoInstitucional: 'martin.lagos@alumnos.usm.cl',
 	authUserId: 'a1b2c3d4-0000-4000-8000-000000000005'
 };
@@ -475,7 +475,7 @@ const renato: Sansano = {
 	digitoVerificador: 5,
 	idCargo: 1,
 	nombreSansano: 'Renato Cid',
-	telefono: 966778899,
+	telefono: 66778899,
 	correoInstitucional: 'renato.cid@sansano.usm.cl',
 	authUserId: null
 };
@@ -486,7 +486,7 @@ const felipe: Sansano = {
 	digitoVerificador: 6,
 	idCargo: 3,
 	nombreSansano: 'Felipe Guzmán',
-	telefono: 955667788,
+	telefono: 55667788,
 	correoInstitucional: 'felipe.guzman@usm.cl',
 	authUserId: null
 };
