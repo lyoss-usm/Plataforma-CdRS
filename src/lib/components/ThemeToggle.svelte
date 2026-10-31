@@ -20,7 +20,7 @@
 
 <button
 	type="button"
-	class="fixed right-6 bottom-6 z-50 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full border border-glass-border surface-level-2 text-on-surface-variant shadow-lg transition hover:text-on-surface hover:ice-glow"
+	class="fixed right-6 bottom-6 z-50 flex h-12 w-12 cursor-pointer items-center justify-center rounded-full surface-level-2 border border-glass-border text-on-surface-variant shadow-lg transition hover:text-on-surface hover:ice-glow"
 	onclick={() => apply(!isLight)}
 	aria-label={isLight ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro'}
 	aria-pressed={isLight}

@@ -1,19 +1,21 @@
 # Plataforma Club de Rol Sansano ![](https://img.shields.io/badge/estado-activo-green) ![](https://img.shields.io/github/license/lyoss-usm/Plataforma-CdRS)
 
-Este repositorio es para el **Sistema de Gestion de Prestamos e Inventario** diseñado para el *Club de Rol Sansano*. Contempla tanto una plataforma administrativa como un portal web abierto al publico, enfocandose en el **perfomance** y **UI/UX**.
-
+Este repositorio es para el **Sistema de Gestion de Prestamos e Inventario** diseñado para el _Club de Rol Sansano_. Contempla tanto una plataforma administrativa como un portal web abierto al publico, enfocandose en el **perfomance** y **UI/UX**.
 
 ## Seguimiento
+
 - Puedes seguir el progreso del proyecto en [GitHub Projects](https://github.com/orgs/lyoss-usm/projects/18).
 - Para reportar problemas o sugerencias, visita [GitHub Issues](https://github.com/lyoss-usm/Plataforma-CdRS/issues).
 - Documentación adicional disponible en [GitHub Wiki](https://github.com/lyoss-usm/Plataforma-CdRS/wiki).
 
 ## Requisitos
+
 - [Node.js](https://nodejs.org/en) (>= 22.x)
 - [pnpm](https://pnpm.io/es/) (>= 10.x)
 - [Make](https://www.gnu.org/software/make/) (>= 4.x)
 
 ## Quick Start
+
 1. Clona este repositorio:
    ```bash
    git clone https://github.com/lyoss-usm/Plataforma-CdRS.git
@@ -34,6 +36,7 @@ Este repositorio es para el **Sistema de Gestion de Prestamos e Inventario** dis
 
 > [!TIP]
 > Para ver mas comandos disponibles, ejecuta:
+>
 > ```bash
 > make help
 > ```
@@ -44,12 +47,12 @@ Este repositorio es para el **Sistema de Gestion de Prestamos e Inventario** dis
 valida con políticas RLS en la base de datos. Para desarrollo local, `supabase db reset` carga
 tres cuentas de prueba (contraseña `cdrs-dev`):
 
-| Correo | Cargo |
-|---|---|
-| `dev.junior@usm.cl` | Junior |
-| `dev.senior@usm.cl` | Senior |
-| `dev.directivo@usm.cl` | Directivo |
-| `dev.comun@usm.cl` | Ninguno (cuenta sin acceso al panel) |
+| Correo                 | Cargo                                |
+| ---------------------- | ------------------------------------ |
+| `dev.junior@usm.cl`    | Junior                               |
+| `dev.senior@usm.cl`    | Senior                               |
+| `dev.directivo@usm.cl` | Directivo                            |
+| `dev.comun@usm.cl`     | Ninguno (cuenta sin acceso al panel) |
 
 Ingresa en [http://localhost:5173/login](http://localhost:5173/login). Si tu base local es
 anterior a esta configuración, ejecuta `make reset-seed` para aplicar las migraciones y crear las
