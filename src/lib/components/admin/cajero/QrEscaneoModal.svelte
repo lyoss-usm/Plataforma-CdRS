@@ -1,7 +1,6 @@
 <script lang="ts">
     import Icon from '$lib/components/Icon.svelte';
     import Modal from '../primitives/Modal.svelte';
-    import { QR_DEMO_IDS } from '$lib/data/junta.svelte';
     import { Html5Qrcode } from 'html5-qrcode';
     import { onDestroy, onMount } from 'svelte';
 
@@ -17,6 +16,10 @@
     let cameraActive = $state(false);
     let cameraError = $state<string | null>(null);
     const elementId = 'reader-container';
+    const simulacion = import.meta.env.DEV;
+
+    // Solo en desarrollo: ejemplares que crea el seed (`make seed-*`).
+    const QR_DEMO_IDS = ['SEED-BASE-000001', 'SEED-BASE-000002', 'SEED-BASE-000003', 'SEED-EXP-000001'];
 
     function simularEscaneo() {
         const id = QR_DEMO_IDS[escaneos % QR_DEMO_IDS.length];
@@ -44,7 +47,9 @@
             cameraActive = true;
         } catch (err) {
             console.error('Error al iniciar la cámara:', err);
-            cameraError = 'No se pudo acceder a la cámara. Puedes usar la simulación.';
+            cameraError = simulacion
+                ? 'No se pudo acceder a la cámara. Puedes usar la simulación.'
+                : 'No se pudo acceder a la cámara. Cierra y escribe el código a mano.';
             cameraActive = false;
         }
     }
@@ -86,7 +91,7 @@
 
         {#if !cameraActive && !cameraError}
             <div class="absolute inset-0 flex flex-col items-center justify-center gap-2 z-20 bg-surface-container-low">
-                <Icon name="loader-2" class="h-8 w-8 animate-spin text-primary" />
+                <Icon name="loader-circle" class="h-8 w-8 animate-spin text-primary" />
                 <span class="font-mono text-xs tracking-wider text-on-surface-variant uppercase">
                     Iniciando cámara...
                 </span>
@@ -100,17 +105,21 @@
         </p>
     {/if}
 
-    <p class="text-body-sm mt-4 text-on-surface-variant/70">
-        Si no dispones de cámara web o estás en un entorno de pruebas, usa la opción de simulación.
-    </p>
+    {#if simulacion}
+        <p class="text-body-sm mt-4 text-on-surface-variant/70">
+            Desarrollo: sin cámara, usa «Simular escaneo» para cargar un ejemplar del seed.
+        </p>
+    {/if}
 
     {#snippet footer()}
-        <button
-            type="button"
-            onclick={simularEscaneo}
-            class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-base border border-primary/50 bg-primary/10 px-6 py-2 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow"
-        >
-            <Icon name="scan-line" class="h-4 w-4" /> Simular escaneo
-        </button>
+        {#if simulacion}
+            <button
+                type="button"
+                onclick={simularEscaneo}
+                class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-base border border-primary/50 bg-primary/10 px-6 py-2 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow"
+            >
+                <Icon name="scan-line" class="h-4 w-4" /> Simular escaneo
+            </button>
+        {/if}
     {/snippet}
 </Modal>

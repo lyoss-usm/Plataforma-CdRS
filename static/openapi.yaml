@@ -18,6 +18,8 @@ servers:
 tags:
   - name: Catálogo
     description: Consulta pública de juegos
+  - name: Préstamos
+    description: Cajero de juntas (staff con permiso prestamos:junta)
 
 paths:
   /api/catalogo:
@@ -170,8 +172,456 @@ paths:
               example:
                 message: No se pudo cargar el catálogo.
 
+  /admin/prestamos:
+    post:
+      operationId: crearPrestamoJunta
+      tags:
+        - Préstamos
+      summary: Registrar un préstamo de junta
+      description: |
+        Crea en una transacción la Solicitud Aprobada, el Prestamo Activo y deja el
+        ejemplar Prestado (RPC crear_prestamo_junta). El staff prestador se toma de la
+        sesión. Rechaza ejemplares que no estén En bodega y sansanos suspendidos.
+      security:
+        - sesionSupabase: []
+      parameters:
+        - name: tipo
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - junta
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PrestamoJuntaRequest'
+            example:
+              idEjemplar: CAT-001
+              rutSansano: 20111222
+              tipoDocumento: TNE
+      responses:
+        '201':
+          description: Préstamo creado
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                  - idPrestamo
+                properties:
+                  success:
+                    type: boolean
+                  idPrestamo:
+                    type: integer
+                    minimum: 1
+              example:
+                success: true
+                idPrestamo: 42
+        '400':
+          $ref: '#/components/responses/PrestamoInvalido'
+        '401':
+          $ref: '#/components/responses/PrestamoNoAutenticado'
+        '403':
+          $ref: '#/components/responses/PrestamoSinPermiso'
+        '404':
+          description: El ejemplar o el sansano no existe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrestamoError'
+              example:
+                error: El ejemplar CAT-999 no existe
+        '409':
+          description: El ejemplar no está en bodega o el sansano tiene una suspensión activa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrestamoError'
+              example:
+                error: 'El ejemplar CAT-001 no está en bodega (estado: Prestado)'
+        '500':
+          $ref: '#/components/responses/PrestamoErrorInterno'
+
+    patch:
+      operationId: devolverPrestamo
+      tags:
+        - Préstamos
+      summary: Registrar la devolución de un préstamo
+      description: |
+        Cierra un Prestamo Activo como Devuelto y deja el ejemplar En bodega o Para
+        revisar (RPC devolver_prestamo). El staff receptor se toma de la sesión.
+      security:
+        - sesionSupabase: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DevolucionRequest'
+            example:
+              idPrestamo: 42
+              estadoFinal: Para revisar
+      responses:
+        '200':
+          description: Devolución registrada
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - success
+                properties:
+                  success:
+                    type: boolean
+              example:
+                success: true
+        '400':
+          $ref: '#/components/responses/PrestamoInvalido'
+        '401':
+          $ref: '#/components/responses/PrestamoNoAutenticado'
+        '403':
+          $ref: '#/components/responses/PrestamoSinPermiso'
+        '409':
+          description: El préstamo no existe o ya fue devuelto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrestamoError'
+              example:
+                error: El préstamo 42 no existe o ya fue devuelto
+        '500':
+          $ref: '#/components/responses/PrestamoErrorInterno'
+
+  /admin/prestamos/ejemplares/{idEjemplar}:
+    get:
+      operationId: buscarEjemplarCajero
+      tags:
+        - Préstamos
+      summary: Ficha de un ejemplar para el mesón
+      description: |
+        Devuelve el ejemplar, su juego y el préstamo Activo si lo tiene. Requiere
+        prestamos:junta o prestamos:general. El código se normaliza a mayúsculas.
+      security:
+        - sesionSupabase: []
+      parameters:
+        - name: idEjemplar
+          in: path
+          required: true
+          schema:
+            type: string
+          example: SEED-BASE-000001
+      responses:
+        '200':
+          description: Ejemplar encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - ficha
+                  - prestamoActivo
+                properties:
+                  ficha:
+                    type: object
+                    description: '{ ejemplar, juego }'
+                  prestamoActivo:
+                    $ref: '#/components/schemas/PrestamoEnCurso'
+        '401':
+          $ref: '#/components/responses/PrestamoNoAutenticado'
+        '403':
+          $ref: '#/components/responses/PrestamoSinPermiso'
+        '404':
+          description: El ejemplar no existe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrestamoError'
+        '500':
+          $ref: '#/components/responses/PrestamoErrorInterno'
+
+  /admin/prestamos/sansanos/{rut}:
+    get:
+      operationId: buscarSolicitanteCajero
+      tags:
+        - Préstamos
+      summary: Solicitante por RUT
+      description: |
+        Devuelve el sansano, su suspensión vigente (o null) y su préstamo Activo (o null).
+        Requiere prestamos:junta o prestamos:general.
+      security:
+        - sesionSupabase: []
+      parameters:
+        - name: rut
+          in: path
+          required: true
+          description: RUT sin dígito verificador
+          schema:
+            type: integer
+            minimum: 1
+          example: 60000001
+      responses:
+        '200':
+          description: Sansano encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - sansano
+                  - suspension
+                  - prestamoActivo
+                properties:
+                  sansano:
+                    type: object
+                  suspension:
+                    type:
+                      - object
+                      - 'null'
+                  prestamoActivo:
+                    $ref: '#/components/schemas/PrestamoEnCurso'
+        '400':
+          description: RUT inválido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrestamoError'
+        '401':
+          $ref: '#/components/responses/PrestamoNoAutenticado'
+        '403':
+          $ref: '#/components/responses/PrestamoSinPermiso'
+        '404':
+          description: El RUT no está registrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrestamoError'
+        '500':
+          $ref: '#/components/responses/PrestamoErrorInterno'
+
+  /admin/prestamos/sansanos:
+    post:
+      operationId: altaSansanoCajero
+      tags:
+        - Préstamos
+      summary: Alta rápida de un sansano desde el mesón
+      description: |
+        Crea un sansano común (sin cargo ni cuenta). Requiere prestamos:junta o
+        prestamos:general; la RLS sansano_insert_staff lo permite a todo el staff.
+      security:
+        - sesionSupabase: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+                - rutSansano
+                - digitoVerificador
+                - rolSansano
+                - nombreSansano
+                - telefono
+                - correoInstitucional
+              properties:
+                rutSansano:
+                  type: integer
+                  minimum: 1
+                digitoVerificador:
+                  type: integer
+                  minimum: 0
+                  maximum: 10
+                  description: 10 representa K
+                rolSansano:
+                  type: integer
+                  minimum: 1
+                nombreSansano:
+                  type: string
+                  minLength: 1
+                telefono:
+                  type: integer
+                  minimum: 1
+                correoInstitucional:
+                  type: string
+                  format: email
+                  description: Dominio institucional USM
+            example:
+              rutSansano: 21333444
+              digitoVerificador: 5
+              rolSansano: 202412345
+              nombreSansano: Ana Pérez
+              telefono: 912345678
+              correoInstitucional: ana.perez@usm.cl
+      responses:
+        '201':
+          description: Sansano creado
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - sansano
+                properties:
+                  sansano:
+                    type: object
+        '400':
+          $ref: '#/components/responses/PrestamoInvalido'
+        '401':
+          $ref: '#/components/responses/PrestamoNoAutenticado'
+        '403':
+          $ref: '#/components/responses/PrestamoSinPermiso'
+        '409':
+          description: RUT, rol, teléfono o correo ya registrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PrestamoError'
+              example:
+                error: Ya existe un sansano con ese RUT.
+        '500':
+          $ref: '#/components/responses/PrestamoErrorInterno'
+
 components:
+  securitySchemes:
+    sesionSupabase:
+      type: apiKey
+      in: cookie
+      name: sb-127-auth-token
+      description: |
+        Sesión de Supabase Auth guardada en cookies por @supabase/ssr. El nombre real
+        depende del proyecto (sb-<ref>-auth-token). Sin sesión, /admin redirige a /login.
+
+  responses:
+    PrestamoInvalido:
+      description: El cuerpo no cumple el schema
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PrestamoValidationError'
+          example:
+            error: Datos inválidos
+            detalles:
+              tipoDocumento:
+                - 'Invalid option: expected one of "Carnet"|"TNE"|"TUI"|"Otro"'
+    PrestamoNoAutenticado:
+      description: La sesión no corresponde a un staff
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PrestamoError'
+          example:
+            error: No autorizado
+    PrestamoSinPermiso:
+      description: El cargo no tiene el permiso prestamos:junta
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PrestamoError'
+          example:
+            error: Tu cargo no puede registrar préstamos de junta
+    PrestamoErrorInterno:
+      description: Error inesperado al llamar a la base de datos
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PrestamoError'
+          example:
+            error: Error interno del servidor
+
   schemas:
+    PrestamoJuntaRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - idEjemplar
+        - rutSansano
+        - tipoDocumento
+      properties:
+        idEjemplar:
+          type: string
+          minLength: 1
+          description: Código del ejemplar (QR o ingreso manual)
+        rutSansano:
+          type: integer
+          minimum: 1
+          description: RUT del solicitante sin dígito verificador
+        tipoDocumento:
+          type: string
+          enum:
+            - Carnet
+            - TNE
+            - TUI
+            - Otro
+          description: Documento que el solicitante deja en el mesón
+
+    DevolucionRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - idPrestamo
+        - estadoFinal
+      properties:
+        idPrestamo:
+          type: integer
+          minimum: 1
+        estadoFinal:
+          type: string
+          enum:
+            - En bodega
+            - Para revisar
+          description: Estado en que queda el ejemplar
+
+    PrestamoEnCurso:
+      type:
+        - object
+        - 'null'
+      description: Préstamo Activo con su contexto, o null si no hay
+      required:
+        - prestamo
+        - solicitud
+        - ejemplar
+        - juego
+        - sansano
+      properties:
+        prestamo:
+          type: object
+        solicitud:
+          type: object
+        ejemplar:
+          type: object
+        juego:
+          type: object
+        sansano:
+          type: object
+
+    PrestamoError:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+
+    PrestamoValidationError:
+      type: object
+      required:
+        - error
+        - detalles
+      properties:
+        error:
+          type: string
+        detalles:
+          type: object
+          description: Errores por campo (z.flattenError)
+          additionalProperties:
+            type: array
+            items:
+              type: string
+
     CatalogGame:
       type: object
       additionalProperties: false

@@ -1,122 +1,50 @@
 import { json } from '@sveltejs/kit';
-import { z } from 'zod';
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from '$env/static/private';
+import { devolucionSchema, prestamoJuntaSchema } from '$lib/schemas';
+import { autorizarCajero, leerCuerpo, respuestaErrorDb } from '$lib/server/cajero';
 import type { RequestHandler } from './$types';
 
-const prestamoJuntaSchema = z.object({
-    idEjemplar: z.string().min(1, 'El código del ejemplar es requerido'),
-    rutSansano: z.number().int().positive('El RUT del solicitante es inválido'),
-    tipoDocumento: z.enum(['Carnet', 'TNE', 'TUI', 'Otro'])
-});
-
-const devolucionSchema = z.object({
-    idPrestamo: z.number().int().positive('ID de préstamo inválido'),
-    estadoFinal: z.enum(['Para revisar', 'En bodega', 'De baja'])
-});
-
-function getSupabaseConfig() {
-    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-        throw new Error('Faltan SUPABASE_URL o SUPABASE_ANON_KEY.');
-    }
-
-    return {
-        url: SUPABASE_URL.replace(/\/$/, ''),
-        anonKey: SUPABASE_ANON_KEY
-    };
-}
+const autorizarJunta = (staff: App.Locals['staff']) =>
+	autorizarCajero(staff, ['prestamos:junta'], 'Tu cargo no puede registrar préstamos de junta');
 
 export const POST: RequestHandler = async ({ request, url, locals }) => {
-    const tipo = url.searchParams.get('tipo');
-    if (tipo !== 'junta') {
-        return json({ error: 'Endpoint configurado solo para préstamos de junta' }, { status: 400 });
-    }
+	const noAutorizado = autorizarJunta(locals.staff);
+	if (noAutorizado) return noAutorizado;
 
-    const staff = locals.staff;
-    if (!staff) {
-        return json({ error: 'No autorizado' }, { status: 401 });
-    }
+	if (url.searchParams.get('tipo') !== 'junta') {
+		return json({ error: 'Endpoint configurado solo para préstamos de junta' }, { status: 400 });
+	}
 
-    try {
-        const body = await request.json();
-        const datos = prestamoJuntaSchema.parse(body);
-        const rutStaff = staff.rut; 
+	const { datos, error: invalido } = await leerCuerpo(request, prestamoJuntaSchema);
+	if (invalido) return invalido;
 
-        const { url: supabaseUrl, anonKey } = getSupabaseConfig();
+	const { data: idPrestamo, error } = await locals.supabase.rpc('crear_prestamo_junta', {
+		p_id_ejemplar: datos.idEjemplar,
+		p_rut_sansano: datos.rutSansano,
+		p_tipo_documento: datos.tipoDocumento
+	});
 
-        const response = await fetch(`${supabaseUrl}/rest/v1/rpc/crear_prestamo_junta`, {
-            method: 'POST',
-            headers: {
-                apikey: anonKey,
-                Authorization: `Bearer ${anonKey}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                p_id_ejemplar: datos.idEjemplar,
-                p_rut_sansano: datos.rutSansano,
-                p_rut_staff: rutStaff,
-                p_tipo_documento: datos.tipoDocumento
-            })
-        });
+	if (error) {
+		return respuestaErrorDb(error, 'No se pudo crear el préstamo de junta');
+	}
 
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => null);
-            console.error('Error de Supabase HTTP:', response.status, errorData);
-            return json({ error: errorData?.message || 'Error al crear el préstamo en base de datos' }, { status: response.status });
-        }
-
-        const idPrestamo = await response.json();
-
-        return json({ success: true, idPrestamo }, { status: 200 });
-
-    } catch (err) {
-        if (err instanceof z.ZodError) {
-            return json({ error: 'Datos inválidos', detalles: err.flatten().fieldErrors }, { status: 400 });
-        }
-        console.error('Error interno:', err);
-        return json({ error: 'Error interno del servidor' }, { status: 500 });
-    }
+	return json({ success: true, idPrestamo }, { status: 201 });
 };
 
 export const PATCH: RequestHandler = async ({ request, locals }) => {
-    const staff = locals.staff;
-    if (!staff) {
-        return json({ error: 'No autorizado' }, { status: 401 });
-    }
+	const noAutorizado = autorizarJunta(locals.staff);
+	if (noAutorizado) return noAutorizado;
 
-    try {
-        const body = await request.json();
-        const datos = devolucionSchema.parse(body);
-        
-        const rutStaff = staff.rut; 
-        const { url: supabaseUrl, anonKey } = getSupabaseConfig();
+	const { datos, error: invalido } = await leerCuerpo(request, devolucionSchema);
+	if (invalido) return invalido;
 
-        const response = await fetch(`${supabaseUrl}/rest/v1/rpc/devolver_prestamo`, {
-            method: 'POST',
-            headers: {
-                apikey: anonKey,
-                Authorization: `Bearer ${anonKey}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                p_id_prestamo: datos.idPrestamo,
-                p_rut_receptor: rutStaff,
-                p_estado_final: datos.estadoFinal
-            })
-        });
+	const { error } = await locals.supabase.rpc('devolver_prestamo', {
+		p_id_prestamo: datos.idPrestamo,
+		p_estado_final: datos.estadoFinal
+	});
 
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => null);
-            console.error('Error de Supabase HTTP:', response.status, errorData);
-            return json({ error: errorData?.message || 'Error al devolver el préstamo' }, { status: response.status });
-        }
+	if (error) {
+		return respuestaErrorDb(error, 'No se pudo registrar la devolución');
+	}
 
-        return json({ success: true }, { status: 200 });
-
-    } catch (err) {
-        if (err instanceof z.ZodError) {
-            return json({ error: 'Datos inválidos', detalles: err.flatten().fieldErrors }, { status: 400 });
-        }
-        console.error('Error interno:', err);
-        return json({ error: 'Error interno del servidor' }, { status: 500 });
-    }
+	return json({ success: true });
 };

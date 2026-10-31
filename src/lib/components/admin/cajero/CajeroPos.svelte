@@ -6,15 +6,19 @@
 	import FichaJuego from './FichaJuego.svelte';
 	import QrEscaneoModal from './QrEscaneoModal.svelte';
 	import AltaSansanoModal from './AltaSansanoModal.svelte';
-	import {
-		meson,
-		parsearRut,
-		formatearRut,
-		RUT_STAFF,
-		type DatosAltaSansano,
-		type FichaBusqueda
-	} from '$lib/data/junta.svelte';
-	import type { Documento, Sansano } from '$lib/schemas';
+	import { parsearRut, formatearRut, type DatosAltaSansano } from '$lib/data/junta.svelte';
+	import type {
+		AltaSansanoDto,
+		BusquedaEjemplar,
+		BusquedaSolicitante,
+		DevolucionDto,
+		Documento,
+		FichaEjemplar,
+		PrestamoEnCurso,
+		PrestamoJuntaDto,
+		Sansano,
+		Suspension
+	} from '$lib/schemas';
 	import { notificaciones } from '$lib/stores/notificaciones.svelte';
 
 	type TipoCajero = 'general' | 'junta';
@@ -29,8 +33,10 @@
 	];
 
 	let busqueda = $state('');
-	let ficha = $state<FichaBusqueda | null>(null);
+	let ficha = $state<FichaEjemplar | null>(null);
+	let prestamoFicha = $state<PrestamoEnCurso | null>(null);
 	let errorBusqueda = $state<string | null>(null);
+	let buscandoFicha = $state(false);
 	let enviando = $state(false);
 
 	let qrAbierto = $state(false);
@@ -38,20 +44,18 @@
 	let documento = $state<Documento | null>(null);
 	let rutEntrada = $state('');
 	let sansano = $state<Sansano | null>(null);
+	let suspension = $state<Suspension | null>(null);
+	let prestamoPersona = $state<PrestamoEnCurso | null>(null);
 	let errorRut = $state<string | null>(null);
+	let buscandoSansano = $state(false);
 	let noExiste = $state(false);
 	let altaAbierta = $state(false);
+	let errorAlta = $state<string | null>(null);
+	let creandoSansano = $state(false);
 
 	let errorIniciar = $state<string | null>(null);
 
-	const suspension = $derived(sansano ? meson.suspensionActiva(sansano.rutSansano) : null);
 	const prestable = $derived(ficha !== null && ficha.ejemplar.estadoEjemplar === 'En bodega');
-	const prestamoPersona = $derived(
-		sansano ? meson.prestamoActivoDePersona(sansano.rutSansano) : null
-	);
-	const prestamoFicha = $derived(
-		ficha ? meson.prestamoActivoPorEjemplar(ficha.ejemplar.idEjemplar) : null
-	);
 	const prestamoAterminar = $derived(prestamoPersona ?? prestamoFicha);
 	const requiereDocumento = $derived(tipo === 'junta');
 	const listo = $derived(
@@ -60,11 +64,56 @@
 		)
 	);
 
-	function usarFicha(id: string) {
-		const encontrada = meson.ejemplarConJuego(id);
+	type Respuesta<T> = { ok: true; datos: T } | { ok: false; status: number; error: string };
+
+	/** Llama al API del cajero y normaliza errores de red, de sesión y de validación. */
+	async function pedir<T>(url: string, init?: RequestInit): Promise<Respuesta<T>> {
+		try {
+			const res = await fetch(url, init);
+
+			// Sin sesión, el hook de /admin redirige a /login y fetch sigue la redirección.
+			if (res.redirected) {
+				return { ok: false, status: 401, error: 'Tu sesión expiró. Vuelve a iniciar sesión.' };
+			}
+
+			const cuerpo = await res.json().catch(() => null);
+
+			if (!res.ok) {
+				const error: string = cuerpo?.error ?? 'Error del servidor';
+				const detalles = cuerpo?.detalles ? Object.values(cuerpo.detalles).flat().join(', ') : '';
+
+				return { ok: false, status: res.status, error: detalles ? `${error}: ${detalles}` : error };
+			}
+
+			return { ok: true, datos: cuerpo as T };
+		} catch {
+			return { ok: false, status: 0, error: 'Error de red al comunicarse con el servidor.' };
+		}
+	}
+
+	function conJson(method: 'POST' | 'PATCH', body: unknown): RequestInit {
+		return { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) };
+	}
+
+	async function usarFicha(id: string) {
 		busqueda = id;
-		ficha = encontrada;
-		errorBusqueda = encontrada ? null : `El código «${id}» no existe en el catálogo.`;
+		buscandoFicha = true;
+		const respuesta = await pedir<BusquedaEjemplar>(
+			`/admin/prestamos/ejemplares/${encodeURIComponent(id)}`
+		);
+		buscandoFicha = false;
+
+		if (!respuesta.ok) {
+			ficha = null;
+			prestamoFicha = null;
+			errorBusqueda =
+				respuesta.status === 404 ? `El código «${id}» no existe en el catálogo.` : respuesta.error;
+			return;
+		}
+
+		ficha = respuesta.datos.ficha;
+		prestamoFicha = respuesta.datos.prestamoActivo;
+		errorBusqueda = null;
 	}
 
 	function buscar() {
@@ -77,13 +126,44 @@
 		}
 
 		errorIniciar = null;
-		usarFicha(id);
+		void usarFicha(id);
 	}
 
 	function alEscaneado(id: string) {
 		qrAbierto = false;
 		errorIniciar = null;
-		usarFicha(id);
+		void usarFicha(id);
+	}
+
+	function aplicarSolicitante(datos: BusquedaSolicitante) {
+		sansano = datos.sansano;
+		suspension = datos.suspension;
+		prestamoPersona = datos.prestamoActivo;
+		rutEntrada = formatearRut(datos.sansano.rutSansano, datos.sansano.digitoVerificador);
+		noExiste = false;
+		errorRut = null;
+		errorIniciar = null;
+
+		if (datos.prestamoActivo && requiereDocumento && documento === null) {
+			documento = datos.prestamoActivo.prestamo.tipoDocumento;
+		}
+	}
+
+	async function cargarSolicitante(rut: number) {
+		buscandoSansano = true;
+		const respuesta = await pedir<BusquedaSolicitante>(`/admin/prestamos/sansanos/${rut}`);
+		buscandoSansano = false;
+
+		if (respuesta.ok) {
+			aplicarSolicitante(respuesta.datos);
+			return;
+		}
+
+		sansano = null;
+		suspension = null;
+		prestamoPersona = null;
+		noExiste = respuesta.status === 404;
+		errorRut = noExiste ? null : respuesta.error;
 	}
 
 	function identificar() {
@@ -96,32 +176,49 @@
 
 		errorRut = null;
 		errorIniciar = null;
-		const encontrado = meson.sansanoPorRut(rut.rut);
-
-		if (encontrado) {
-			const activo = meson.prestamoActivoDePersona(encontrado.rutSansano);
-
-			if (activo && requiereDocumento && documento === null) {
-				documento = activo.prestamo.tipoDocumento;
-			}
-		}
-
-		sansano = encontrado;
-		noExiste = encontrado === null;
+		void cargarSolicitante(rut.rut);
 	}
 
-	function crearSansano(datos: DatosAltaSansano) {
-		const creado = meson.crearSansano(datos);
+	async function crearSansano(datos: DatosAltaSansano) {
+		const alta: AltaSansanoDto = {
+			rutSansano: datos.rut,
+			digitoVerificador: datos.digitoVerificador,
+			rolSansano: datos.rol,
+			nombreSansano: datos.nombre,
+			telefono: datos.telefono,
+			correoInstitucional: datos.correo
+		};
+
+		creandoSansano = true;
+		errorAlta = null;
+		const respuesta = await pedir<{ sansano: Sansano }>(
+			'/admin/prestamos/sansanos',
+			conJson('POST', alta)
+		);
+		creandoSansano = false;
+
+		if (!respuesta.ok) {
+			errorAlta = respuesta.error;
+			return;
+		}
+
 		altaAbierta = false;
-		noExiste = false;
-		sansano = creado;
-		rutEntrada = formatearRut(creado.rutSansano, creado.digitoVerificador);
-		errorRut = null;
-		errorIniciar = null;
+		aplicarSolicitante({
+			sansano: respuesta.datos.sansano,
+			suspension: null,
+			prestamoActivo: null
+		});
+	}
+
+	function cerrarAlta() {
+		altaAbierta = false;
+		errorAlta = null;
 	}
 
 	function limpiarSolicitante() {
 		sansano = null;
+		suspension = null;
+		prestamoPersona = null;
 		documento = null;
 		rutEntrada = '';
 		noExiste = false;
@@ -131,6 +228,7 @@
 
 	function limpiarFicha() {
 		ficha = null;
+		prestamoFicha = null;
 		busqueda = '';
 		errorBusqueda = null;
 		errorIniciar = null;
@@ -145,109 +243,83 @@
 			return;
 		}
 
-		const contexto = prestamoFicha;
-		sansano = contexto.sansano;
-		rutEntrada = formatearRut(contexto.sansano.rutSansano, contexto.sansano.digitoVerificador);
-		documento = contexto.prestamo.tipoDocumento;
-		noExiste = false;
-		errorRut = null;
-		errorIniciar = null;
+		documento = prestamoFicha.prestamo.tipoDocumento;
+		void cargarSolicitante(prestamoFicha.sansano.rutSansano);
 	}
 
-async function terminarYCargar() {
-    const activo = prestamoAterminar;
-    if (!activo) return;
+	async function terminarYCargar() {
+		const activo = prestamoAterminar;
 
-    enviando = true;
-    errorIniciar = null;
+		if (!activo) {
+			return;
+		}
 
-    try {
-        const res = await fetch(`/admin/prestamos`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                idPrestamo: activo.prestamo.idPrestamo,
-                estadoFinal: 'Para revisar'
-            })
-        });
+		const devolucion: DevolucionDto = {
+			idPrestamo: activo.prestamo.idPrestamo,
+			estadoFinal: 'Para revisar'
+		};
 
-        const data = await res.json();
+		enviando = true;
+		errorIniciar = null;
+		const respuesta = await pedir('/admin/prestamos', conJson('PATCH', devolucion));
+		enviando = false;
 
-        if (!res.ok) {
-            errorIniciar = data.error || 'Error al terminar el préstamo en la BD';
-            return;
-        }
+		if (!respuesta.ok) {
+			errorIniciar = respuesta.error;
+			return;
+		}
 
-        notificaciones.mostrar(
-            'info',
-            `Préstamo #${activo.prestamo.idPrestamo} terminado`,
-            `${activo.ejemplar.idEjemplar} ${activo.juego.nombreJuego} terminó con ${activo.sansano.nombreSansano} y quedó «Para revisar». Escanea el juego nuevo para darle otro préstamo.`,
-            { duracion: 8000 }
-        );
+		notificaciones.mostrar(
+			'info',
+			`Préstamo #${activo.prestamo.idPrestamo} terminado`,
+			`${activo.ejemplar.idEjemplar} ${activo.juego.nombreJuego} terminó con ${activo.sansano.nombreSansano} y quedó «Para revisar». Escanea el juego nuevo para darle otro préstamo.`,
+			{ duracion: 8000 }
+		);
 
-        if (ficha && ficha.ejemplar.idEjemplar === activo.ejemplar.idEjemplar) {
-            limpiarFicha();
-        }
-    } catch (err) {
-        errorIniciar = 'Error de conexión al terminar préstamo.';
-    } finally {
-        enviando = false;
-    }
-}
+		if (prestamoPersona?.prestamo.idPrestamo === activo.prestamo.idPrestamo) {
+			prestamoPersona = null;
+		}
 
-async function iniciar() {
-    if (!ficha || !sansano || (requiereDocumento && !documento)) {
-        return;
-    }
+		if (ficha?.ejemplar.idEjemplar === activo.ejemplar.idEjemplar) {
+			limpiarFicha();
+		}
+	}
 
-    enviando = true;
-    errorIniciar = null;
+	async function iniciar() {
+		if (!ficha || !sansano || (requiereDocumento && !documento)) {
+			return;
+		}
 
-    try {
-        const respuesta = await fetch(`/admin/prestamos?tipo=${tipo}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                idEjemplar: ficha.ejemplar.idEjemplar,
-                rutSansano: sansano.rutSansano,
-                tipoDocumento: requiereDocumento ? documento : 'Carnet'
-            })
-        });
+		const fichaActual = ficha;
+		const solicitante = sansano;
+		const prestamo: PrestamoJuntaDto = {
+			idEjemplar: fichaActual.ejemplar.idEjemplar,
+			rutSansano: solicitante.rutSansano,
+			tipoDocumento: requiereDocumento && documento ? documento : 'Carnet'
+		};
 
-        const data = await respuesta.json();
+		enviando = true;
+		errorIniciar = null;
+		const respuesta = await pedir<{ idPrestamo: number }>(
+			`/admin/prestamos?tipo=${tipo}`,
+			conJson('POST', prestamo)
+		);
+		enviando = false;
 
-        if (!respuesta.ok) {
-            let errorMsg = data.error || 'Error al iniciar el préstamo en la BD';
-            if (data.detalles) {
-                errorMsg += ' - ' + Object.values(data.detalles).flat().join(', ');
-            }
-            errorIniciar = errorMsg;
-            return;
-        }
+		if (!respuesta.ok) {
+			errorIniciar = respuesta.error;
+			return;
+		}
 
-        notificaciones.mostrar(
-            'success',
-            `Préstamo #${data.idPrestamo} iniciado`,
-            `${ficha.ejemplar.idEjemplar} ${ficha.juego.nombreJuego} prestado a ${sansano.nombreSansano}.`
-        );
+		notificaciones.mostrar(
+			'success',
+			`Préstamo #${respuesta.datos.idPrestamo} iniciado`,
+			`${fichaActual.ejemplar.idEjemplar} ${fichaActual.juego.nombreJuego} con ${solicitante.nombreSansano}. El ejemplar quedó en «Prestado».`
+		);
 
-        ficha = null;
-        busqueda = '';
-        errorBusqueda = null;
-        documento = null;
-        rutEntrada = '';
-        sansano = null;
-        noExiste = false;
-        errorRut = null;
-
-    } catch (err) {
-        errorIniciar = 'Error de red al intentar comunicarse con el servidor.';
-    } finally {
-        enviando = false;
-    }
-}
+		limpiarFicha();
+		limpiarSolicitante();
+	}
 </script>
 
 <div class="mx-auto flex w-full max-w-5xl flex-col gap-4">
@@ -324,10 +396,15 @@ async function iniciar() {
 					<button
 						type="button"
 						onclick={buscar}
+						disabled={buscandoFicha}
 						aria-label="Buscar juego por código"
-						class="flex w-12 shrink-0 cursor-pointer items-center justify-center self-stretch rounded-base border border-primary/50 bg-primary/10 text-primary transition hover:bg-primary/20 hover:ice-glow"
+						class="flex w-12 shrink-0 cursor-pointer items-center justify-center self-stretch rounded-base border border-primary/50 bg-primary/10 text-primary transition hover:bg-primary/20 hover:ice-glow disabled:cursor-not-allowed disabled:opacity-40"
 					>
-						<Icon name="search" class="h-5 w-5" strokeWidth={1.8} />
+						<Icon
+							name={buscandoFicha ? 'loader-circle' : 'search'}
+							class="h-5 w-5 {buscandoFicha ? 'animate-spin' : ''}"
+							strokeWidth={1.8}
+						/>
 					</button>
 				</div>
 			</FormField>
@@ -447,10 +524,15 @@ async function iniciar() {
 					<button
 						type="button"
 						onclick={identificar}
+						disabled={buscandoSansano}
 						aria-label="Identificar por RUT"
-						class="flex w-12 shrink-0 cursor-pointer items-center justify-center self-stretch rounded-base border border-primary/50 bg-primary/10 text-primary transition hover:bg-primary/20 hover:ice-glow"
+						class="flex w-12 shrink-0 cursor-pointer items-center justify-center self-stretch rounded-base border border-primary/50 bg-primary/10 text-primary transition hover:bg-primary/20 hover:ice-glow disabled:cursor-not-allowed disabled:opacity-40"
 					>
-						<Icon name="search" class="h-5 w-5" strokeWidth={1.8} />
+						<Icon
+							name={buscandoSansano ? 'loader-circle' : 'search'}
+							class="h-5 w-5 {buscandoSansano ? 'animate-spin' : ''}"
+							strokeWidth={1.8}
+						/>
 					</button>
 				</div>
 			</FormField>
@@ -622,7 +704,7 @@ async function iniciar() {
 				class="mt-4 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-base border border-primary/50 bg-primary/10 px-6 py-3 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow disabled:cursor-not-allowed disabled:opacity-40"
 			>
 				{#if enviando}
-					<Icon name="loader-2" class="h-4 w-4 animate-spin" strokeWidth={2} />
+					<Icon name="loader-circle" class="h-4 w-4 animate-spin" strokeWidth={2} />
 					Registrando en la base de datos...
 				{:else}
 					<Icon
@@ -644,7 +726,9 @@ async function iniciar() {
 {#if altaAbierta}
 	<AltaSansanoModal
 		rutInicial={rutEntrada}
-		oncerrar={() => (altaAbierta = false)}
+		error={errorAlta}
+		enviando={creandoSansano}
+		oncerrar={cerrarAlta}
 		oncrear={crearSansano}
 	/>
 {/if}

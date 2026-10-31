@@ -8,11 +8,14 @@
 
 	interface Props {
 		rutInicial?: string;
+		/** Rechazo del servidor (p. ej. RUT o correo ya registrado). */
+		error?: string | null;
+		enviando?: boolean;
 		oncerrar: () => void;
 		oncrear: (datos: DatosAltaSansano) => void;
 	}
 
-	let { rutInicial = '', oncerrar, oncrear }: Props = $props();
+	let { rutInicial = '', error = null, enviando = false, oncerrar, oncrear }: Props = $props();
 
 	type Campo = 'nombre' | 'rut' | 'rol' | 'telefono' | 'correo';
 
@@ -206,6 +209,15 @@
 				class="w-full rounded-base border border-glass-border bg-surface-container-lowest px-3 py-2.5 text-body-md text-on-surface transition outline-none placeholder:text-on-surface-variant/60 focus:border-primary/50"
 			/>
 		</FormField>
+
+		{#if error}
+			<p
+				class="text-body-sm rounded-base border border-error/40 bg-error/15 p-2.5 text-error"
+				role="alert"
+			>
+				{error}
+			</p>
+		{/if}
 	</div>
 
 	{#snippet footer()}
@@ -219,9 +231,14 @@
 		<button
 			type="button"
 			onclick={crear}
-			class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-base border border-primary/50 bg-primary/10 px-6 py-2 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow"
+			disabled={enviando}
+			class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-base border border-primary/50 bg-primary/10 px-6 py-2 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow disabled:cursor-not-allowed disabled:opacity-40"
 		>
-			<Icon name="user-plus" class="h-4 w-4" /> Crear y seleccionar
+			{#if enviando}
+				<Icon name="loader-circle" class="h-4 w-4 animate-spin" /> Creando...
+			{:else}
+				<Icon name="user-plus" class="h-4 w-4" /> Crear y seleccionar
+			{/if}
 		</button>
 	{/snippet}
 </Modal>
