@@ -2,7 +2,7 @@
 	import Icon from '$lib/components/Icon.svelte';
 	import Modal from '../primitives/Modal.svelte';
 	import FormField from '../primitives/FormField.svelte';
-	import { dominiosCorreoInstitucional } from '$lib/schemas/sansano';
+	import { dominiosCorreoInstitucional, parsearRol } from '$lib/schemas/sansano';
 	import { parsearRut } from '$lib/data/junta.svelte';
 	import type { DatosAltaSansano } from '$lib/data/junta.svelte';
 
@@ -58,7 +58,11 @@
 
 				return null;
 			case 'rol':
-				return /^\d{1,8}$/.test(rol.trim()) ? null : 'Ingresa un rol válido (matrícula).';
+				if (rol.trim() === '') {
+					return 'Ingresa el rol.';
+				}
+
+				return parsearRol(rol) === null ? 'Formato inválido. Usa el formato 202373037-8.' : null;
 			case 'telefono':
 				if (telefono.trim() === '') {
 					return 'Ingresa el teléfono.';
@@ -94,14 +98,15 @@
 		}
 
 		const rutParseado = parsearRut(rut);
+		const rolParseado = parsearRol(rol);
 
-		if (!rutParseado) {
+		if (!rutParseado || rolParseado === null) {
 			return;
 		}
 
 		oncrear({
 			nombre: nombre.trim(),
-			rol: Number(rol.trim()),
+			rol: rolParseado,
 			telefono: Number(telefono.trim()),
 			correo: correo.trim(),
 			...rutParseado
@@ -157,6 +162,7 @@
 			<FormField
 				label="Rol (matrícula)"
 				htmlFor="alta-rol"
+				hint="Formato 202373037-8"
 				error={tocado.rol || intentoEnvio ? validarCampo('rol') : null}
 			>
 				<input
@@ -165,7 +171,7 @@
 					inputmode="numeric"
 					bind:value={rol}
 					onblur={() => marcarTocado('rol')}
-					placeholder="1234567"
+					placeholder="202373037-8"
 					aria-invalid={tocado.rol || intentoEnvio ? validarCampo('rol') !== null : undefined}
 					aria-describedby={tocado.rol || intentoEnvio ? 'alta-rol-error' : undefined}
 					class="w-full rounded-base border border-glass-border bg-surface-container-lowest px-3 py-2.5 font-mono text-body-md text-on-surface transition outline-none placeholder:text-on-surface-variant/60 focus:border-primary/50"
