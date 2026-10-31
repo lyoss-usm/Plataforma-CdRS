@@ -4,9 +4,9 @@ info:
   title: API Plataforma Club de Rol Sansano
   version: 0.1.0
   description:
-    API utilizada por el catálogo público del Club de Rol Sansano.
+    API utilizada por el catálogo y las solicitudes web del Club de Rol Sansano.
 
-    Los filtros y la paginación se ejecutan en PostgreSQL. El catálogo se obtiene desde los datos persistidos en Supabase.
+    Los filtros, las fechas de retiro y las reglas de creación se validan contra los datos persistidos en Supabase.
   license:
     name: MIT
     identifier: MIT
@@ -22,6 +22,8 @@ tags:
     description: Cajero de juntas (staff con permiso prestamos:junta)
   - name: Exportación
     description: Exportación de datos a CSV (solo Directivo)
+  - name: Solicitudes
+    description: Registro público de solicitudes de préstamo
 
 paths:
   /api/catalogo:
@@ -526,6 +528,96 @@ paths:
         '500':
           description: No se pudo generar la exportación
 
+  /api/solicitudes/opciones:
+    get:
+      operationId: obtenerOpcionesSolicitud
+      tags:
+        - Solicitudes
+      summary: Obtener las opciones del formulario de solicitud
+      description: |
+        Retorna las expansiones del juego base que tienen al menos un
+        ejemplar en bodega.
+      security: []
+      parameters:
+        - name: idJuego
+          in: query
+          required: true
+          description: Identificador del juego base seleccionado
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Opciones obtenidas correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpcionesSolicitudWeb'
+        '400':
+          description: El identificador del juego no es válido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '500':
+          description: No fue posible obtener las opciones desde Supabase
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/solicitudes:
+    post:
+      operationId: crearSolicitudWeb
+      tags:
+        - Solicitudes
+      summary: Crear una solicitud de préstamo
+      description: |
+        Valida los datos personales y registra una solicitud pendiente. El
+        servidor traduce el bloque elegido a una fecha vigente y selecciona
+        los ejemplares más aptos; sus identificadores no se exponen en la
+        respuesta.
+      security: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/CrearSolicitudWeb'
+      responses:
+        '201':
+          description: Solicitud registrada correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SolicitudCreada'
+        '400':
+          description: El formulario o la relación entre juegos no es válida
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ValidationError'
+                  - $ref: '#/components/schemas/SolicitudError'
+        '403':
+          description: El Sansano tiene una suspensión activa
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SolicitudError'
+        '409':
+          description: Las opciones cambiaron o los datos ya están en uso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SolicitudError'
+        '500':
+          description: No fue posible registrar la solicitud
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   securitySchemes:
     sesionSupabase:
@@ -662,6 +754,105 @@ components:
             type: array
             items:
               type: string
+
+    ExpansionSolicitud:
+      type: object
+      additionalProperties: false
+      required:
+        - idJuego
+        - nombreJuego
+      properties:
+        idJuego:
+          type: integer
+          minimum: 1
+        nombreJuego:
+          type: string
+          minLength: 1
+
+    OpcionesSolicitudWeb:
+      type: object
+      additionalProperties: false
+      required:
+        - expansiones
+      properties:
+        expansiones:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExpansionSolicitud'
+
+    CrearSolicitudWeb:
+      type: object
+      additionalProperties: false
+      required:
+        - idJuego
+        - nombreSansano
+        - rut
+        - rol
+        - telefono
+        - correoInstitucional
+        - bloqueRetiro
+        - aceptaTerminos
+      properties:
+        idJuego:
+          type: integer
+          minimum: 1
+        idJuegoExpansion:
+          type:
+            - integer
+            - 'null'
+          minimum: 1
+        nombreSansano:
+          type: string
+          minLength: 1
+          maxLength: 120
+        rut:
+          type: string
+          description: RUT con dígito verificador; el guion es opcional
+          example: 18585543-0
+        rol:
+          type: string
+          description: ROL con el mismo dígito verificador del RUT
+          example: 202610101-0
+        telefono:
+          type: string
+          pattern: '^\d{8}$'
+          description: Ocho dígitos posteriores al prefijo +569
+        correoInstitucional:
+          type: string
+          format: email
+        bloqueRetiro:
+          type: string
+          enum:
+            - martes
+            - jueves
+          description: Día elegido; el servidor lo traduce a la próxima fecha permitida
+        aceptaTerminos:
+          type: string
+          enum:
+            - 'on'
+          description: Valor enviado por el checkbox HTML al estar marcado
+
+    SolicitudCreada:
+      type: object
+      additionalProperties: false
+      required:
+        - idSolicitud
+      properties:
+        idSolicitud:
+          type: integer
+          minimum: 1
+
+    SolicitudError:
+      type: object
+      additionalProperties: false
+      required:
+        - message
+      properties:
+        message:
+          type: string
+        field:
+          type: string
+          description: Campo relacionado con el error, cuando corresponde
 
     CatalogGame:
       type: object

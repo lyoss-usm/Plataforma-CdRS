@@ -20,7 +20,7 @@ export const dominiosCorreoInstitucional = [
 export const correoInstitucionalSchema = z
 	.string()
 	.trim()
-	.email()
+	.email('Ingresa un correo electrónico válido')
 	.refine(
 		(correo) => {
 			const dominio = correo.split('@').at(-1)?.toLowerCase();
