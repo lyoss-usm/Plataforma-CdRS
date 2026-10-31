@@ -8,15 +8,17 @@ import { generarCSV } from '$lib/server/exportar';
 
 const datasetsSchema = z.array(exportDatasetSchema).min(1);
 
-export const GET: RequestHandler = async ({ url, fetch }) => {
-	// To Do: Verificar que el usuario sea directivo
+export const GET: RequestHandler = async ({ url, locals }) => {
+	if (locals.staff?.rol !== 'directivo') {
+		throw error(403, 'Solo el Directivo puede exportar datos.');
+	}
 
 	const parsed = datasetsSchema.safeParse([...new Set(url.searchParams.getAll('dataset'))]);
 	if (!parsed.success) throw error(400, 'Dataset inválido.');
 
 	try {
 		const fecha = new Date().toISOString().slice(0, 10);
-		const resultados = await Promise.all(parsed.data.map((d) => generarCSV(d, fetch)));
+		const resultados = await Promise.all(parsed.data.map((d) => generarCSV(d, locals.supabase)));
 
 		if (resultados.length === 1) {
 			const { csv, dataset } = resultados[0];

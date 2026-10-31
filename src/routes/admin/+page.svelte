@@ -8,8 +8,6 @@
 	const role = $derived(adminSession.user.role);
 	const actions = $derived(quickActions.filter((action) => action.roles.includes(role)));
 	const showsDataPanels = $derived(role === 'directivo');
-
-
 </script>
 
 <div class="mx-auto w-full max-w-5xl px-4 py-8 sm:px-6">
@@ -50,12 +48,12 @@
 
 	{#if showsDataPanels}
 		<section class="mt-10">
-			<div class="flex flex-wrap items-start justify-between gap-3">
-			<h2 class="font-display text-headline-md font-semibold tracking-tight text-on-surface">
-				Exportar
-			</h2>
-			<ExportarDatos />
-		</div>
+			<div class="flex flex-wrap items-center justify-between gap-3">
+				<h2 class="font-display text-headline-md font-semibold tracking-tight text-on-surface">
+					Datos
+				</h2>
+				<ExportarDatos />
+			</div>
 
 			<div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
 				{#each [1, 2, 3, 4] as metric (metric)}
@@ -65,7 +63,10 @@
 						<div class="h-2.5 w-1/2 rounded-full bg-on-surface/15"></div>
 						<div class="flex h-20 items-end gap-1.5" aria-hidden="true">
 							{#each [40, 65, 50, 80, 60, 90, 70] as bar (bar)}
-								<div class="h-full w-full rounded-sm bg-on-surface/10" style={`height: ${bar}%`}></div>
+								<div
+									class="h-full w-full rounded-sm bg-on-surface/10"
+									style={`height: ${bar}%`}
+								></div>
 							{/each}
 						</div>
 						<span

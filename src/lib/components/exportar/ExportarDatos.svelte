@@ -61,7 +61,7 @@
 			const params = new SvelteURLSearchParams();
 			for (const d of elegidos) params.append('dataset', d.value);
 
-			const res = await fetch(`/api/exportar?${params}`);
+			const res = await fetch(`/admin/exportar?${params}`);
 
 			if (res.status === 403) {
 				mensaje = 'Solo los directivos pueden exportar datos.';
@@ -104,7 +104,6 @@
 	Exportar
 </button>
 
-
 <dialog
 	bind:this={dialog}
 	aria-labelledby="export-titulo"
@@ -142,9 +141,14 @@
 
 			{#each DATASETS as d (d.value)}
 				<label
-					class="flex cursor-pointer items-center gap-3 rounded-base border border-outline-variant px-4 py-3 transition hover:bg-on-surface/5 has-checked:border-primary/50 has:checked:bg-primary/10"
+					class="has:checked:bg-primary/10 flex cursor-pointer items-center gap-3 rounded-base border border-outline-variant px-4 py-3 transition hover:bg-on-surface/5 has-checked:border-primary/50"
 				>
-					<input type="checkbox" value={d.value} bind:group={seleccion} class="h-4 w-4 accent-primary" />
+					<input
+						type="checkbox"
+						value={d.value}
+						bind:group={seleccion}
+						class="h-4 w-4 accent-primary"
+					/>
 					<span class="flex flex-col">
 						<span class="font-semibold">{d.label}</span>
 						<span class="text-xs text-on-surface-variant">{d.detalle}</span>

@@ -20,6 +20,8 @@ tags:
     description: Consulta pública de juegos
   - name: Préstamos
     description: Cajero de juntas (staff con permiso prestamos:junta)
+  - name: Exportación
+    description: Exportación de datos a CSV (solo Directivo)
 
 paths:
   /api/catalogo:
@@ -476,6 +478,53 @@ paths:
                 error: Ya existe un sansano con ese RUT.
         '500':
           $ref: '#/components/responses/PrestamoErrorInterno'
+
+  /admin/exportar:
+    get:
+      operationId: exportarDatos
+      tags:
+        - Exportación
+      summary: Exportar datasets a CSV o ZIP
+      description: |
+        Solo lectura. Un dataset devuelve un `.csv` (UTF-8 sin BOM, encabezado snake_case, fechas
+        ISO-8601); varios devuelven un `.zip` con un CSV por dataset. Solo el rol Directivo; la
+        lectura usa la sesión del usuario, por lo que la RLS sigue siendo la autoridad.
+      security:
+        - sesionSupabase: []
+      parameters:
+        - name: dataset
+          in: query
+          required: true
+          description: Repetible para exportar varios datasets
+          schema:
+            type: array
+            minItems: 1
+            items:
+              type: string
+              enum:
+                - prestamos
+                - solicitudes
+                - inventario
+                - nomina
+          style: form
+          explode: true
+      responses:
+        '200':
+          description: Archivo generado
+          content:
+            text/csv:
+              schema:
+                type: string
+            application/zip:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: Dataset inválido o ausente
+        '403':
+          description: Solo el Directivo puede exportar datos
+        '500':
+          description: No se pudo generar la exportación
 
 components:
   securitySchemes:

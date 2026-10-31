@@ -1,4 +1,3 @@
-import { env } from '$env/dynamic/private';
 import { z } from 'zod';
 import {
 	cargoSchema,
@@ -11,7 +10,7 @@ import {
 	type ExportDataset
 } from '$lib/schemas';
 
-type FetchFunction = typeof globalThis.fetch;
+type Cliente = App.Locals['supabase'];
 type Fila = Record<string, unknown>;
 type Resultado = { columnas: string[]; filas: Fila[] };
 
@@ -30,46 +29,32 @@ const TABLAS = {
 
 type Tabla = (typeof TABLAS)[keyof typeof TABLAS];
 
-// Obtiene la configuracion de la SUPABASE
-function getSupabaseConfig() {
-	const url = env.SUPABASE_URL;
-	const anonKey = env.SUPABASE_ANON_KEY;
-
-	if (!url || !anonKey) {
-		throw new Error('Faltan SUPABASE_URL o SUPABASE_ANON_KEY.');
-	}
-
-	return { url: url.replace(/\/$/, ''), anonKey };
-}
-
-
-
 // Transforma a snake_Case
 const aSnakeCase = (nombre: string) => nombre.replace(/([A-Z])/g, '_$1').toLowerCase();
 
 // Transforma las fechas al ISO requerido
 const iso = (valor: string | null) => (valor ? new Date(valor).toISOString() : null);
 
-
+// Lee la tabla completa por páginas con la sesión del Directivo (la RLS decide qué ve)
 async function leerTabla<S extends z.ZodType>(
 	tabla: Tabla,
 	schema: S,
-	fetchFunction: FetchFunction
+	supabase: Cliente
 ): Promise<z.output<S>[]> {
-	const { url, anonKey } = getSupabaseConfig();
 	const resultado: z.output<S>[] = [];
 
 	for (let offset = 0; ; offset += PAGINA) {
-		const response = await fetchFunction(
-			`${url}/rest/v1/${tabla.nombre}?select=*&order=${tabla.orden}.asc&limit=${PAGINA}&offset=${offset}`,
-			{ headers: { apikey: anonKey, Authorization: `Bearer ${anonKey}` } }
-		);
+		const { data, error } = await supabase
+			.from(tabla.nombre)
+			.select('*')
+			.order(tabla.orden, { ascending: true })
+			.range(offset, offset + PAGINA - 1);
 
-		if (!response.ok) {
-			throw new Error(`Supabase rechazó la exportación de ${tabla.nombre}: HTTP ${response.status}.`);
+		if (error) {
+			throw new Error(`Supabase rechazó la exportación de ${tabla.nombre}: ${error.message}`);
 		}
 
-		const lote = z.array(z.record(z.string(), z.unknown())).parse(await response.json());
+		const lote = data ?? [];
 		resultado.push(...lote.map((fila) => schema.parse(fila)));
 
 		if (lote.length < PAGINA) break;
@@ -78,9 +63,9 @@ async function leerTabla<S extends z.ZodType>(
 	return resultado;
 }
 
-// Dataset de los prestamos 
-async function prestamos(f: FetchFunction): Promise<Resultado> {
-	const datos = await leerTabla(TABLAS.prestamo, prestamoSchema, f);
+// Dataset de los prestamos
+async function prestamos(supabase: Cliente): Promise<Resultado> {
+	const datos = await leerTabla(TABLAS.prestamo, prestamoSchema, supabase);
 
 	return {
 		columnas: [...Object.keys(prestamoSchema.shape), 'duracionPrestamoDias'],
@@ -94,15 +79,16 @@ async function prestamos(f: FetchFunction): Promise<Resultado> {
 				fechaDevolucion: iso(p.fechaDevolucion),
 				fechaRevision: iso(p.fechaRevision),
 				// null mientras el préstamo siga activo (sin devolución)
-				duracionPrestamoDias: fin === null ? null : Math.round(((fin - inicio) / MS_DIA) * 100) / 100
+				duracionPrestamoDias:
+					fin === null ? null : Math.round(((fin - inicio) / MS_DIA) * 100) / 100
 			};
 		})
 	};
 }
 
 // Dataset de las solicitudes
-async function solicitudes(f: FetchFunction): Promise<Resultado> {
-	const datos = await leerTabla(TABLAS.solicitud, solicitudSchema, f);
+async function solicitudes(supabase: Cliente): Promise<Resultado> {
+	const datos = await leerTabla(TABLAS.solicitud, solicitudSchema, supabase);
 
 	return {
 		columnas: Object.keys(solicitudSchema.shape),
@@ -111,10 +97,10 @@ async function solicitudes(f: FetchFunction): Promise<Resultado> {
 }
 
 // Dataset del inventario
-async function inventario(f: FetchFunction): Promise<Resultado> {
+async function inventario(supabase: Cliente): Promise<Resultado> {
 	const [ejemplares, juegos] = await Promise.all([
-		leerTabla(TABLAS.ejemplar, ejemplarSchema, f),
-		leerTabla(TABLAS.juego, juegoSchema, f)
+		leerTabla(TABLAS.ejemplar, ejemplarSchema, supabase),
+		leerTabla(TABLAS.juego, juegoSchema, supabase)
 	]);
 	const juegoPorId = new Map(juegos.map((j) => [j.idJuego, j]));
 
@@ -146,10 +132,10 @@ async function inventario(f: FetchFunction): Promise<Resultado> {
 }
 
 // Dataset de la nomina (Excluye datos personales)
-async function nomina(f: FetchFunction): Promise<Resultado> {
+async function nomina(supabase: Cliente): Promise<Resultado> {
 	const [sansanos, cargos] = await Promise.all([
-		leerTabla(TABLAS.sansano, sansanoSchema, f),
-		leerTabla(TABLAS.cargo, cargoSchema, f)
+		leerTabla(TABLAS.sansano, sansanoSchema, supabase),
+		leerTabla(TABLAS.cargo, cargoSchema, supabase)
 	]);
 	const cargoPorId = new Map(cargos.map((c) => [c.idCargo, c]));
 
@@ -173,7 +159,7 @@ async function nomina(f: FetchFunction): Promise<Resultado> {
 }
 
 // Mapa que conecta el nombre con su dataset especifico
-const GENERADORES: Record<ExportDataset, (f: FetchFunction) => Promise<Resultado>> = {
+const GENERADORES: Record<ExportDataset, (supabase: Cliente) => Promise<Resultado>> = {
 	prestamos,
 	solicitudes,
 	inventario,
@@ -194,9 +180,10 @@ function escapar(valor: unknown): string {
 // Genera un CSV: UTF-8 sin BOM, header snake_case, fechas ISO-8601
 export async function generarCSV(
 	datasetInput: string,
-	fetchFunction: FetchFunction = globalThis.fetch): Promise<{ csv: string; filas: number; dataset: ExportDataset }> {
+	supabase: Cliente
+): Promise<{ csv: string; filas: number; dataset: ExportDataset }> {
 	const dataset = exportDatasetSchema.parse(datasetInput);
-	const { columnas, filas } = await GENERADORES[dataset](fetchFunction);
+	const { columnas, filas } = await GENERADORES[dataset](supabase);
 
 	const encabezado = columnas.map(aSnakeCase).join(',');
 	const cuerpo = filas.map((fila) => columnas.map((c) => escapar(fila[c])).join(','));
