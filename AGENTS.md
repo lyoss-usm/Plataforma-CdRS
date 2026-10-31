@@ -43,7 +43,8 @@ no formatear archivos ajenos a la tarea.
 - Supabase local vía Makefile; seed faker en `scripts/seed` (`pnpm db:seed --profile <size>`).
 - Zod 4: schemas en `src/lib/schemas/` son la **única fuente** de tipos y validación (front + backend).
 - Iconos: `@lucide/svelte` (ya instalado) vía registro `src/lib/icons.ts` + `Icon.svelte`; no agregar librerías.
-- Swagger en `/docs/api`; actualizar `static/openapi.yaml` al tocar endpoints (README).
+- Swagger en `/docs/api` (solo en dev; 404 en producción); actualizar `static/openapi.yaml` al
+  tocar endpoints (README).
 
 ## Convenciones
 

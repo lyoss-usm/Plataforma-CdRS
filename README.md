@@ -66,3 +66,12 @@ Con el servidor de desarrollo en ejecución, la documentación interactiva está
 - [Contrato OpenAPI](http://localhost:5173/openapi.yaml)
 
 El contrato fuente se encuentra en [`static/openapi.yaml`](static/openapi.yaml). Al agregar o modificar endpoints, este archivo debe actualizarse para mantener la documentación sincronizada con la implementación.
+
+Swagger UI solo se sirve en desarrollo (`pnpm dev`); en un build de producción `/docs/api`
+responde 404.
+
+Swagger UI corre en el mismo origen que la app, así que el navegador adjunta las cookies de sesión
+de Supabase a cada petición: si ya iniciaste sesión, los endpoints de `/admin/*` responden como ese
+usuario (con su cargo y la RLS que le corresponde). Para probar como anónimo, usa una ventana de
+incógnito. Sin sesión, `/admin/*` responde `303` hacia `/login`, y como Swagger sigue la
+redirección verás un `200` con el HTML del login, no datos.
