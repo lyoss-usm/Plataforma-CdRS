@@ -108,7 +108,7 @@
 	</header>
 
 	<aside
-		class="fixed top-16 bottom-0 left-0 z-30 hidden w-64 flex-col gap-6 overflow-y-auto border-r border-glass-border surface-level-1 px-4 py-6 md:flex"
+		class="fixed top-16 bottom-0 left-0 z-30 hidden w-64 flex-col gap-6 overflow-y-auto border-r border-glass-border bg-surface-overlay px-4 py-6 md:flex"
 		aria-label="Navegación administrativa"
 	>
 		<nav class="flex flex-col gap-6">
