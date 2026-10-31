@@ -34,10 +34,8 @@
             html5QrCode = new Html5Qrcode(elementId);
             await html5QrCode.start(
                 { facingMode: 'environment' },
-                {
-                    fps: 10,
-                    qrbox: { width: 200, height: 200 }
-                },
+                // Sin qrbox: se escanea el cuadro completo y el marco del visor es solo una guía.
+                { fps: 10 },
                 (decodedText) => {
                     detenerCamara();
                     onresultado(decodedText.trim().toUpperCase());
@@ -67,8 +65,37 @@
         }
     }
 
+    // El lector se monta con este ancho de layout (resolución del canvas que se decodifica) y se
+    // escala visualmente para cubrir el visor. `transform` no altera clientWidth/clientHeight, que la
+    // librería usa para copiar cada cuadro al canvas: así el QR no llega deformado.
+    const ANCHO_LECTOR = 720;
+    let visor = $state<HTMLDivElement>();
+    let escala = $state(1);
+
+    function ajustarVisor() {
+        const lector = document.getElementById(elementId);
+
+        if (!visor || !lector || lector.offsetHeight === 0) {
+            return;
+        }
+
+        escala = Math.max(
+            visor.clientWidth / lector.offsetWidth,
+            visor.clientHeight / lector.offsetHeight
+        );
+    }
+
     onMount(() => {
         iniciarCamara();
+
+        // Recalcula al cargar el video (cambia el alto del lector) y al redimensionar el visor.
+        const observador = new ResizeObserver(ajustarVisor);
+        const lector = document.getElementById(elementId);
+
+        if (visor) observador.observe(visor);
+        if (lector) observador.observe(lector);
+
+        return () => observador.disconnect();
     });
 
     onDestroy(() => {
@@ -81,13 +108,21 @@
         Apunta la cámara al QR del ejemplar que está en el mesón para cargar su ficha al instante.
     </p>
 
-    <div class="relative mx-auto mt-6 h-52 w-52 overflow-hidden rounded-base border border-primary/30 bg-black/40 flex items-center justify-center">
-        <div id={elementId} class="absolute inset-0 h-full w-full"></div>
+    <!-- Visor: el video cubre todo el recuadro (cover) y el marco centrado indica dónde poner el QR. -->
+    <div bind:this={visor} class="relative mx-auto mt-6 aspect-3/4 w-full max-w-sm overflow-hidden rounded-base border border-primary/30 bg-black">
+        <div class="absolute top-1/2 left-1/2 w-max" style:transform="translate(-50%, -50%) scale({escala})">
+            <div id={elementId} style:width="{ANCHO_LECTOR}px"></div>
+        </div>
 
-        <span class="absolute -top-px -left-px h-8 w-8 rounded-tl-lg border-t-2 border-l-2 border-primary z-10 pointer-events-none"></span>
-        <span class="absolute -top-px -right-px h-8 w-8 rounded-tr-lg border-t-2 border-r-2 border-primary z-10 pointer-events-none"></span>
-        <span class="absolute -bottom-px -left-px h-8 w-8 rounded-bl-lg border-b-2 border-l-2 border-primary z-10 pointer-events-none"></span>
-        <span class="absolute -right-px -bottom-px h-8 w-8 rounded-br-lg border-r-2 border-b-2 border-primary z-10 pointer-events-none"></span>
+        <div class="pointer-events-none absolute inset-0 z-10 flex items-center justify-center" aria-hidden="true">
+            <!-- La sombra extendida oscurece levemente lo que queda fuera del marco sin ocultarlo. -->
+            <div class="relative aspect-square w-3/5 rounded-lg shadow-[0_0_0_100vmax_rgb(0_0_0/0.35)]">
+                <span class="absolute -top-px -left-px h-8 w-8 rounded-tl-lg border-t-2 border-l-2 border-primary"></span>
+                <span class="absolute -top-px -right-px h-8 w-8 rounded-tr-lg border-t-2 border-r-2 border-primary"></span>
+                <span class="absolute -bottom-px -left-px h-8 w-8 rounded-bl-lg border-b-2 border-l-2 border-primary"></span>
+                <span class="absolute -right-px -bottom-px h-8 w-8 rounded-br-lg border-r-2 border-b-2 border-primary"></span>
+            </div>
+        </div>
 
         {#if !cameraActive && !cameraError}
             <div class="absolute inset-0 flex flex-col items-center justify-center gap-2 z-20 bg-surface-container-low">
