@@ -1,6 +1,10 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { navigating } from '$app/state';
+	import { resolve } from '$app/paths';
+	import { onDestroy } from 'svelte';
+	import { SvelteURLSearchParams } from 'svelte/reactivity';
 	import Icon from '$lib/components/Icon.svelte';
-	import { onMount } from 'svelte';
 	import DataTable from '$lib/components/admin/primitives/DataTable.svelte';
 	import type { DataColumn } from '$lib/components/admin/primitives/types';
 	import Dropdown from '$lib/components/admin/primitives/Dropdown.svelte';
@@ -8,11 +12,20 @@
 	import StatusBadge from '$lib/components/admin/primitives/StatusBadge.svelte';
 	import FichaStaffModal from './FichaStaffModal.svelte';
 	import InvitarStaffModal from './InvitarStaffModal.svelte';
-	import { meson, formatearRut } from '$lib/data/junta.svelte';
-	import { adminSession } from '$lib/stores/adminSession.svelte';
-	import type { Sansano } from '$lib/schemas';
+	import { formatearRut } from '$lib/data/junta.svelte';
+	import { STAFF_PAGE_SIZE, type StaffFila, type StaffPage, type StaffQuery } from '$lib/schemas';
 
-	const sizePagina = 6;
+	interface Props {
+		staffPage: StaffPage;
+		cargos: { idCargo: number; nombreCargo: string }[];
+		permisosPorCargo: Record<number, string[]>;
+		filtros: StaffQuery;
+		puedeGestionar: boolean;
+		errorCarga: string | null;
+	}
+
+	let { staffPage, cargos, permisosPorCargo, filtros, puedeGestionar, errorCarga }: Props =
+		$props();
 
 	const columnas: DataColumn[] = [
 		{ id: 'sansano', label: 'Sansano' },
@@ -25,71 +38,57 @@
 
 	const itemsFiltro = $derived([
 		{ value: 'Todos', label: 'Todos' },
-		...meson.cargos.map((c) => ({ value: String(c.idCargo), label: c.nombreCargo }))
+		...cargos.map((c) => ({ value: String(c.idCargo), label: c.nombreCargo }))
 	]);
-
-	const gestiona = $derived(adminSession.user.role === 'directivo');
 
 	const claseBotonVer =
 		'inline-flex cursor-pointer items-center gap-1.5 rounded-base border border-glass-border bg-surface-container-lowest px-2.5 py-1.5 font-mono text-xs uppercase tracking-wider text-on-surface-variant transition hover:border-secondary/50 hover:bg-secondary/10 hover:text-secondary';
 	const claseInput =
 		'w-full rounded-base border bg-surface-container-lowest px-4 py-2.5 text-body-md text-on-surface transition outline-none placeholder:text-on-surface-variant/70 focus:border-primary/50 border-glass-border';
 
-	let buscar = $state('');
-	let filtroCargo = $state('Todos');
-	let pagina = $state(1);
-	let cargando = $state(true);
-	let ficha = $state<Sansano | null>(null);
+	// El input es local mientras se escribe; la URL se actualiza con retardo.
+	// svelte-ignore state_referenced_locally
+	let buscar = $state(filtros.busqueda);
+	let fichaRut = $state<number | null>(null);
 	let invitando = $state(false);
+	let temporizador: ReturnType<typeof setTimeout> | undefined;
 
-	function normalizar(texto: string): string {
-		return texto
-			.toLowerCase()
-			.normalize('NFD')
-			.replace(/\p{Diacritic}/gu, '')
-			.replace(/[^a-z0-9]/gu, '');
+	const cargando = $derived(navigating.to !== null);
+	// Se resuelve contra la página actual: tras editar y recargar, la ficha muestra lo nuevo.
+	const ficha = $derived(staffPage.filas.find((f) => f.rutSansano === fichaRut) ?? null);
+
+	function navegar(cambios: { busqueda?: string; idCargo?: number | null; pagina?: number }) {
+		const busqueda = cambios.busqueda ?? filtros.busqueda;
+		const idCargo = cambios.idCargo === undefined ? filtros.idCargo : cambios.idCargo;
+		const pagina = cambios.pagina ?? 1;
+		const parametros = new SvelteURLSearchParams();
+
+		if (busqueda) parametros.set('q', busqueda);
+		if (idCargo !== null) parametros.set('cargo', String(idCargo));
+		if (pagina > 1) parametros.set('pagina', String(pagina));
+
+		const consulta = parametros.toString();
+
+		// eslint-disable-next-line svelte/no-navigation-without-resolve -- ruta resuelta; solo se agrega la query
+		goto(`${resolve('/admin/miembros')}${consulta ? `?${consulta}` : ''}`, {
+			keepFocus: true,
+			noScroll: true,
+			replaceState: true
+		});
 	}
 
-	onMount(() => {
-		const temporizador = setTimeout(() => {
-			cargando = false;
-		}, 450);
+	function alEscribir() {
+		clearTimeout(temporizador);
+		temporizador = setTimeout(() => navegar({ busqueda: buscar.trim() }), 300);
+	}
 
-		return () => clearTimeout(temporizador);
-	});
+	onDestroy(() => clearTimeout(temporizador));
 
-	const staff = $derived(meson.sansanos.filter((s) => s.idCargo !== null));
-	const filtrados = $derived(
-		staff.filter((s) => {
-			const coincideCargo = filtroCargo === 'Todos' || s.idCargo === Number(filtroCargo);
-			const termino = normalizar(buscar.trim());
-			const coincideTexto =
-				termino === '' ||
-				normalizar(s.nombreSansano).includes(termino) ||
-				normalizar(s.correoInstitucional).includes(termino) ||
-				normalizar(formatearRut(s.rutSansano, s.digitoVerificador)).includes(termino) ||
-				normalizar(String(s.rutSansano)).includes(termino) ||
-				normalizar(`rol ${String(s.rolSansano)}`).includes(termino) ||
-				normalizar(String(s.telefono)).includes(termino);
-			return coincideCargo && coincideTexto;
-		})
-	);
-	const paginados = $derived(filtrados.slice((pagina - 1) * sizePagina, pagina * sizePagina));
+	function toneCargo(nombreCargo: string): 'error' | 'info' | 'neutral' {
+		if (nombreCargo === 'Directivo') return 'error';
+		if (nombreCargo === 'Senior') return 'info';
 
-	$effect(() => {
-		const totalPaginas = Math.max(Math.ceil(filtrados.length / sizePagina), 1);
-
-		if (pagina > totalPaginas) {
-			pagina = totalPaginas;
-		}
-	});
-
-	function cargoNombre(idCargo: number | null): string {
-		if (idCargo === null) {
-			return 'Sin cargo';
-		}
-
-		return meson.cargoDe(idCargo)?.nombreCargo ?? '—';
+		return 'neutral';
 	}
 </script>
 
@@ -106,7 +105,7 @@
 				id="miembros-buscar"
 				type="search"
 				bind:value={buscar}
-				oninput={() => (pagina = 1)}
+				oninput={alEscribir}
 				placeholder="Buscar por nombre, correo, RUT o rol…"
 				class={`${claseInput} w-56 pl-9`}
 			/>
@@ -117,11 +116,8 @@
 			<span class="font-mono text-xs tracking-wider text-on-surface-variant uppercase">Cargo</span>
 			<Dropdown
 				items={itemsFiltro}
-				value={filtroCargo}
-				onchange={(valor) => {
-					filtroCargo = valor;
-					pagina = 1;
-				}}
+				value={filtros.idCargo === null ? 'Todos' : String(filtros.idCargo)}
+				onchange={(valor) => navegar({ idCargo: valor === 'Todos' ? null : Number(valor) })}
 				class="w-36"
 			/>
 		</div>
@@ -129,9 +125,9 @@
 
 	<div class="flex flex-wrap items-center gap-3">
 		<span class="font-mono text-xs tracking-wider text-on-surface-variant/70 uppercase">
-			{filtrados.length} miembro{filtrados.length === 1 ? '' : 's'} del staff
+			{staffPage.total} miembro{staffPage.total === 1 ? '' : 's'} del staff
 		</span>
-		{#if gestiona}
+		{#if puedeGestionar}
 			<button
 				type="button"
 				onclick={() => (invitando = true)}
@@ -144,7 +140,7 @@
 	</div>
 {/snippet}
 
-{#snippet tarjetaMovil(fila: Sansano)}
+{#snippet tarjetaMovil(fila: StaffFila)}
 	<div class="flex flex-col gap-2.5">
 		<div class="flex items-center justify-between gap-2">
 			<div class="flex min-w-0 flex-col">
@@ -156,8 +152,8 @@
 				</span>
 			</div>
 			<span class="flex shrink-0 flex-col items-end gap-1.5">
-				<StatusBadge tone={fila.idCargo === 3 ? 'error' : fila.idCargo === 2 ? 'info' : 'neutral'}>
-					{cargoNombre(fila.idCargo)}
+				<StatusBadge tone={toneCargo(fila.nombreCargo)}>
+					{fila.nombreCargo}
 				</StatusBadge>
 				<StatusBadge tone={fila.authUserId ? 'success' : 'warning'}>
 					{fila.authUserId ? 'Activo' : 'Pendiente'}
@@ -171,7 +167,7 @@
 
 		<button
 			type="button"
-			onclick={() => (ficha = fila)}
+			onclick={() => (fichaRut = fila.rutSansano)}
 			aria-label={`Ver ficha de ${fila.nombreSansano}`}
 			class={`${claseBotonVer} w-full justify-center`}
 		>
@@ -181,7 +177,7 @@
 	</div>
 {/snippet}
 
-{#snippet cell(fila: Sansano, columna: DataColumn)}
+{#snippet cell(fila: StaffFila, columna: DataColumn)}
 	{#if columna.id === 'sansano'}
 		<span class="flex min-w-0 flex-col">
 			<span class="font-medium">{fila.nombreSansano}</span>
@@ -190,8 +186,8 @@
 			</span>
 		</span>
 	{:else if columna.id === 'cargo'}
-		<StatusBadge tone={fila.idCargo === 3 ? 'error' : fila.idCargo === 2 ? 'info' : 'neutral'}>
-			{cargoNombre(fila.idCargo)}
+		<StatusBadge tone={toneCargo(fila.nombreCargo)}>
+			{fila.nombreCargo}
 		</StatusBadge>
 	{:else if columna.id === 'acceso'}
 		<StatusBadge tone={fila.authUserId ? 'success' : 'warning'}>
@@ -205,7 +201,7 @@
 		<span class="flex items-center justify-end">
 			<button
 				type="button"
-				onclick={() => (ficha = fila)}
+				onclick={() => (fichaRut = fila.rutSansano)}
 				aria-label={`Ver ficha de ${fila.nombreSansano}`}
 				class={claseBotonVer}
 			>
@@ -219,28 +215,39 @@
 <div class="flex flex-col gap-4">
 	<DataTable
 		columns={columnas}
-		rows={paginados}
+		rows={staffPage.filas}
 		keyRow={(fila) => String(fila.rutSansano)}
 		{cell}
 		mobileCard={tarjetaMovil}
 		loading={cargando}
-		emptyMessage="No hay staff registrado"
-		emptyDescription="Cuando se invite a alguien, aparecerá aquí con su cargo y estado de acceso."
+		error={errorCarga}
+		emptyMessage={filtros.busqueda || filtros.idCargo !== null
+			? 'Ningún miembro coincide con la búsqueda'
+			: 'No hay staff registrado'}
+		emptyDescription={filtros.busqueda || filtros.idCargo !== null
+			? 'Prueba con otro nombre, correo o cargo.'
+			: 'Cuando se invite a alguien, aparecerá aquí con su cargo y estado de acceso.'}
 		{toolbar}
 	/>
 
 	<Pagination
-		page={pagina}
-		pageSize={sizePagina}
-		total={filtrados.length}
-		onchange={(paginaNueva) => (pagina = paginaNueva)}
+		page={filtros.pagina}
+		pageSize={STAFF_PAGE_SIZE}
+		total={staffPage.total}
+		onchange={(pagina) => navegar({ pagina })}
 	/>
 </div>
 
 {#if ficha}
-	<FichaStaffModal sansano={ficha} onclose={() => (ficha = null)} />
+	<FichaStaffModal
+		{ficha}
+		{cargos}
+		permisos={permisosPorCargo[ficha.idCargo ?? 0] ?? []}
+		{puedeGestionar}
+		onclose={() => (fichaRut = null)}
+	/>
 {/if}
 
 {#if invitando}
-	<InvitarStaffModal onclose={() => (invitando = false)} />
+	<InvitarStaffModal {cargos} onclose={() => (invitando = false)} />
 {/if}

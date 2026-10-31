@@ -39,3 +39,14 @@ export const loginSchema = z.object({
 	password: z.string().min(1, 'Ingresa tu contraseña')
 });
 export type Login = z.infer<typeof loginSchema>;
+
+export const definirClaveSchema = z
+	.object({
+		password: z.string().min(8, 'Usa al menos 8 caracteres'),
+		confirmacion: z.string().min(1, 'Repite la contraseña')
+	})
+	.refine((datos) => datos.password === datos.confirmacion, {
+		message: 'Las contraseñas no coinciden',
+		path: ['confirmacion']
+	});
+export type DefinirClave = z.infer<typeof definirClaveSchema>;

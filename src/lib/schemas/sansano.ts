@@ -17,7 +17,7 @@ export const dominiosCorreoInstitucional = [
 	'externos.usm.cl'
 ] as const;
 
-const correoInstitucionalSchema = z
+export const correoInstitucionalSchema = z
 	.string()
 	.trim()
 	.email()
@@ -48,7 +48,7 @@ export const createSansanoSchema = z.object(sansanoShape);
 export type CreateSansanoDto = z.infer<typeof createSansanoSchema>;
 
 /**
- * Rol USM: 9 dígitos + dígito verificador, con o sin guion (`202373037-8` o `2023730378`).
+ * Rol USM: 9 dígitos + dígito verificador, con o sin guion (`202012345-6` o `2020123456`).
  * Devuelve el rol sin verificador, que es lo que guarda `Sansano.rolSansano`.
  * Se exigen los 9 dígitos para no confundir un rol sin verificador con uno que lo trae pegado.
  */

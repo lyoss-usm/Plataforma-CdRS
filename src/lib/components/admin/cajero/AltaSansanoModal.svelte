@@ -62,7 +62,7 @@
 					return 'Ingresa el rol.';
 				}
 
-				return parsearRol(rol) === null ? 'Formato inválido. Usa el formato 202373037-8.' : null;
+				return parsearRol(rol) === null ? 'Formato inválido. Usa el formato 202012345-6.' : null;
 			case 'telefono':
 				if (telefono.trim() === '') {
 					return 'Ingresa el teléfono.';
@@ -162,7 +162,7 @@
 			<FormField
 				label="Rol (matrícula)"
 				htmlFor="alta-rol"
-				hint="Formato 202373037-8"
+				hint="Formato 202012345-6"
 				error={tocado.rol || intentoEnvio ? validarCampo('rol') : null}
 			>
 				<input
@@ -171,7 +171,7 @@
 					inputmode="numeric"
 					bind:value={rol}
 					onblur={() => marcarTocado('rol')}
-					placeholder="202373037-8"
+					placeholder="202012345-6"
 					aria-invalid={tocado.rol || intentoEnvio ? validarCampo('rol') !== null : undefined}
 					aria-describedby={tocado.rol || intentoEnvio ? 'alta-rol-error' : undefined}
 					class="w-full rounded-base border border-glass-border bg-surface-container-lowest px-3 py-2.5 font-mono text-body-md text-on-surface transition outline-none placeholder:text-on-surface-variant/60 focus:border-primary/50"

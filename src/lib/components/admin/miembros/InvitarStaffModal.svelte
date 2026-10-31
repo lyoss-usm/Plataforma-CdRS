@@ -1,26 +1,38 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import Icon from '$lib/components/Icon.svelte';
 	import Modal from '$lib/components/admin/primitives/Modal.svelte';
 	import Dropdown from '$lib/components/admin/primitives/Dropdown.svelte';
 	import FormField from '$lib/components/admin/primitives/FormField.svelte';
-	import { meson, parsearRut } from '$lib/data/junta.svelte';
+	import { parsearRut } from '$lib/data/junta.svelte';
 	import { notificaciones } from '$lib/stores/notificaciones.svelte';
-	import { dominiosCorreoInstitucional } from '$lib/schemas/sansano';
+	import { dominiosCorreoInstitucional, parsearRol } from '$lib/schemas/sansano';
+	import type { SubmitFunction } from '@sveltejs/kit';
 
 	interface Props {
+		cargos: { idCargo: number; nombreCargo: string }[];
 		onclose: () => void;
 	}
 
 	type CampoValidable = 'nombre' | 'rut' | 'rol' | 'telefono' | 'correo' | 'cargo';
 
-	let { onclose }: Props = $props();
+	let { cargos, onclose }: Props = $props();
 
 	const formatoRut = /^\d{1,8}-[0-9kK]$/;
-	const formatoRol = /^\d{5,9}$/;
 	const formatoTelefono = /^[0-9 +-]{8,20}$/;
+	// Campo del servidor → campo local.
+	const campoLocal: Record<string, CampoValidable> = {
+		correoInstitucional: 'correo',
+		idCargo: 'cargo',
+		nombreSansano: 'nombre',
+		rutSansano: 'rut',
+		digitoVerificador: 'rut',
+		rolSansano: 'rol',
+		telefono: 'telefono'
+	};
 
 	const itemsCargo = $derived(
-		meson.cargos.map((c) => ({ value: String(c.idCargo), label: c.nombreCargo }))
+		cargos.map((c) => ({ value: String(c.idCargo), label: c.nombreCargo }))
 	);
 
 	let nombre = $state('');
@@ -38,7 +50,16 @@
 		cargo: false
 	});
 	let intentoEnvio = $state(false);
+	let enviando = $state(false);
 	let error = $state<string | null>(null);
+	// El servidor pidió la ficha porque el correo no existe: pasa a ser obligatoria.
+	let fichaExigida = $state(false);
+	let erroresServidor = $state<Partial<Record<CampoValidable, string>>>({});
+
+	// La ficha es opcional salvo que el sansano no exista: si se llena algo, se exige completa.
+	const fichaIniciada = $derived(
+		fichaExigida || [nombre, rut, rol, telefono].some((valor) => valor.trim() !== '')
+	);
 
 	const claseInput =
 		'w-full rounded-base border bg-surface-container-lowest px-4 py-2.5 text-body-md text-on-surface transition outline-none placeholder:text-on-surface-variant/70 focus:border-primary/50';
@@ -47,7 +68,7 @@
 	const claseBotonSecundario =
 		'cursor-pointer rounded-base border border-glass-border px-4 py-2 text-on-surface-variant transition hover:bg-white/5 hover:text-on-surface';
 	const claseBotonPrimario =
-		'inline-flex cursor-pointer items-center gap-2 rounded-base border border-primary/50 bg-primary/10 px-4 py-2 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow';
+		'inline-flex cursor-pointer items-center gap-2 rounded-base border border-primary/50 bg-primary/10 px-4 py-2 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow disabled:cursor-not-allowed disabled:opacity-40';
 
 	function marcarTocado(campo: CampoValidable) {
 		tocado[campo] = true;
@@ -56,8 +77,12 @@
 	function validarCampo(campo: CampoValidable): string | null {
 		switch (campo) {
 			case 'nombre':
-				return nombre.trim() === '' ? 'Ingresa el nombre completo.' : null;
+				return fichaIniciada && nombre.trim() === '' ? 'Ingresa el nombre completo.' : null;
 			case 'rut':
+				if (!fichaIniciada && rut.trim() === '') {
+					return null;
+				}
+
 				if (rut.trim() === '') {
 					return 'Ingresa el RUT.';
 				}
@@ -68,16 +93,24 @@
 
 				return null;
 			case 'rol':
+				if (!fichaIniciada && rol.trim() === '') {
+					return null;
+				}
+
 				if (rol.trim() === '') {
 					return 'Ingresa el ROL USM.';
 				}
 
-				if (!formatoRol.test(rol.trim())) {
-					return 'ROL inválido.';
+				if (parsearRol(rol) === null) {
+					return 'Formato inválido. Usa el formato 202012345-6.';
 				}
 
 				return null;
 			case 'telefono':
+				if (!fichaIniciada && telefono.trim() === '') {
+					return null;
+				}
+
 				if (telefono.trim() === '') {
 					return 'Ingresa el teléfono.';
 				}
@@ -106,7 +139,7 @@
 	}
 
 	function mostrarError(campo: CampoValidable, mensaje: string | null): string | null {
-		return tocado[campo] || intentoEnvio ? mensaje : null;
+		return (tocado[campo] || intentoEnvio ? mensaje : null) ?? erroresServidor[campo] ?? null;
 	}
 
 	const errores = $derived({
@@ -119,56 +152,70 @@
 	});
 	const hayErrores = $derived(Object.values(errores).some(Boolean));
 
-	const cargoNombre = $derived(meson.cargoDe(Number(cargoSeleccion))?.nombreCargo ?? 'sin cargo');
+	type Resultado = { ok: boolean; mensaje: string; errores: Record<string, string> };
 
-	function invitar() {
+	const alInvitar: SubmitFunction = ({ formData, cancel }) => {
 		intentoEnvio = true;
+		erroresServidor = {};
+		error = null;
 
 		if (hayErrores) {
+			cancel();
 			return;
 		}
 
-		const parseRut = parsearRut(rut.trim());
+		// El RUT se escribe como «12345678-9»; el servidor recibe número y dígito por separado.
+		formData.delete('rut');
 
-		if (!parseRut) {
-			return;
+		if (fichaIniciada) {
+			const parseRut = parsearRut(rut.trim());
+
+			if (!parseRut) {
+				cancel();
+				return;
+			}
+
+			formData.set('rutSansano', String(parseRut.rut));
+			formData.set('digitoVerificador', String(parseRut.digitoVerificador));
+			formData.set('telefono', telefono.replace(/\D/g, ''));
 		}
 
-		const resultado = meson.invitarSansano(
-			{
-				nombre: nombre.trim(),
-				rut: parseRut.rut,
-				digitoVerificador: parseRut.digitoVerificador,
-				rol: Number(rol.trim()),
-				telefono: Number(telefono.replace(/[^0-9]/g, '')),
-				correo: correo.trim()
-			},
-			Number(cargoSeleccion)
-		);
+		enviando = true;
 
-		if (!resultado.ok) {
-			error = resultado.motivo;
-			return;
-		}
+		return async ({ result, update }) => {
+			enviando = false;
 
-		notificaciones.mostrar(
-			'success',
-			'Invitación enviada',
-			`${resultado.sansano?.nombreSansano ?? nombre.trim()} fue invitado como ${cargoNombre} (${correo.trim()}). El enlace de acceso llega por correo.`
-		);
-		onclose();
-	}
+			if (result.type === 'success') {
+				notificaciones.mostrar('success', 'Invitación', (result.data as Resultado).mensaje);
+				await update({ reset: false });
+				onclose();
+			} else if (result.type === 'failure') {
+				const datos = result.data as Resultado;
+				erroresServidor = {};
+
+				for (const [campo, mensaje] of Object.entries(datos.errores)) {
+					const local = campoLocal[campo];
+					if (local) erroresServidor[local] = mensaje;
+				}
+
+				if (datos.errores.datos) fichaExigida = true;
+				error = datos.mensaje;
+			} else {
+				await update({ reset: false });
+			}
+		};
+	};
 </script>
 
 <Modal title="Invitar staff" size="lg" {onclose}>
 	<form
-		onsubmit={(e) => {
-			e.preventDefault();
-			invitar();
-		}}
+		method="POST"
+		action="?/invitar"
+		use:enhance={alInvitar}
 		class="flex flex-col gap-4"
 		novalidate
 	>
+		<input type="hidden" name="idCargo" value={cargoSeleccion} />
 		<p class="text-body-md text-on-surface-variant">
 			Se envía un enlace de acceso de Supabase Auth al correo institucional y se asigna el cargo
 			inicial. Mientras el invitado no lo acepte, su acceso queda «Pendiente».
@@ -178,6 +225,7 @@
 			<FormField label="Correo institucional" htmlFor="invite-correo" error={errores.correo}>
 				<input
 					id="invite-correo"
+					name="correoInstitucional"
 					type="email"
 					bind:value={correo}
 					onblur={() => marcarTocado('correo')}
@@ -210,14 +258,15 @@
 				Ficha básica del sansano
 			</legend>
 			<p class="text-body-sm mb-3 text-on-surface-variant">
-				Solo se usa si el correo no corresponde a un sansano existente; si ya existe, se le reasigna
-				el cargo directamente.
+				Solo se usa si el correo no corresponde a un sansano existente; si ya existe, se le asigna
+				el cargo directamente. Si completas algún campo, completa todos.
 			</p>
 
 			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
 				<FormField label="Nombre" htmlFor="invite-nombre" error={errores.nombre}>
 					<input
 						id="invite-nombre"
+						name="nombreSansano"
 						type="text"
 						bind:value={nombre}
 						onblur={() => marcarTocado('nombre')}
@@ -231,6 +280,7 @@
 				<FormField label="RUT" htmlFor="invite-rut" error={errores.rut}>
 					<input
 						id="invite-rut"
+						name="rut"
 						type="text"
 						inputmode="numeric"
 						bind:value={rut}
@@ -245,11 +295,12 @@
 				<FormField label="ROL USM" htmlFor="invite-rol" error={errores.rol}>
 					<input
 						id="invite-rol"
+						name="rolSansano"
 						type="text"
 						inputmode="numeric"
 						bind:value={rol}
 						onblur={() => marcarTocado('rol')}
-						placeholder="1234567"
+						placeholder="202012345-6"
 						aria-invalid={errores.rol !== null}
 						aria-describedby={errores.rol ? 'invite-rol-error' : undefined}
 						class={errores.rol ? claseInputInvalido : claseInputValido}
@@ -259,6 +310,7 @@
 				<FormField label="Teléfono" htmlFor="invite-telefono" error={errores.telefono}>
 					<input
 						id="invite-telefono"
+						name="telefono"
 						type="tel"
 						bind:value={telefono}
 						onblur={() => marcarTocado('telefono')}
@@ -283,9 +335,9 @@
 
 		<div class="mt-2 flex flex-wrap items-center justify-end gap-3">
 			<button type="button" onclick={onclose} class={claseBotonSecundario}>Cancelar</button>
-			<button type="submit" class={claseBotonPrimario}>
+			<button type="submit" disabled={enviando} aria-busy={enviando} class={claseBotonPrimario}>
 				<Icon name="user-plus" class="h-4 w-4" strokeWidth={2} />
-				Enviar invitación
+				{enviando ? 'Enviando…' : 'Enviar invitación'}
 			</button>
 		</div>
 	</form>
