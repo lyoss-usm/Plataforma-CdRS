@@ -140,6 +140,7 @@ BEGIN
 		IF p_modo = 'valor' THEN
 			EXECUTE p_sql INTO v_valor;
 			v_res := v_valor;
+			PERFORM set_config('request.jwt.claims', '', true);
 			RESET role;
 			RETURN v_res;
 		ELSE
