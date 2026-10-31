@@ -1,32 +1,8 @@
 <script lang="ts">
 	import { Plus } from '@lucide/svelte';
+	import { landing } from '$lib/data/landing';
 
-	const faqs = [
-		{
-			q: '¿Necesito experiencia previa?',
-			a: 'Nada. Aprendemos jugando: cada mesa recibe con partidas introductorias y explica las reglas sobre la marcha.'
-		},
-		{
-			q: '¿Cómo me sumo a una partida?',
-			a: 'Por Discord o nuestro correo: coordinas tu primera sesión con el director o directora de la mesa que te interese.'
-		},
-		{
-			q: '¿Hay que pagar algo?',
-			a: 'El club es gratuito. Solo cubres tus propios traslados o consumo cuando la sesión es presencial.'
-		},
-		{
-			q: '¿Juegan online o presencial?',
-			a: 'Ambos. Presencial cerca del campus y online por Discord, con voz y vídeo.'
-		},
-		{
-			q: '¿Puedo dirigir una mesa?',
-			a: 'Por supuesto. Tenemos tutores que acompañan a nuevos directores y un repositorio de materiales compartidos.'
-		},
-		{
-			q: '¿Qué sistemas de rol se juegan?',
-			a: 'Dungeons & Dragons, Vampiro: La Mascarada, Call of Cthulhu y otros según el interés de cada mesa.'
-		}
-	];
+	const faqs = landing.faq;
 </script>
 
 <section

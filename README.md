@@ -69,6 +69,15 @@ que `invitar_staff()` lo aprobó: copia la clave de `pnpx supabase status` a
 ([http://127.0.0.1:54324](http://127.0.0.1:54324)) y el enlace aterriza en `/auth/confirmar`, donde
 el invitado crea su contraseña.
 
+## Landing pública
+
+Los textos (Sobre nosotros, FAQ, eventos, redes y metadatos) se editan en `src/lib/data/landing.json`
+sin tocar los componentes; el schema de `src/lib/schemas/landing.ts` los valida al compilar. Para que
+Discord y WhatsApp muestren la imagen al compartir el link, define `PUBLIC_SITE_URL` (dominio público,
+sin `/` final) antes de `pnpm build`; sin ella solo se emiten título y descripción. Las imágenes
+estáticas van en WebP; `static/logos/og-image.jpg` (1200×630) es la excepción, porque algunos
+scrapers no leen WebP.
+
 ## Documentación de la API
 
 Con el servidor de desarrollo en ejecución, la documentación interactiva está disponible en:

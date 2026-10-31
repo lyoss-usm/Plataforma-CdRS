@@ -9,3 +9,4 @@ export * from './sesion.ts';
 export * from './solicitud.ts';
 export * from './exportacion.ts';
 export * from './staff.ts';
+export * from './landing.ts';

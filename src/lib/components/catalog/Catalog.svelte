@@ -185,7 +185,7 @@
 			</div>
 
 			<img
-				src="/rolo/rolo_cargando_cajas_fix.png"
+				src="/rolo/rolo_cargando_cajas_fix.webp"
 				alt="Rolo cargando cajas de juegos del catálogo"
 				class="w-28 shrink-0 self-start drop-shadow-lg sm:w-32 lg:w-36"
 				loading="lazy"
