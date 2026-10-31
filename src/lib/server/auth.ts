@@ -56,12 +56,7 @@ export async function obtenerStaff(supabase: ClienteSupabase): Promise<StaffSesi
 export function permisoRequerido(url: URL): NombrePermiso | null {
 	const { pathname, searchParams } = url;
 
-	if (pathname.startsWith('/admin/prestamos')) {
-		const tipo = searchParams.get('tipo');
-		if (tipo === 'general') return 'prestamos:general';
-		if (tipo === 'junta') return 'prestamos:junta';
-		return null;
-	}
+	if (pathname.startsWith('/admin/prestamos')) return 'prestamos:junta';
 	if (pathname.startsWith('/admin/solicitudes')) return 'solicitudes:atender';
 	if (pathname.startsWith('/admin/inventario')) return 'inventario:editar';
 	if (pathname.startsWith('/admin/miembros') && searchParams.get('tab') === 'moderacion') {

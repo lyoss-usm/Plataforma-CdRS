@@ -11,31 +11,23 @@ import {
 	type BusquedaEjemplar,
 	type BusquedaSolicitante,
 	type FichaEjemplar,
-	type NombrePermiso,
 	type PrestamoEnCurso,
 	type Sansano
 } from '$lib/schemas';
 import type { StaffSesion } from './auth';
 import type { ClienteSupabase } from './supabase';
 
-/** Búsquedas y alta del mesón: sirven al cajero de junta y al de préstamos generales. */
-export const PERMISOS_CAJERO: NombrePermiso[] = ['prestamos:junta', 'prestamos:general'];
-
 /**
- * El guard de `/admin` (layout) no protege los `+server.ts`: cada handler valida sesión y permiso.
- * La autoridad sigue siendo la DB (RPC y RLS validan cada operación).
+ * El guard de `/admin` (layout) no protege los `+server.ts`: cada handler del cajero valida sesión y
+ * `prestamos:junta`. La autoridad sigue siendo la DB (RPC y RLS validan cada operación).
  */
-export function autorizarCajero(
-	staff: StaffSesion | null,
-	permisos: NombrePermiso[] = PERMISOS_CAJERO,
-	mensaje = 'Tu cargo no tiene acceso al cajero'
-): Response | null {
+export function autorizarCajero(staff: StaffSesion | null): Response | null {
 	if (!staff) {
 		return json({ error: 'No autorizado' }, { status: 401 });
 	}
 
-	if (!permisos.some((permiso) => staff.permisos.includes(permiso))) {
-		return json({ error: mensaje }, { status: 403 });
+	if (!staff.permisos.includes('prestamos:junta')) {
+		return json({ error: 'Tu cargo no puede registrar préstamos de junta' }, { status: 403 });
 	}
 
 	return null;

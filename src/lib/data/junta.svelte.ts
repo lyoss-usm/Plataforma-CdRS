@@ -516,11 +516,6 @@ const permisosIniciales: Permiso[] = [
 		descripcionPermiso: 'Cobrar préstamos en juntas masivas (cajero).'
 	},
 	{
-		idPermiso: 2,
-		nombrePermiso: 'prestamos:general',
-		descripcionPermiso: 'Realizar préstamos generales del catálogo.'
-	},
-	{
 		idPermiso: 3,
 		nombrePermiso: 'solicitudes:atender',
 		descripcionPermiso: 'Atender solicitudes del formulario web.'
@@ -562,14 +557,12 @@ const cargoPermisosIniciales: CargoPermiso[] = [
 	{ idCargo: 1, idPermiso: 6 },
 	{ idCargo: 1, idPermiso: 9 },
 	{ idCargo: 2, idPermiso: 1 },
-	{ idCargo: 2, idPermiso: 2 },
 	{ idCargo: 2, idPermiso: 3 },
 	{ idCargo: 2, idPermiso: 4 },
 	{ idCargo: 2, idPermiso: 5 },
 	{ idCargo: 2, idPermiso: 6 },
 	{ idCargo: 2, idPermiso: 9 },
 	{ idCargo: 3, idPermiso: 1 },
-	{ idCargo: 3, idPermiso: 2 },
 	{ idCargo: 3, idPermiso: 3 },
 	{ idCargo: 3, idPermiso: 4 },
 	{ idCargo: 3, idPermiso: 5 },

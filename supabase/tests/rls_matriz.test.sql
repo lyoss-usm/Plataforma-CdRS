@@ -269,9 +269,10 @@ VALUES
 	('C', $$SELECT public.tiene_permiso('prestamos:junta')::text$$, 'false'),
 	('I', $$SELECT public.tiene_permiso('prestamos:junta')::text$$, 'false'),
 	('J', $$SELECT public.tiene_permiso('prestamos:junta')::text$$, 'true'),
-	('J', $$SELECT public.tiene_permiso('prestamos:general')::text$$, 'false'),
+	('J', $$SELECT public.tiene_permiso('solicitudes:atender')::text$$, 'false'),
 	('J', $$SELECT public.tiene_permiso('inventario:editar')::text$$, 'false'),
-	('S', $$SELECT public.tiene_permiso('prestamos:general')::text$$, 'true'),
+	('S', $$SELECT public.tiene_permiso('solicitudes:atender')::text$$, 'true'),
+	('S', $$SELECT public.tiene_permiso('prestamos:general')::text$$, 'false'),
 	('S', $$SELECT public.tiene_permiso('inventario:eliminar')::text$$, 'true'),
 	('S', $$SELECT public.tiene_permiso('usuarios:gestionar')::text$$, 'false'),
 	('S', $$SELECT public.tiene_permiso('moderacion:suspender')::text$$, 'false'),
@@ -281,8 +282,8 @@ VALUES
 	('C', 'SELECT count(*)::text FROM public.perfil_staff()', '0'),
 	('I', 'SELECT count(*)::text FROM public.perfil_staff()', '0'),
 	('J', 'SELECT cardinality(permisos)::text FROM public.perfil_staff()', '3'),
-	('S', 'SELECT cardinality(permisos)::text FROM public.perfil_staff()', '7'),
-	('D', 'SELECT cardinality(permisos)::text FROM public.perfil_staff()', '9'),
+	('S', 'SELECT cardinality(permisos)::text FROM public.perfil_staff()', '6'),
+	('D', 'SELECT cardinality(permisos)::text FROM public.perfil_staff()', '8'),
 
 	('A', 'SELECT public.suspension_activa(50000011)::text', 'error'),
 	-- Quien no es staff no debe poder averiguar quién está suspendido.

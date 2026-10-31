@@ -3,16 +3,9 @@ import { devolucionSchema, prestamoJuntaSchema } from '$lib/schemas';
 import { autorizarCajero, leerCuerpo, respuestaErrorDb } from '$lib/server/cajero';
 import type { RequestHandler } from './$types';
 
-const autorizarJunta = (staff: App.Locals['staff']) =>
-	autorizarCajero(staff, ['prestamos:junta'], 'Tu cargo no puede registrar préstamos de junta');
-
-export const POST: RequestHandler = async ({ request, url, locals }) => {
-	const noAutorizado = autorizarJunta(locals.staff);
+export const POST: RequestHandler = async ({ request, locals }) => {
+	const noAutorizado = autorizarCajero(locals.staff);
 	if (noAutorizado) return noAutorizado;
-
-	if (url.searchParams.get('tipo') !== 'junta') {
-		return json({ error: 'Endpoint configurado solo para préstamos de junta' }, { status: 400 });
-	}
 
 	const { datos, error: invalido } = await leerCuerpo(request, prestamoJuntaSchema);
 	if (invalido) return invalido;
@@ -31,7 +24,7 @@ export const POST: RequestHandler = async ({ request, url, locals }) => {
 };
 
 export const PATCH: RequestHandler = async ({ request, locals }) => {
-	const noAutorizado = autorizarJunta(locals.staff);
+	const noAutorizado = autorizarCajero(locals.staff);
 	if (noAutorizado) return noAutorizado;
 
 	const { datos, error: invalido } = await leerCuerpo(request, devolucionSchema);

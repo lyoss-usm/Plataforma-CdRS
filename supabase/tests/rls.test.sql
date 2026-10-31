@@ -136,15 +136,15 @@ RESET role;
 SELECT pg_temp.como('10000000-0000-4000-8000-000000000001', 'test.junior@usm.cl');
 SELECT is(public.cargo_actual(), 'Junior', 'cargo_actual() distingue Junior');
 SELECT ok(public.tiene_permiso('prestamos:junta'), 'Junior tiene prestamos:junta');
-SELECT ok(NOT public.tiene_permiso('prestamos:general'), 'Junior no tiene prestamos:general');
+SELECT ok(NOT public.tiene_permiso('solicitudes:atender'), 'Junior no atiende solicitudes web');
 RESET role;
 
 SELECT pg_temp.como('10000000-0000-4000-8000-000000000003', 'test.directivo@usm.cl');
 SELECT is(public.cargo_actual(), 'Directivo', 'cargo_actual() distingue Directivo');
 SELECT is(
 	(SELECT cardinality(permisos) FROM public.perfil_staff()),
-	9,
-	'perfil_staff() devuelve los 9 permisos del Directivo'
+	8,
+	'perfil_staff() devuelve los 8 permisos del Directivo'
 );
 RESET role;
 

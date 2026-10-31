@@ -4,7 +4,6 @@ import { nonEmptyTextSchema, rutSchema } from './common.ts';
 // Matriz de permisos de la wiki (Flujos del Sistema § 3.3); la autoridad real es la RLS.
 export const nombrePermisoSchema = z.enum([
 	'prestamos:junta',
-	'prestamos:general',
 	'prestamos:devolver',
 	'solicitudes:atender',
 	'inventario:editar',

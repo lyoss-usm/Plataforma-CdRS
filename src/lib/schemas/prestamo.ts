@@ -33,7 +33,7 @@ export type Prestamo = z.infer<typeof prestamoSchema>;
 export const createPrestamoSchema = z.object(prestamoShape).omit({ idPrestamo: true });
 export type CreatePrestamoDto = z.infer<typeof createPrestamoSchema>;
 
-/** Cuerpo de POST /admin/prestamos?tipo=junta (RPC crear_prestamo_junta). */
+/** Cuerpo de POST /admin/prestamos (RPC crear_prestamo_junta). */
 export const prestamoJuntaSchema = z.object({
 	idEjemplar: ejemplarIdSchema,
 	rutSansano: rutSchema,

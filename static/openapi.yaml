@@ -184,14 +184,6 @@ paths:
         sesión. Rechaza ejemplares que no estén En bodega y sansanos suspendidos.
       security:
         - sesionSupabase: []
-      parameters:
-        - name: tipo
-          in: query
-          required: true
-          schema:
-            type: string
-            enum:
-              - junta
       requestBody:
         required: true
         content:
@@ -199,7 +191,7 @@ paths:
             schema:
               $ref: '#/components/schemas/PrestamoJuntaRequest'
             example:
-              idEjemplar: CAT-001
+              idEjemplar: SEED-BASE-000001
               rutSansano: 20111222
               tipoDocumento: TNE
       responses:
@@ -304,7 +296,7 @@ paths:
       summary: Ficha de un ejemplar para el mesón
       description: |
         Devuelve el ejemplar, su juego y el préstamo Activo si lo tiene. Requiere
-        prestamos:junta o prestamos:general. El código se normaliza a mayúsculas.
+        prestamos:junta. El código se normaliza a mayúsculas.
       security:
         - sesionSupabase: []
       parameters:
@@ -351,7 +343,7 @@ paths:
       summary: Solicitante por RUT
       description: |
         Devuelve el sansano, su suspensión vigente (o null) y su préstamo Activo (o null).
-        Requiere prestamos:junta o prestamos:general.
+        Requiere prestamos:junta.
       security:
         - sesionSupabase: []
       parameters:
@@ -409,8 +401,8 @@ paths:
         - Préstamos
       summary: Alta rápida de un sansano desde el mesón
       description: |
-        Crea un sansano común (sin cargo ni cuenta). Requiere prestamos:junta o
-        prestamos:general; la RLS sansano_insert_staff lo permite a todo el staff.
+        Crea un sansano común (sin cargo ni cuenta). Requiere prestamos:junta; la RLS
+        sansano_insert_staff lo permite a todo el staff.
       security:
         - sesionSupabase: []
       requestBody:

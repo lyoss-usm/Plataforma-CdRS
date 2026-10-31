@@ -21,10 +21,6 @@
 	} from '$lib/schemas';
 	import { notificaciones } from '$lib/stores/notificaciones.svelte';
 
-	type TipoCajero = 'general' | 'junta';
-
-	let { tipo = 'junta' }: { tipo?: TipoCajero } = $props();
-
 	const documentos: { value: Documento; label: string }[] = [
 		{ value: 'Carnet', label: 'Carnet' },
 		{ value: 'TNE', label: 'TNE' },
@@ -57,11 +53,8 @@
 
 	const prestable = $derived(ficha !== null && ficha.ejemplar.estadoEjemplar === 'En bodega');
 	const prestamoAterminar = $derived(prestamoPersona ?? prestamoFicha);
-	const requiereDocumento = $derived(tipo === 'junta');
 	const listo = $derived(
-		Boolean(
-			ficha && prestable && sansano && (requiereDocumento ? documento : true) && suspension === null
-		)
+		Boolean(ficha && prestable && sansano && documento && suspension === null)
 	);
 
 	type Respuesta<T> = { ok: true; datos: T } | { ok: false; status: number; error: string };
@@ -144,7 +137,7 @@
 		errorRut = null;
 		errorIniciar = null;
 
-		if (datos.prestamoActivo && requiereDocumento && documento === null) {
+		if (datos.prestamoActivo && documento === null) {
 			documento = datos.prestamoActivo.prestamo.tipoDocumento;
 		}
 	}
@@ -286,7 +279,7 @@
 	}
 
 	async function iniciar() {
-		if (!ficha || !sansano || (requiereDocumento && !documento)) {
+		if (!ficha || !sansano || !documento) {
 			return;
 		}
 
@@ -295,13 +288,13 @@
 		const prestamo: PrestamoJuntaDto = {
 			idEjemplar: fichaActual.ejemplar.idEjemplar,
 			rutSansano: solicitante.rutSansano,
-			tipoDocumento: requiereDocumento && documento ? documento : 'Carnet'
+			tipoDocumento: documento
 		};
 
 		enviando = true;
 		errorIniciar = null;
 		const respuesta = await pedir<{ idPrestamo: number }>(
-			`/admin/prestamos?tipo=${tipo}`,
+			'/admin/prestamos',
 			conJson('POST', prestamo)
 		);
 		enviando = false;
@@ -555,25 +548,16 @@
 		{/if}
 
 		<div class="mt-4">
-			{#if requiereDocumento}
-				<Dropdown
-					label="Documento retenido"
-					items={documentos}
-					value={documento}
-					onchange={(valor) => {
-						documento = valor as Documento;
-						errorIniciar = null;
-					}}
-					placeholder="Carnet · TNE · TUI · Otro"
-				/>
-			{:else}
-				<div
-					class="text-body-sm flex items-start gap-2 rounded-base border border-glass-border bg-black/20 p-2.5 text-on-surface-variant"
-				>
-					<Icon name="info" class="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.8} />
-					<p>Identificación por RUT/ROL. No se retiene documento.</p>
-				</div>
-			{/if}
+			<Dropdown
+				label="Documento retenido"
+				items={documentos}
+				value={documento}
+				onchange={(valor) => {
+					documento = valor as Documento;
+					errorIniciar = null;
+				}}
+				placeholder="Carnet · TNE · TUI · Otro (si no deja ninguno)"
+			/>
 		</div>
 	</section>
 
@@ -630,7 +614,7 @@
 					</span>
 				</li>
 				<li class="flex items-center gap-2">
-					{#if requiereDocumento ? documento : true}
+					{#if documento}
 						<Icon name="check" class="h-4 w-4 shrink-0" strokeWidth={2} />
 					{:else}
 						<Icon
@@ -641,11 +625,7 @@
 					{/if}
 					<span class="flex flex-wrap items-baseline gap-x-1">
 						<span class="text-on-surface-variant">Documento retenido:</span>
-						{#if requiereDocumento}
-							<span>{documento ?? 'Pendiente'}</span>
-						{:else}
-							<span>No se retiene · RUT/ROL</span>
-						{/if}
+						<span>{documento ?? 'Pendiente'}</span>
 					</span>
 				</li>
 			</ul>
@@ -679,7 +659,7 @@
 					<Icon name="circle-alert" class="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.8} />
 					<p>Falta identificar al solicitante para iniciar el préstamo.</p>
 				</div>
-			{:else if requiereDocumento && !documento}
+			{:else if !documento}
 				<div
 					class="text-body-sm mt-3 flex items-start gap-2 rounded-base border border-glass-border bg-black/20 p-3 text-on-surface-variant"
 				>
