@@ -7,4 +7,5 @@ export * from './prestamo.ts';
 export * from './sansano.ts';
 export * from './sesion.ts';
 export * from './solicitud.ts';
+export * from './exportacion.ts';
 export * from './staff.ts';
