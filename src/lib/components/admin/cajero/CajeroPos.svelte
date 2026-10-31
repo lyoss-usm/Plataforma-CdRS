@@ -31,6 +31,7 @@
 	let busqueda = $state('');
 	let ficha = $state<FichaBusqueda | null>(null);
 	let errorBusqueda = $state<string | null>(null);
+	let enviando = $state(false);
 
 	let qrAbierto = $state(false);
 
@@ -153,64 +154,100 @@
 		errorIniciar = null;
 	}
 
-	function terminarYCargar() {
-		const activo = prestamoAterminar;
+async function terminarYCargar() {
+    const activo = prestamoAterminar;
+    if (!activo) return;
 
-		if (!activo) {
-			return;
-		}
+    enviando = true;
+    errorIniciar = null;
 
-		const devuelto = meson.terminarPrestamo(activo.prestamo.idPrestamo, RUT_STAFF);
+    try {
+        const res = await fetch(`/admin/prestamos`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                idPrestamo: activo.prestamo.idPrestamo,
+                estadoFinal: 'Para revisar'
+            })
+        });
 
-		if (!devuelto) {
-			return;
-		}
+        const data = await res.json();
 
-		notificaciones.mostrar(
-			'info',
-			`Préstamo #${devuelto.idPrestamo} terminado`,
-			`${activo.ejemplar.idEjemplar} ${activo.juego.nombreJuego} terminó con ${activo.sansano.nombreSansano} y quedó «Para revisar». Escanea el juego nuevo para darle otro préstamo.`,
-			{ duracion: 8000 }
-		);
-		errorIniciar = null;
+        if (!res.ok) {
+            errorIniciar = data.error || 'Error al terminar el préstamo en la BD';
+            return;
+        }
 
-		if (ficha && ficha.ejemplar.idEjemplar === activo.ejemplar.idEjemplar) {
-			limpiarFicha();
-		}
-	}
+        notificaciones.mostrar(
+            'info',
+            `Préstamo #${activo.prestamo.idPrestamo} terminado`,
+            `${activo.ejemplar.idEjemplar} ${activo.juego.nombreJuego} terminó con ${activo.sansano.nombreSansano} y quedó «Para revisar». Escanea el juego nuevo para darle otro préstamo.`,
+            { duracion: 8000 }
+        );
 
-	function iniciar() {
-		if (!ficha || !sansano || (requiereDocumento && !documento)) {
-			return;
-		}
+        if (ficha && ficha.ejemplar.idEjemplar === activo.ejemplar.idEjemplar) {
+            limpiarFicha();
+        }
+    } catch (err) {
+        errorIniciar = 'Error de conexión al terminar préstamo.';
+    } finally {
+        enviando = false;
+    }
+}
 
-		const resultado = meson.crearPrestamoPresencial({
-			idEjemplar: ficha.ejemplar.idEjemplar,
-			rutSansano: sansano.rutSansano,
-			documento: requiereDocumento ? documento : null,
-			rutPrestador: RUT_STAFF
-		});
+async function iniciar() {
+    if (!ficha || !sansano || (requiereDocumento && !documento)) {
+        return;
+    }
 
-		if (!resultado.ok) {
-			errorIniciar = resultado.motivo;
-			return;
-		}
+    enviando = true;
+    errorIniciar = null;
 
-		notificaciones.mostrar(
-			'success',
-			`Préstamo #${resultado.prestamo.idPrestamo} iniciado`,
-			`Solicitud #${resultado.solicitud.idSolicitud} aprobada · ${ficha.ejemplar.idEjemplar} ${ficha.juego.nombreJuego} con ${sansano.nombreSansano}. El ejemplar quedó en «Prestado».`
-		);
-		errorIniciar = null;
-		ficha = null;
-		busqueda = '';
-		errorBusqueda = null;
-		documento = null;
-		rutEntrada = '';
-		sansano = null;
-		noExiste = false;
-		errorRut = null;
-	}
+    try {
+        const respuesta = await fetch(`/admin/prestamos?tipo=${tipo}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                idEjemplar: ficha.ejemplar.idEjemplar,
+                rutSansano: sansano.rutSansano,
+                tipoDocumento: requiereDocumento ? documento : 'Carnet'
+            })
+        });
+
+        const data = await respuesta.json();
+
+        if (!respuesta.ok) {
+            let errorMsg = data.error || 'Error al iniciar el préstamo en la BD';
+            if (data.detalles) {
+                errorMsg += ' - ' + Object.values(data.detalles).flat().join(', ');
+            }
+            errorIniciar = errorMsg;
+            return;
+        }
+
+        notificaciones.mostrar(
+            'success',
+            `Préstamo #${data.idPrestamo} iniciado`,
+            `${ficha.ejemplar.idEjemplar} ${ficha.juego.nombreJuego} prestado a ${sansano.nombreSansano}.`
+        );
+
+        ficha = null;
+        busqueda = '';
+        errorBusqueda = null;
+        documento = null;
+        rutEntrada = '';
+        sansano = null;
+        noExiste = false;
+        errorRut = null;
+
+    } catch (err) {
+        errorIniciar = 'Error de red al intentar comunicarse con el servidor.';
+    } finally {
+        enviando = false;
+    }
+}
 </script>
 
 <div class="mx-auto flex w-full max-w-5xl flex-col gap-4">
@@ -581,15 +618,20 @@
 			<button
 				type="button"
 				onclick={prestamoAterminar ? terminarYCargar : iniciar}
-				disabled={!prestamoAterminar && !listo}
+				disabled={(!prestamoAterminar && !listo) || enviando}
 				class="mt-4 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-base border border-primary/50 bg-primary/10 px-6 py-3 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow disabled:cursor-not-allowed disabled:opacity-40"
 			>
-				<Icon
-					name={prestamoAterminar ? 'arrow-left-right' : 'check'}
-					class="h-4 w-4"
-					strokeWidth={2}
-				/>
-				{prestamoAterminar ? 'Terminar préstamo y prestar otro juego' : 'Iniciar préstamo'}
+				{#if enviando}
+					<Icon name="loader-2" class="h-4 w-4 animate-spin" strokeWidth={2} />
+					Registrando en la base de datos...
+				{:else}
+					<Icon
+						name={prestamoAterminar ? 'arrow-left-right' : 'check'}
+						class="h-4 w-4"
+						strokeWidth={2}
+					/>
+					{prestamoAterminar ? 'Terminar préstamo y prestar otro juego' : 'Iniciar préstamo'}
+				{/if}
 			</button>
 		</section>
 	{/if}
