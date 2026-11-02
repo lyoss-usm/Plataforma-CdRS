@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fixture escrito a mano; sin imagen y con muchos datos vacíos -->
+<items termsofuse="https://boardgamegeek.com/xmlapi/termsofuse">
+  <item type="boardgame" id="30549">
+    <name type="primary" sortindex="1" value="Pandemic" />
+    <yearpublished value="2008" />
+    <minplayers value="2" />
+    <maxplayers value="4" />
+    <playingtime value="45" />
+    <minage value="8" />
+    <statistics page="1">
+      <ratings>
+        <usersrated value="110000" />
+        <average value="7.58" />
+        <averageweight value="2.4" />
+      </ratings>
+    </statistics>
+  </item>
+</items>
