@@ -119,6 +119,7 @@ const juegos: Juego[] = [
 		calificacion: 8.2,
 		dificultad: 'Intermedio',
 		pathImagen: '/ludoteca/catan.jpg',
+		idBgg: null,
 		manual: null,
 		video: null
 	},
@@ -134,6 +135,7 @@ const juegos: Juego[] = [
 		calificacion: 8.0,
 		dificultad: 'Intermedio',
 		pathImagen: null,
+		idBgg: null,
 		manual: null,
 		video: null
 	},
@@ -149,6 +151,7 @@ const juegos: Juego[] = [
 		calificacion: 7.9,
 		dificultad: 'Fácil',
 		pathImagen: '/ludoteca/dixit.jpg',
+		idBgg: null,
 		manual: null,
 		video: null
 	},
@@ -164,6 +167,7 @@ const juegos: Juego[] = [
 		calificacion: 7.5,
 		dificultad: 'Fácil',
 		pathImagen: '/ludoteca/codenames.jpg',
+		idBgg: null,
 		manual: null,
 		video: null
 	},
@@ -179,6 +183,7 @@ const juegos: Juego[] = [
 		calificacion: 9.1,
 		dificultad: 'Difícil',
 		pathImagen: '/ludoteca/scythe.png',
+		idBgg: null,
 		manual: null,
 		video: null
 	},
@@ -194,6 +199,7 @@ const juegos: Juego[] = [
 		calificacion: 7.4,
 		dificultad: 'Fácil',
 		pathImagen: '/ludoteca/ticket-to-ride.jpg',
+		idBgg: null,
 		manual: null,
 		video: null
 	},
@@ -209,6 +215,7 @@ const juegos: Juego[] = [
 		calificacion: 7.6,
 		dificultad: 'Intermedio',
 		pathImagen: '/ludoteca/pandemic.jpg',
+		idBgg: null,
 		manual: null,
 		video: null
 	},
@@ -224,6 +231,7 @@ const juegos: Juego[] = [
 		calificacion: 8.8,
 		dificultad: 'Difícil',
 		pathImagen: '/ludoteca/gloomhaven.jpg',
+		idBgg: null,
 		manual: null,
 		video: null
 	}
@@ -338,7 +346,7 @@ const sofia: Sansano = {
 	digitoVerificador: 9,
 	idCargo: null,
 	nombreSansano: 'Sofía Muñoz',
-	telefono: 912345678,
+	telefono: 12345678,
 	correoInstitucional: 'sofia.munoz@alumnos.usm.cl',
 	authUserId: null
 };
@@ -349,7 +357,7 @@ const tomas: Sansano = {
 	digitoVerificador: 1,
 	idCargo: null,
 	nombreSansano: 'Tomás Herrera',
-	telefono: 987654321,
+	telefono: 87654321,
 	correoInstitucional: 'tomas.herrera@usm.cl',
 	authUserId: null
 };
@@ -360,7 +368,7 @@ const camila: Sansano = {
 	digitoVerificador: 5,
 	idCargo: null,
 	nombreSansano: 'Camila Fuentes',
-	telefono: 911223344,
+	telefono: 11223344,
 	correoInstitucional: 'camila.fuentes@usm.cl',
 	authUserId: null
 };
@@ -380,7 +388,7 @@ const jorge: Sansano = {
 	digitoVerificador: 4,
 	idCargo: null,
 	nombreSansano: 'Jorge Núñez',
-	telefono: 977889900,
+	telefono: 77889900,
 	correoInstitucional: 'jorge.nunez@alumnos.usm.cl',
 	authUserId: null
 };
@@ -391,7 +399,7 @@ const paulina: Sansano = {
 	digitoVerificador: 1,
 	idCargo: null,
 	nombreSansano: 'Paulina Carrasco',
-	telefono: 988990011,
+	telefono: 88990011,
 	correoInstitucional: 'paulina.carrasco@sansano.usm.cl',
 	authUserId: null
 };
@@ -420,7 +428,7 @@ const daniela: Sansano = {
 	digitoVerificador: 3,
 	idCargo: 3,
 	nombreSansano: 'Daniela Contreras',
-	telefono: 933445566,
+	telefono: 33445566,
 	correoInstitucional: 'daniela.contreras@usm.cl',
 	authUserId: 'a1b2c3d4-0000-4000-8000-000000000001'
 };
@@ -431,7 +439,7 @@ const marcelo: Sansano = {
 	digitoVerificador: 4,
 	idCargo: 2,
 	nombreSansano: 'Marcelo Rivas',
-	telefono: 955667788,
+	telefono: 55667788,
 	correoInstitucional: 'marcelo.rivas@usm.cl',
 	authUserId: 'a1b2c3d4-0000-4000-8000-000000000002'
 };
@@ -442,7 +450,7 @@ const ignacia: Sansano = {
 	digitoVerificador: 2,
 	idCargo: 2,
 	nombreSansano: 'Ignacia Soto',
-	telefono: 966778899,
+	telefono: 66778899,
 	correoInstitucional: 'ignacia.soto@usm.cl',
 	authUserId: 'a1b2c3d4-0000-4000-8000-000000000003'
 };
@@ -453,7 +461,7 @@ const fernanda: Sansano = {
 	digitoVerificador: 0,
 	idCargo: 1,
 	nombreSansano: 'Fernanda Alarcón',
-	telefono: 977889900,
+	telefono: 77889900,
 	correoInstitucional: 'fernanda.alarcon@sansano.usm.cl',
 	authUserId: 'a1b2c3d4-0000-4000-8000-000000000004'
 };
@@ -464,7 +472,7 @@ const martin: Sansano = {
 	digitoVerificador: 3,
 	idCargo: 1,
 	nombreSansano: 'Martín Lagos',
-	telefono: 988990011,
+	telefono: 88990011,
 	correoInstitucional: 'martin.lagos@alumnos.usm.cl',
 	authUserId: 'a1b2c3d4-0000-4000-8000-000000000005'
 };
@@ -475,7 +483,7 @@ const renato: Sansano = {
 	digitoVerificador: 5,
 	idCargo: 1,
 	nombreSansano: 'Renato Cid',
-	telefono: 966778899,
+	telefono: 66778899,
 	correoInstitucional: 'renato.cid@sansano.usm.cl',
 	authUserId: null
 };
@@ -486,7 +494,7 @@ const felipe: Sansano = {
 	digitoVerificador: 6,
 	idCargo: 3,
 	nombreSansano: 'Felipe Guzmán',
-	telefono: 955667788,
+	telefono: 55667788,
 	correoInstitucional: 'felipe.guzman@usm.cl',
 	authUserId: null
 };
@@ -514,11 +522,6 @@ const permisosIniciales: Permiso[] = [
 		idPermiso: 1,
 		nombrePermiso: 'prestamos:junta',
 		descripcionPermiso: 'Cobrar préstamos en juntas masivas (cajero).'
-	},
-	{
-		idPermiso: 2,
-		nombrePermiso: 'prestamos:general',
-		descripcionPermiso: 'Realizar préstamos generales del catálogo.'
 	},
 	{
 		idPermiso: 3,
@@ -562,14 +565,12 @@ const cargoPermisosIniciales: CargoPermiso[] = [
 	{ idCargo: 1, idPermiso: 6 },
 	{ idCargo: 1, idPermiso: 9 },
 	{ idCargo: 2, idPermiso: 1 },
-	{ idCargo: 2, idPermiso: 2 },
 	{ idCargo: 2, idPermiso: 3 },
 	{ idCargo: 2, idPermiso: 4 },
 	{ idCargo: 2, idPermiso: 5 },
 	{ idCargo: 2, idPermiso: 6 },
 	{ idCargo: 2, idPermiso: 9 },
 	{ idCargo: 3, idPermiso: 1 },
-	{ idCargo: 3, idPermiso: 2 },
 	{ idCargo: 3, idPermiso: 3 },
 	{ idCargo: 3, idPermiso: 4 },
 	{ idCargo: 3, idPermiso: 5 },
@@ -788,113 +789,6 @@ class Meson {
 
 	cargoDe(idCargo: number): Cargo | null {
 		return this.cargos.find((c) => c.idCargo === idCargo) ?? null;
-	}
-
-	permisosDeCargo(idCargo: number | null): Permiso[] {
-		if (idCargo === null) {
-			return [];
-		}
-
-		const ids = this.cargoPermisos.filter((cp) => cp.idCargo === idCargo).map((cp) => cp.idPermiso);
-
-		return this.permisos.filter((p) => ids.includes(p.idPermiso));
-	}
-
-	invitarSansano(
-		datos: DatosAltaSansano,
-		idCargo: number
-	): { ok: boolean; sansano: Sansano | null; motivo: string } {
-		const porRut = this.sansanoPorRut(datos.rut);
-
-		if (porRut) {
-			if (porRut.idCargo !== null) {
-				return {
-					ok: false,
-					sansano: null,
-					motivo: 'El RUT ya pertenece al staff con un cargo asignado.'
-				};
-			}
-
-			porRut.idCargo = idCargo;
-
-			return { ok: true, sansano: porRut, motivo: '' };
-		}
-
-		const porCorreo = this.sansanos.find((s) => s.correoInstitucional === datos.correo);
-
-		if (porCorreo) {
-			return {
-				ok: false,
-				sansano: null,
-				motivo: `El correo ya está registrado en ${porCorreo.nombreSansano}.`
-			};
-		}
-
-		const nuevo: Sansano = {
-			rutSansano: datos.rut,
-			rolSansano: datos.rol,
-			digitoVerificador: datos.digitoVerificador,
-			idCargo,
-			nombreSansano: datos.nombre,
-			telefono: datos.telefono,
-			correoInstitucional: datos.correo,
-			authUserId: null
-		};
-
-		this.sansanos.push(nuevo);
-
-		return { ok: true, sansano: nuevo, motivo: '' };
-	}
-
-	actualizarSansano(
-		rutSansano: number,
-		cambios: Partial<
-			Pick<Sansano, 'nombreSansano' | 'telefono' | 'correoInstitucional' | 'idCargo'>
-		>
-	): Sansano | null {
-		const sansano = this.sansanoPorRut(rutSansano);
-
-		if (!sansano) {
-			return null;
-		}
-
-		Object.assign(sansano, cambios);
-
-		return sansano;
-	}
-
-	darBajaSansano(rutSansano: number): Sansano | null {
-		return this.actualizarSansano(rutSansano, { idCargo: null });
-	}
-
-	eliminarSansano(rutSansano: number): { ok: boolean; motivo: string } {
-		const tieneHistorial =
-			this.solicitudes.some((s) => s.rutSansano === rutSansano) ||
-			this.prestamos.some(
-				(p) =>
-					p.rutPrestador === rutSansano ||
-					p.rutReceptor === rutSansano ||
-					p.rutRevisor === rutSansano
-			) ||
-			this.suspensiones.some((s) => s.rutSansano === rutSansano);
-
-		if (tieneHistorial) {
-			return {
-				ok: false,
-				motivo:
-					'El registro conserva historial (solicitudes, préstamos o suspensiones). Aplica la baja por cargo.'
-			};
-		}
-
-		const indice = this.sansanos.findIndex((s) => s.rutSansano === rutSansano);
-
-		if (indice === -1) {
-			return { ok: false, motivo: 'El sansano no existe.' };
-		}
-
-		this.sansanos.splice(indice, 1);
-
-		return { ok: true, motivo: '' };
 	}
 
 	suspensionesDe(rutSansano: number): Suspension[] {

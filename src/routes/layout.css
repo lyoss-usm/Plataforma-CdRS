@@ -258,6 +258,16 @@
 		-webkit-font-smoothing: antialiased;
 	}
 
+	button:not(:disabled),
+	[role='button']:not([aria-disabled='true']),
+	summary {
+		cursor: pointer;
+	}
+
+	button:disabled {
+		cursor: not-allowed;
+	}
+
 	::selection {
 		background-color: var(--color-primary-container);
 		color: var(--color-on-primary-container);

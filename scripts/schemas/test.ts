@@ -4,13 +4,22 @@ import {
 	catalogGameSchema,
 	catalogPageSchema,
 	catalogQuerySchema,
+	calcularDigitoVerificador,
+	crearSolicitudWebSchema,
 	createEjemplarSchema,
 	createJuegoSchema,
 	createPrestamoSchema,
 	createSansanoSchema,
 	createSolicitudSchema,
+	errorRol,
+	formatearIdentificador,
 	juegoSchema,
+	opcionesSolicitudWebSchema,
+	normalizarTelefono,
+	parsearRol,
 	permisoSchema,
+	respuestaErrorSolicitudWebSchema,
+	solicitudWebCreadaSchema,
 	suspensionSchema,
 	updateJuegoSchema
 } from '../../src/lib/schemas/index.ts';
@@ -21,6 +30,20 @@ const authUserId = '550e8400-e29b-41d4-a716-446655440002';
 const rutSansano = 12345678;
 const rutStaff = 87654321;
 const fechaRetiro = '2026-05-21T18:30:00-04:00';
+
+const solicitudWebSchema = crearSolicitudWebSchema();
+
+const solicitudWebValida = {
+	idJuego: '1',
+	idJuegoExpansion: '2',
+	nombreSansano: '  Ada   Lovelace  ',
+	rut: '18585543-0',
+	rol: '202612345-6',
+	telefono: '1234 5678',
+	correoInstitucional: 'ada.lovelace@alumnos.usm.cl',
+	bloqueRetiro: 'martes',
+	aceptaTerminos: 'on'
+};
 
 const catalogGame = {
 	idJuego: 1,
@@ -176,6 +199,31 @@ const cases = [
 			total: 1,
 			hayMas: false
 		}
+	},
+	{
+		name: 'Formulario público de solicitud',
+		schema: solicitudWebSchema,
+		value: solicitudWebValida
+	},
+	{
+		name: 'Opciones del formulario de solicitud',
+		schema: opcionesSolicitudWebSchema,
+		value: {
+			expansiones: [{ idJuego: 2, nombreJuego: 'Navegantes de Catan' }]
+		}
+	},
+	{
+		name: 'Respuesta de solicitud creada',
+		schema: solicitudWebCreadaSchema,
+		value: { idSolicitud: 1 }
+	},
+	{
+		name: 'Error del formulario de solicitud',
+		schema: respuestaErrorSolicitudWebSchema,
+		value: {
+			message: 'Revisa los datos del formulario.',
+			issues: [{ path: ['rut'], message: 'Ingresa un RUT válido' }]
+		}
 	}
 ];
 
@@ -227,6 +275,46 @@ const invalidCases = [
 		name: 'Identificador de ejemplar vacío',
 		schema: createEjemplarSchema,
 		value: { ...cases[1].value, idEjemplar: '   ' }
+	},
+	{
+		name: 'Formulario con RUT inválido',
+		schema: solicitudWebSchema,
+		value: {
+			...solicitudWebValida,
+			rut: '18585543-1'
+		}
+	},
+	{
+		name: 'Formulario con dígito verificador de ROL inválido',
+		schema: solicitudWebSchema,
+		value: {
+			...solicitudWebValida,
+			rol: '202612345-9'
+		}
+	},
+	{
+		name: 'Formulario con teléfono inválido',
+		schema: solicitudWebSchema,
+		value: {
+			...solicitudWebValida,
+			telefono: '1234567'
+		}
+	},
+	{
+		name: 'Formulario sin bloque de retiro',
+		schema: solicitudWebSchema,
+		value: {
+			...solicitudWebValida,
+			bloqueRetiro: ''
+		}
+	},
+	{
+		name: 'Formulario sin aceptación de términos',
+		schema: solicitudWebSchema,
+		value: {
+			...solicitudWebValida,
+			aceptaTerminos: undefined
+		}
 	}
 ];
 
@@ -255,6 +343,75 @@ for (const testCase of invalidCases) {
 	}
 
 	console.log(`${testCase.name}: inválido según lo esperado`);
+}
+
+const formularioConCorreoInvalido = solicitudWebSchema.safeParse({
+	...solicitudWebValida,
+	correoInstitucional: 'correo-invalido'
+});
+
+if (
+	formularioConCorreoInvalido.success ||
+	!formularioConCorreoInvalido.error.issues.some(
+		(issue) =>
+			issue.path[0] === 'correoInstitucional' &&
+			issue.message === 'Ingresa un correo electrónico válido'
+	)
+) {
+	hasErrors = true;
+	console.error('El correo inválido no produjo el mensaje esperado en español');
+}
+
+const formularioSinBloque = solicitudWebSchema.safeParse({
+	...solicitudWebValida,
+	bloqueRetiro: ''
+});
+
+if (
+	formularioSinBloque.success ||
+	!formularioSinBloque.error.issues.some(
+		(issue) =>
+			issue.path[0] === 'bloqueRetiro' &&
+			issue.message === 'Selecciona uno de los bloques de retiro disponibles'
+	)
+) {
+	hasErrors = true;
+	console.error('El bloque vacío no produjo el mensaje esperado en español');
+}
+
+if (calcularDigitoVerificador('18585543') !== '0') {
+	hasErrors = true;
+	console.error('El cálculo del dígito verificador no produjo el resultado esperado');
+}
+
+if (formatearIdentificador('18.585.5430') !== '18585543-0') {
+	hasErrors = true;
+	console.error('El autoformato del identificador no produjo el resultado esperado');
+}
+
+if (parsearRol('202612345-6') !== 202612345 || parsearRol('2026123456') !== 202612345) {
+	hasErrors = true;
+	console.error('No se reconoció un ROL válido con y sin guion');
+}
+
+if (parsearRol('202612345-9') !== null || errorRol('202612345-9') === null) {
+	hasErrors = true;
+	console.error('No se rechazó un ROL con dígito verificador inválido');
+}
+
+if (parsearRol('12345-6') !== null || errorRol('12345-6') === null) {
+	hasErrors = true;
+	console.error('No se rechazó un ROL con menos de 9 dígitos');
+}
+
+if (formatearIdentificador('2026.12345-6', 10) !== '202612345-6') {
+	hasErrors = true;
+	console.error('El autoformato del ROL no produjo el resultado esperado');
+}
+
+if (normalizarTelefono('+56 9 1234 5678') !== '12345678') {
+	hasErrors = true;
+	console.error('La normalización del teléfono no dejó solo los 8 dígitos finales');
 }
 
 if (hasErrors) {

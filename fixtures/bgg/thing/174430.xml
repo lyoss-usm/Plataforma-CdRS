@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fixture escrito a mano con la forma de xmlapi2/thing?stats=1; reemplazar con scripts/bgg/capturar-fixtures.ts -->
+<items termsofuse="https://boardgamegeek.com/xmlapi/termsofuse">
+  <item type="boardgame" id="174430">
+    <thumbnail>https://cf.geekdo-images.com/mock/thumb174430.jpg</thumbnail>
+    <image>https://cf.geekdo-images.com/mock/pic174430.jpg</image>
+    <name type="primary" sortindex="1" value="Gloomhaven" />
+    <name type="alternate" sortindex="1" value="Gloomhaven (Second Printing)" />
+    <yearpublished value="2017" />
+    <minplayers value="1" />
+    <maxplayers value="4" />
+    <playingtime value="120" />
+    <minage value="14" />
+    <link type="boardgameexpansion" id="231" value="Gloomhaven: Forgotten Circles" />
+    <statistics page="1">
+      <ratings>
+        <usersrated value="60000" />
+        <average value="8.6123" />
+        <averageweight value="3.8765" />
+      </ratings>
+    </statistics>
+  </item>
+</items>

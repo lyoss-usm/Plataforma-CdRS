@@ -1,17 +1,24 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import Icon from '$lib/components/Icon.svelte';
 	import Modal from '$lib/components/admin/primitives/Modal.svelte';
 	import StatusBadge from '$lib/components/admin/primitives/StatusBadge.svelte';
 	import Dropdown from '$lib/components/admin/primitives/Dropdown.svelte';
 	import FormField from '$lib/components/admin/primitives/FormField.svelte';
-	import { meson, formatearRut } from '$lib/data/junta.svelte';
-	import { adminSession } from '$lib/stores/adminSession.svelte';
+	import TelefonoInput from '$lib/components/forms/TelefonoInput.svelte';
+	import { formatearRut } from '$lib/data/junta.svelte';
+	import { formatearTelefono } from '$lib/schemas';
 	import { notificaciones } from '$lib/stores/notificaciones.svelte';
 	import { dominiosCorreoInstitucional } from '$lib/schemas/sansano';
-	import type { Sansano } from '$lib/schemas';
+	import type { StaffFila } from '$lib/schemas';
+	import type { SubmitFunction } from '@sveltejs/kit';
 
 	interface Props {
-		sansano: Sansano;
+		ficha: StaffFila;
+		cargos: { idCargo: number; nombreCargo: string }[];
+		/** Permisos efectivos del cargo actual (`CargoPermiso`). */
+		permisos: string[];
+		puedeGestionar: boolean;
 		onclose: () => void;
 	}
 
@@ -19,14 +26,21 @@
 	type Accion = 'baja' | 'eliminar' | null;
 	type CampoValidable = 'nombre' | 'telefono' | 'correo' | 'cargo';
 
-	let { sansano, onclose }: Props = $props();
+	let { ficha: sansano, cargos, permisos, puedeGestionar: gestiona, onclose }: Props = $props();
 
-	const formatoTelefono = /^[0-9 +-]{8,20}$/;
-	const gestiona = $derived(adminSession.user.role === 'directivo');
+	const formatoTelefono = /^\d{8}$/;
+	// Campo del formulario del servidor → campo local.
+	const campoLocal: Record<string, CampoValidable> = {
+		nombreSansano: 'nombre',
+		telefono: 'telefono',
+		correoInstitucional: 'correo',
+		idCargo: 'cargo'
+	};
 
 	let modo = $state<Modo>('ver');
 	let accion = $state<Accion>(null);
 	let errorGestion = $state<string | null>(null);
+	let enviando = $state(false);
 
 	let nombre = $state('');
 	let telefono = $state('');
@@ -39,22 +53,17 @@
 		cargo: false
 	});
 	let intentoGuardado = $state(false);
+	let erroresServidor = $state<Partial<Record<CampoValidable, string>>>({});
 
 	const itemsCargo = $derived(
-		meson.cargos.map((c) => ({ value: String(c.idCargo), label: c.nombreCargo }))
+		cargos.map((c) => ({ value: String(c.idCargo), label: c.nombreCargo }))
 	);
 
-	const cargoActual = $derived(sansano.idCargo === null ? null : meson.cargoDe(sansano.idCargo));
-	const suspension = $derived(meson.suspensionActiva(sansano.rutSansano));
+	const suspension = $derived(sansano.suspendido);
 	const historial = $derived({
-		solicitudes: meson.solicitudes.filter((s) => s.rutSansano === sansano.rutSansano).length,
-		prestamos: meson.prestamos.filter(
-			(p) =>
-				p.rutPrestador === sansano.rutSansano ||
-				p.rutReceptor === sansano.rutSansano ||
-				p.rutRevisor === sansano.rutSansano
-		).length,
-		suspensiones: meson.suspensionesDe(sansano.rutSansano).length
+		solicitudes: sansano.solicitudes,
+		prestamos: sansano.prestamos,
+		suspensiones: sansano.suspensiones
 	});
 	const totalHistorial = $derived(
 		historial.solicitudes + historial.prestamos + historial.suspensiones
@@ -63,9 +72,9 @@
 	const claseBotonSecundario =
 		'cursor-pointer rounded-base border border-glass-border px-4 py-2 text-on-surface-variant transition hover:bg-white/5 hover:text-on-surface';
 	const claseBotonPrimario =
-		'inline-flex cursor-pointer items-center gap-2 rounded-base border border-primary/50 bg-primary/10 px-4 py-2 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow';
+		'inline-flex cursor-pointer items-center gap-2 rounded-base border border-primary/50 bg-primary/10 px-4 py-2 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow disabled:cursor-not-allowed disabled:opacity-40';
 	const claseBotonPeligro =
-		'inline-flex cursor-pointer items-center gap-2 rounded-base border border-error/50 bg-error/15 px-4 py-2 font-semibold text-error transition hover:bg-error/25';
+		'inline-flex cursor-pointer items-center gap-2 rounded-base border border-error/50 bg-error/15 px-4 py-2 font-semibold text-error transition hover:bg-error/25 disabled:cursor-not-allowed disabled:opacity-40';
 	const claseBotonBaja =
 		'inline-flex cursor-pointer items-center gap-2 rounded-base border border-tertiary/50 bg-tertiary/10 px-3 py-1.5 font-mono text-xs uppercase tracking-wider text-tertiary transition hover:bg-tertiary/20';
 	const claseInput =
@@ -73,12 +82,11 @@
 	const claseInputValido = `${claseInput} border-glass-border`;
 	const claseInputInvalido = `${claseInput} border-error`;
 
-	function fechaCorta(iso: string): string {
-		return new Date(iso).toLocaleDateString('es-CL', {
-			day: '2-digit',
-			month: 'short',
-			year: 'numeric'
-		});
+	function toneCargo(nombreCargo: string): 'error' | 'info' | 'neutral' {
+		if (nombreCargo === 'Directivo') return 'error';
+		if (nombreCargo === 'Senior') return 'info';
+
+		return 'neutral';
 	}
 
 	function iniciarEdicion() {
@@ -88,6 +96,7 @@
 		cargoSeleccion = sansano.idCargo === null ? '' : String(sansano.idCargo);
 		tocado = { nombre: false, telefono: false, correo: false, cargo: false };
 		intentoGuardado = false;
+		erroresServidor = {};
 		errorGestion = null;
 		modo = 'editar';
 	}
@@ -104,7 +113,7 @@
 				return telefono.trim() === ''
 					? 'Ingresa el teléfono.'
 					: !formatoTelefono.test(telefono.trim())
-						? 'Ingresa un teléfono válido.'
+						? 'Ingresa los 8 dígitos posteriores a +56 9.'
 						: null;
 			case 'correo': {
 				if (correo.trim() === '') {
@@ -125,7 +134,7 @@
 	}
 
 	function mostrarError(campo: CampoValidable, mensaje: string | null): string | null {
-		return tocado[campo] || intentoGuardado ? mensaje : null;
+		return (tocado[campo] || intentoGuardado ? mensaje : null) ?? erroresServidor[campo] ?? null;
 	}
 
 	const errores = $derived({
@@ -135,28 +144,6 @@
 		cargo: mostrarError('cargo', validarCampo('cargo'))
 	});
 	const hayErrores = $derived(Object.values(errores).some(Boolean));
-
-	function guardar() {
-		intentoGuardado = true;
-
-		if (hayErrores) {
-			return;
-		}
-
-		meson.actualizarSansano(sansano.rutSansano, {
-			nombreSansano: nombre.trim(),
-			telefono: Number(telefono.replace(/[^0-9]/g, '')),
-			correoInstitucional: correo.trim(),
-			idCargo: Number(cargoSeleccion)
-		});
-
-		notificaciones.mostrar(
-			'success',
-			'Staff actualizado',
-			`Se guardaron los cambios de ${nombre.trim()} y su cargo reasignado.`
-		);
-		modo = 'ver';
-	}
 
 	function pedirBaja() {
 		accion = 'baja';
@@ -170,44 +157,77 @@
 		modo = 'confirmar';
 	}
 
-	function confirmarGestion() {
-		if (accion === 'baja') {
-			const resultado = meson.darBajaSansano(sansano.rutSansano);
+	type Resultado = { ok: boolean; mensaje: string; errores: Record<string, string> };
 
-			if (!resultado) {
-				errorGestion = 'El staff no existe en la nómina.';
-				return;
+	// Los tres formularios (editar, baja, eliminar) comparten el manejo del resultado del servidor.
+	const alEditar: SubmitFunction = ({ formData, cancel }) => {
+		intentoGuardado = true;
+		erroresServidor = {};
+
+		if (hayErrores) {
+			cancel();
+			return;
+		}
+
+		formData.set('telefono', telefono.replace(/\D/g, ''));
+		enviando = true;
+
+		return async ({ result, update }) => {
+			enviando = false;
+
+			if (result.type === 'success') {
+				notificaciones.mostrar('success', 'Staff actualizado', (result.data as Resultado).mensaje);
+				modo = 'ver';
+				await update({ reset: false });
+			} else if (result.type === 'failure') {
+				const datos = result.data as Resultado;
+				erroresServidor = {};
+				for (const [campo, mensaje] of Object.entries(datos.errores)) {
+					const local = campoLocal[campo];
+					if (local) erroresServidor[local] = mensaje;
+				}
+				errorGestion = Object.keys(datos.errores).length ? null : datos.mensaje;
+			} else {
+				await update({ reset: false });
 			}
+		};
+	};
 
-			notificaciones.mostrar(
-				'info',
-				'Staff dado de baja',
-				`${sansano.nombreSansano} dejó de operar los paneles. Su historial se conserva.`
-			);
-			onclose();
-			return;
-		}
+	const alGestionar: SubmitFunction = () => {
+		enviando = true;
 
-		const resultado = meson.eliminarSansano(sansano.rutSansano);
+		return async ({ result, update }) => {
+			enviando = false;
 
-		if (!resultado.ok) {
-			errorGestion = resultado.motivo;
-			modo = 'ver';
-			return;
-		}
-
-		notificaciones.mostrar(
-			'success',
-			'Registro eliminado',
-			`El registro de ${sansano.nombreSansano} se eliminó de forma permanente.`
-		);
-		onclose();
-	}
+			if (result.type === 'success') {
+				const datos = result.data as Resultado;
+				notificaciones.mostrar(
+					accion === 'baja' ? 'info' : 'success',
+					accion === 'baja' ? 'Staff dado de baja' : 'Registro eliminado',
+					datos.mensaje
+				);
+				await update({ reset: false });
+				onclose();
+			} else if (result.type === 'failure') {
+				errorGestion = (result.data as Resultado).mensaje;
+				modo = 'ver';
+			} else {
+				await update({ reset: false });
+			}
+		};
+	};
 </script>
 
 <Modal title={`Ficha de ${sansano.nombreSansano}`} size="lg" {onclose}>
 	{#if modo === 'confirmar'}
-		<div class="flex items-start gap-3">
+		<form
+			id="ficha-gestion"
+			method="POST"
+			action={accion === 'baja' ? '?/baja' : '?/eliminar'}
+			use:enhance={alGestionar}
+			class="flex items-start gap-3"
+		>
+			<input type="hidden" name="rutSansano" value={sansano.rutSansano} />
 			<span
 				class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-error/50 bg-error/15"
 			>
@@ -229,9 +249,18 @@
 					{/if}
 				</p>
 			</div>
-		</div>
+		</form>
 	{:else if modo === 'editar'}
-		<div class="flex flex-col gap-4">
+		<form
+			id="ficha-editar"
+			method="POST"
+			action="?/editar"
+			novalidate
+			use:enhance={alEditar}
+			class="flex flex-col gap-4"
+		>
+			<input type="hidden" name="rutSansano" value={sansano.rutSansano} />
+			<input type="hidden" name="idCargo" value={cargoSeleccion} />
 			<div class="rounded-base border border-glass-border p-4">
 				<p class="font-mono text-[10px] tracking-wider text-on-surface-variant/70 uppercase">
 					Identidad (no se edita)
@@ -246,6 +275,7 @@
 				<FormField label="Nombre" htmlFor="staff-nombre" error={errores.nombre}>
 					<input
 						id="staff-nombre"
+						name="nombreSansano"
 						type="text"
 						bind:value={nombre}
 						onblur={() => marcarTocado('nombre')}
@@ -256,14 +286,13 @@
 				</FormField>
 
 				<FormField label="Teléfono" htmlFor="staff-telefono" error={errores.telefono}>
-					<input
+					<TelefonoInput
 						id="staff-telefono"
-						type="tel"
 						bind:value={telefono}
+						inputClass={errores.telefono ? claseInputInvalido : claseInputValido}
 						onblur={() => marcarTocado('telefono')}
-						aria-invalid={errores.telefono !== null}
-						aria-describedby={errores.telefono ? 'staff-telefono-error' : undefined}
-						class={errores.telefono ? claseInputInvalido : claseInputValido}
+						invalid={errores.telefono !== null}
+						describedby={errores.telefono ? 'staff-telefono-error' : undefined}
 					/>
 				</FormField>
 			</div>
@@ -272,6 +301,7 @@
 				<FormField label="Correo institucional" htmlFor="staff-correo" error={errores.correo}>
 					<input
 						id="staff-correo"
+						name="correoInstitucional"
 						type="email"
 						bind:value={correo}
 						onblur={() => marcarTocado('correo')}
@@ -305,7 +335,7 @@
 					<span>{errorGestion}</span>
 				</p>
 			{/if}
-		</div>
+		</form>
 	{:else}
 		<div class="flex flex-col gap-4">
 			<div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -323,17 +353,13 @@
 					<p class="text-body-sm break-all text-on-surface-variant">
 						{sansano.correoInstitucional}
 					</p>
-					<p class="font-mono text-sm text-on-surface-variant">+56 {sansano.telefono}</p>
+					<p class="font-mono text-sm text-on-surface-variant">
+						{formatearTelefono(sansano.telefono)}
+					</p>
 					<div class="mt-2 flex flex-wrap items-center gap-2">
-						{#if cargoActual}
-							<StatusBadge
-								tone={sansano.idCargo === 3 ? 'error' : sansano.idCargo === 2 ? 'info' : 'neutral'}
-							>
-								{cargoActual.nombreCargo}
-							</StatusBadge>
-						{:else}
-							<StatusBadge tone="neutral">Sin cargo</StatusBadge>
-						{/if}
+						<StatusBadge tone={toneCargo(sansano.nombreCargo)}>
+							{sansano.nombreCargo}
+						</StatusBadge>
 						<StatusBadge tone={sansano.authUserId ? 'success' : 'warning'}>
 							{sansano.authUserId ? 'Acceso activo' : 'Invitación pendiente'}
 						</StatusBadge>
@@ -380,16 +406,30 @@
 							<StatusBadge tone="error">
 								<Icon name="ban" class="h-3 w-3" strokeWidth={2} /> Suspendido
 							</StatusBadge>
-							<p class="mt-1.5 text-xs text-on-surface-variant/70">
-								Hasta {suspension.fechaTermino === null
-									? 'siempre'
-									: fechaCorta(suspension.fechaTermino)}
-							</p>
 						{:else}
 							<StatusBadge tone="success">Sin suspensiones activas</StatusBadge>
 						{/if}
 					</div>
 				</div>
+			</div>
+
+			<div class="rounded-base border border-glass-border p-4">
+				<p class="font-mono text-[10px] tracking-wider text-on-surface-variant/70 uppercase">
+					Permisos efectivos
+				</p>
+				{#if permisos.length}
+					<ul class="mt-2 flex flex-wrap gap-1.5">
+						{#each permisos as permiso (permiso)}
+							<li
+								class="rounded-base border border-glass-border bg-surface-container-lowest px-2 py-1 font-mono text-xs text-on-surface-variant"
+							>
+								{permiso}
+							</li>
+						{/each}
+					</ul>
+				{:else}
+					<p class="mt-2 text-body-md text-on-surface-variant">Este cargo no tiene permisos.</p>
+				{/if}
 			</div>
 
 			{#if gestiona}
@@ -441,9 +481,9 @@
 			>
 				Cancelar
 			</button>
-			<button type="button" onclick={guardar} class={claseBotonPrimario}>
+			<button type="submit" form="ficha-editar" disabled={enviando} class={claseBotonPrimario}>
 				<Icon name="check" class="h-4 w-4" strokeWidth={2} />
-				Guardar cambios
+				{enviando ? 'Guardando…' : 'Guardar cambios'}
 			</button>
 		{:else}
 			<button
@@ -456,9 +496,9 @@
 			>
 				Cancelar
 			</button>
-			<button type="button" onclick={confirmarGestion} class={claseBotonPeligro}>
+			<button type="submit" form="ficha-gestion" disabled={enviando} class={claseBotonPeligro}>
 				<Icon name="check" class="h-4 w-4" strokeWidth={2} />
-				Confirmar
+				{enviando ? 'Procesando…' : 'Confirmar'}
 			</button>
 		{/if}
 	{/snippet}

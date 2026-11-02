@@ -1,16 +1,8 @@
 <script lang="ts">
-	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import Icon from '$lib/components/Icon.svelte';
-	import type { IconName } from '$lib/icons';
-	import {
-		bottomSlotsByRole,
-		roleMeta,
-		sidebarSections,
-		type AdminRoute,
-		type SidebarLink
-	} from '$lib/data/admin';
+	import { bottomSlotsByRole, roleMeta, sidebarSections, type SidebarLink } from '$lib/data/admin';
 	import { adminSession } from '$lib/stores/adminSession.svelte';
 	import Toast from '$lib/components/admin/primitives/Toast.svelte';
 	import type { LayoutProps } from './$types';
@@ -51,10 +43,6 @@
 		return '';
 	});
 
-	const prestamosIcon = $derived(
-		page.url.searchParams.get('tipo') === 'junta' ? 'boxes' : ('box' as IconName)
-	);
-
 	const isActive = (id: string) =>
 		id === activeId || (id === 'miembros' && activeId === 'moderacion');
 
@@ -65,20 +53,6 @@
 
 	const iconClasses = (id: string) =>
 		isActive(id) ? 'text-primary' : 'text-on-surface-variant/70';
-
-	$effect(() => {
-		if (page.url.pathname !== '/admin/prestamos') return;
-		const tipo = page.url.searchParams.get('tipo');
-		const meta = roleMeta[role];
-		const current: string | null = tipo === 'general' || tipo === 'junta' ? tipo : null;
-		const target =
-			current && meta.allowed.includes(current as 'general' | 'junta') ? null : meta.defaultTipo;
-		if (target) goto(resolve(loanRouteHref(target)));
-	});
-
-	function loanRouteHref(tipo: 'general' | 'junta'): AdminRoute {
-		return `/admin/prestamos?tipo=${tipo}` as AdminRoute;
-	}
 
 	function childOf(parent: SidebarLink) {
 		return parent.children ?? [];
@@ -134,7 +108,7 @@
 	</header>
 
 	<aside
-		class="fixed top-16 bottom-0 left-0 z-30 hidden w-64 flex-col gap-6 overflow-y-auto border-r border-glass-border surface-level-1 px-4 py-6 md:flex"
+		class="fixed top-16 bottom-0 left-0 z-30 hidden w-64 flex-col gap-6 overflow-y-auto border-r border-glass-border bg-surface-overlay px-4 py-6 md:flex"
 		aria-label="Navegación administrativa"
 	>
 		<nav class="flex flex-col gap-6">
@@ -152,10 +126,7 @@
 								link.id
 							)}"
 						>
-							<Icon
-								name={link.id === 'prestamos' ? prestamosIcon : link.icon}
-								class="h-5 w-5 shrink-0 transition {iconClasses(link.id)}"
-							/>
+							<Icon name={link.icon} class="h-5 w-5 shrink-0 transition {iconClasses(link.id)}" />
 							<span class="truncate">{link.label}</span>
 						</a>
 						{#each childOf(link) as child (child.id)}
@@ -194,7 +165,7 @@
 					aria-current={isActive(slot.id) ? 'page' : undefined}
 					class={`flex flex-col items-center justify-center gap-0.5 transition ${isActive(slot.id) ? 'text-primary' : 'text-on-surface-variant hover:text-on-surface'}`}
 				>
-					<Icon class="h-6 w-6" name={slot.id === 'prestamos' ? prestamosIcon : slot.icon} />
+					<Icon class="h-6 w-6" name={slot.icon} />
 					<span class="font-mono text-[10px] tracking-wider uppercase">{slot.label}</span>
 				</a>
 			{/each}

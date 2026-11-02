@@ -1,0 +1,157 @@
+{
+	"meta": {
+		"titulo": "Club de Rol Sansano",
+		"descripcion": "El club de rol del sur: dados, historias y buenas juntas.",
+		"imagenOg": "/logos/og-image.jpg",
+		"imagenOgAlt": "Banner del Club de Rol Sansano con dados, un meeple y el logo del club"
+	},
+	"lema": "El club de rol del sur: dados, historias y buenas juntas.",
+	"navegacion": [
+		{ "href": "#inicio", "label": "Inicio" },
+		{ "href": "#sobre-nosotros", "label": "Nosotros" },
+		{ "href": "#faq", "label": "FAQ" },
+		{ "href": "#redes", "label": "Redes" }
+	],
+	"nosotros": [
+		{
+			"titulo": "Club de Rol Sansano",
+			"img": "/logos/cdrs-banner.webp",
+			"alt": "Banner del Club de Rol Sansano",
+			"cuadrado": true,
+			"texto": "El Club de Rol Sansano (CdRS) surge como iniciativa estudiantil de la UTFSM en 2015, con el propósito de generar un espacio de esparcimiento, de recreación e integración comunitaria a través de los juegos de mesa y de rol, dentro del marco de la cultura Geek."
+		},
+		{
+			"titulo": "Misión",
+			"img": "/logos/sticker_gradiente.webp",
+			"alt": "Sticker del club",
+			"cuadrado": false,
+			"texto": "El CdRS tiene como misión promover y fomentar la cultura Geek a través de la creación de actividades, eventos y espacios que integren a la comunidad sansana con la región de Valparaíso. Nos comprometemos a trabajar con el nivel de calidad que caracteriza a la UTFSM, reflejando excelencia en cada una de nuestras acciones."
+		},
+		{
+			"titulo": "Visión",
+			"img": "/logos/sticker_solido.webp",
+			"alt": "Sticker del club",
+			"cuadrado": false,
+			"texto": "Aspiramos a ser una iniciativa reconocida en la región por la creación de espacios para la cultura Geek, fortaleciendo los lazos entre la comunidad sansana y la región de Valparaiso. Además, buscamos fomentar el desarrollo integral de nuestros miembros mediante una sana convivencia, la colaboración y el trabajo en equipo."
+		}
+	],
+	"faq": [
+		{
+			"q": "¿Necesito experiencia previa?",
+			"a": "Nada. Aprendemos jugando: cada mesa recibe con partidas introductorias y explica las reglas sobre la marcha."
+		},
+		{
+			"q": "¿Cómo me sumo a una partida?",
+			"a": "Por Discord o nuestro correo: coordinas tu primera sesión con el director o directora de la mesa que te interese."
+		},
+		{
+			"q": "¿Hay que pagar algo?",
+			"a": "El club es gratuito. Solo cubres tus propios traslados o consumo cuando la sesión es presencial."
+		},
+		{
+			"q": "¿Juegan online o presencial?",
+			"a": "Ambos. Presencial cerca del campus y online por Discord, con voz y vídeo."
+		},
+		{
+			"q": "¿Puedo dirigir una mesa?",
+			"a": "Por supuesto. Tenemos tutores que acompañan a nuevos directores y un repositorio de materiales compartidos."
+		},
+		{
+			"q": "¿Qué sistemas de rol se juegan?",
+			"a": "Dungeons & Dragons, Vampiro: La Mascarada, Call of Cthulhu y otros según el interés de cada mesa."
+		}
+	],
+	"eventos": [
+		{
+			"src": "/eventos/evento-1.webp",
+			"alt": "Dados sobre una mesa durante una sesión",
+			"caption": "Noche de dados",
+			"cols": "col-span-2 row-span-2",
+			"rot": "-rotate-1"
+		},
+		{
+			"src": "/eventos/evento-2.webp",
+			"alt": "Juego de mesa en una mesa de eventos",
+			"caption": "Torneo de mesa",
+			"cols": "",
+			"rot": "rotate-2"
+		},
+		{
+			"src": "/eventos/evento-3.webp",
+			"alt": "Reunión festiva del club",
+			"caption": "Fiesta de cierre",
+			"cols": "",
+			"rot": "-rotate-2"
+		},
+		{
+			"src": "/eventos/evento-4.webp",
+			"alt": "Amigos jugando en grupo",
+			"caption": "Mesa de verano",
+			"cols": "row-span-2",
+			"rot": "rotate-1"
+		},
+		{
+			"src": "/eventos/evento-5.webp",
+			"alt": "Partida de mesa con gente al fondo",
+			"caption": "Campeonato del club",
+			"cols": "col-span-2",
+			"rot": "-rotate-1"
+		},
+		{
+			"src": "/eventos/evento-6.webp",
+			"alt": "Sesión de rol en vivo",
+			"caption": "Rol en vivo",
+			"cols": "",
+			"rot": "rotate-2"
+		},
+		{
+			"src": "/eventos/evento-7.webp",
+			"alt": "Juegos y accesorios de mesa",
+			"caption": "Salón de juegos",
+			"cols": "",
+			"rot": "-rotate-2"
+		},
+		{
+			"src": "/eventos/evento-8.webp",
+			"alt": "Convención con público",
+			"caption": "Convención",
+			"cols": "",
+			"rot": "rotate-1"
+		},
+		{
+			"src": "/eventos/evento-9.webp",
+			"alt": "Cartas sobre la mesa",
+			"caption": "Tarde de cartas",
+			"cols": "",
+			"rot": "-rotate-2"
+		},
+		{
+			"src": "/eventos/evento-10.webp",
+			"alt": "Tablero de ajedrez",
+			"caption": "Ajedrez rápido",
+			"cols": "",
+			"rot": "rotate-2"
+		},
+		{
+			"src": "/eventos/evento-11.webp",
+			"alt": "Juegos de mesa variados",
+			"caption": "Ludoteca abierta",
+			"cols": "",
+			"rot": "-rotate-1"
+		}
+	],
+	"redes": [
+		{
+			"name": "Instagram",
+			"handle": "@clubderol_sansano",
+			"url": "https://www.instagram.com/clubderol_sansano?igshid=YmMyMTA2M2Y%3D"
+		},
+		{
+			"name": "WhatsApp",
+			"handle": "Club de Rol Sansano 🦑🧙🏼‍♂️🎲",
+			"url": "https://chat.whatsapp.com/LReSEEVJTfJARGi2V7gXfr"
+		},
+		{ "name": "Discord", "handle": "discord.gg/cdrs", "url": "https://discord.com/invite/9xJnxph" },
+		{ "name": "Correo", "handle": "hola@cdrs.cl", "url": "mailto:hola@cdrs.cl" }
+	]
+}

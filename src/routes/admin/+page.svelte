@@ -3,6 +3,7 @@
 	import Icon from '$lib/components/Icon.svelte';
 	import { quickActions } from '$lib/data/admin';
 	import { adminSession } from '$lib/stores/adminSession.svelte';
+	import ExportarDatos from '$lib/components/exportar/ExportarDatos.svelte';
 
 	const role = $derived(adminSession.user.role);
 	const actions = $derived(quickActions.filter((action) => action.roles.includes(role)));
@@ -51,13 +52,7 @@
 				<h2 class="font-display text-headline-md font-semibold tracking-tight text-on-surface">
 					Datos
 				</h2>
-				<button
-					type="button"
-					class="flex items-center gap-2 rounded-base border border-primary/50 bg-primary/10 px-4 py-2 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow"
-				>
-					<Icon name="download" class="h-5 w-5" />
-					Exportar
-				</button>
+				<ExportarDatos />
 			</div>
 
 			<div class="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -68,7 +63,10 @@
 						<div class="h-2.5 w-1/2 rounded-full bg-on-surface/15"></div>
 						<div class="flex h-20 items-end gap-1.5" aria-hidden="true">
 							{#each [40, 65, 50, 80, 60, 90, 70] as bar (bar)}
-								<div class="h-full w-full rounded-sm bg-on-surface/10" style={`height: ${bar}%`}></div>
+								<div
+									class="h-full w-full rounded-sm bg-on-surface/10"
+									style={`height: ${bar}%`}
+								></div>
 							{/each}
 						</div>
 						<span
