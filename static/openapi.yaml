@@ -24,6 +24,8 @@ tags:
     description: Exportación de datos a CSV (solo Directivo)
   - name: Solicitudes
     description: Registro público de solicitudes de préstamo
+  - name: BGG
+    description: Proxy de BoardGameGeek con caché (staff con permiso inventario:editar)
 
 paths:
   /api/catalogo:
@@ -620,6 +622,149 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /admin/bgg/search:
+    get:
+      operationId: buscarJuegosBgg
+      tags:
+        - BGG
+      summary: Buscar juegos para el auto-completado
+      description: |
+        Con `fuente=local` (por defecto) busca primero en `Juego` enlazados a BGG y en la caché; si no
+        hay resultados sigue automáticamente a BGG, y si BGG falla responde `origen: local-sin-bgg` con
+        la lista vacía. Con `fuente=bgg` omite la base local y consulta BGG directo. La búsqueda de
+        BGG solo entrega id, nombre y año.
+      security:
+        - sesionSupabase: []
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Texto a buscar (largo mínimo en `src/lib/data/bgg.json`)
+          schema:
+            type: string
+            minLength: 2
+        - name: fuente
+          in: query
+          schema:
+            type: string
+            enum:
+              - local
+              - bgg
+            default: local
+        - name: exacta
+          in: query
+          description: Con `1`, BGG busca el nombre exacto (`exact=1`)
+          schema:
+            type: string
+            enum:
+              - '1'
+      responses:
+        '200':
+          description: Resultados y de dónde salieron
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BggBusquedaRespuesta'
+        '400':
+          description: Consulta demasiado corta o fuente inválida
+        '401':
+          description: La sesión no corresponde a un staff (sin sesión, `/admin` redirige con 303 al login)
+        '403':
+          description: El cargo no tiene inventario:editar
+        '429':
+          $ref: '#/components/responses/BggRateLimit'
+        '502':
+          description: BGG no disponible o con una respuesta inesperada (solo con `fuente=bgg`)
+        '503':
+          description: Proxy BGG no configurado (falta BGG_API_TOKEN)
+        '504':
+          description: BGG no respondió a tiempo (solo con `fuente=bgg`)
+
+  /admin/bgg/{idBgg}:
+    get:
+      operationId: obtenerFichaBgg
+      tags:
+        - BGG
+      summary: Ficha de un juego de BGG (con caché)
+      description: |
+        Stale-while-revalidate: devuelve la caché si está fresca (`BGG_CACHE_TTL`); si no, consulta BGG
+        (≤ 3 s) y hace upsert **solo en `JuegoBgg`** (el `Juego` se crea al guardar la ficha). Si BGG
+        falla y hay caché responde `origen: cache-desactualizada`. No procesa la imagen: si
+        `caratula.estado` es `pendiente`, el cliente llama a `POST /admin/bgg/{idBgg}/caratula`.
+      security:
+        - sesionSupabase: []
+      parameters:
+        - $ref: '#/components/parameters/IdBgg'
+      responses:
+        '200':
+          description: Ficha normalizada al dominio
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BggFichaRespuesta'
+        '400':
+          description: id inválido
+        '401':
+          description: La sesión no corresponde a un staff (sin sesión, `/admin` redirige con 303 al login)
+        '403':
+          description: El cargo no tiene inventario:editar
+        '404':
+          description: El juego no existe en BGG
+        '429':
+          $ref: '#/components/responses/BggRateLimit'
+        '502':
+          description: BGG no disponible y sin caché
+        '503':
+          description: Proxy BGG no configurado (falta BGG_API_TOKEN)
+        '504':
+          description: BGG no respondió a tiempo y no hay caché
+
+  /admin/bgg/{idBgg}/caratula:
+    post:
+      operationId: procesarCaratulaBgg
+      tags:
+        - BGG
+      summary: Descargar, procesar y subir la carátula
+      description: |
+        Descarga la imagen de la ficha cacheada (solo dominios permitidos en `bgg.json`), la reduce y la
+        sube a `ludoteca/bgg/{idBgg}.jpg`. Es idempotente: si ya hay carátula la devuelve. Si falla,
+        la ficha sigue siendo usable (`pathImagen = null`) y se puede reintentar.
+      security:
+        - sesionSupabase: []
+      parameters:
+        - $ref: '#/components/parameters/IdBgg'
+      responses:
+        '200':
+          description: Estado de la carátula
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - caratula
+                properties:
+                  caratula:
+                    $ref: '#/components/schemas/BggCaratula'
+                  bytes:
+                    type:
+                      - integer
+                      - 'null'
+                    description: Peso de la imagen subida; null si no hubo que procesar
+        '400':
+          description: id inválido
+        '401':
+          description: La sesión no corresponde a un staff (sin sesión, `/admin` redirige con 303 al login)
+        '403':
+          description: El cargo no tiene inventario:editar
+        '404':
+          description: La ficha no está en la caché (consulta antes GET /admin/bgg/{idBgg})
+        '429':
+          $ref: '#/components/responses/BggRateLimit'
+        '502':
+          description: No se pudo descargar o procesar la imagen
+        '504':
+          description: La imagen no respondió a tiempo
+
 components:
   securitySchemes:
     sesionSupabase:
@@ -630,7 +775,28 @@ components:
         Sesión de Supabase Auth guardada en cookies por @supabase/ssr. El nombre real
         depende del proyecto (sb-<ref>-auth-token). Sin sesión, /admin redirige a /login.
 
+  parameters:
+    IdBgg:
+      name: idBgg
+      in: path
+      required: true
+      description: Identificador del juego en BoardGameGeek
+      schema:
+        type: integer
+        minimum: 1
+
   responses:
+    BggRateLimit:
+      description: BGG limitó las solicitudes (o respondió 503)
+      headers:
+        Retry-After:
+          description: Segundos a esperar antes de reintentar (si BGG lo informó)
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PrestamoError'
     PrestamoInvalido:
       description: El cuerpo no cumple el schema
       content:
@@ -668,6 +834,104 @@ components:
             error: Error interno del servidor
 
   schemas:
+    BggSugerencia:
+      type: object
+      required: [idBgg, nombre, anio, tipo, idJuego, enCache]
+      properties:
+        idBgg:
+          type: integer
+        nombre:
+          type: string
+        anio:
+          type: [integer, 'null']
+        tipo:
+          type: [string, 'null']
+          enum: [Juego base, Expansión, null]
+        idJuego:
+          type: [integer, 'null']
+          description: Juego del catálogo ya enlazado a este idBgg
+        enCache:
+          type: boolean
+          description: Existe en la caché JuegoBgg
+
+    BggBusquedaRespuesta:
+      type: object
+      required: [resultados, origen]
+      properties:
+        resultados:
+          type: array
+          items:
+            $ref: '#/components/schemas/BggSugerencia'
+        origen:
+          type: string
+          enum: [local, bgg, local-sin-bgg]
+
+    BggFicha:
+      type: object
+      required:
+        [idBgg, nombreJuego, tipo, idBggBase, anio, edadMinima, jugadoresMin, jugadoresMax, duracion, calificacion, dificultad, peso, urlImagenBgg]
+      properties:
+        idBgg:
+          type: integer
+        nombreJuego:
+          type: string
+        tipo:
+          type: string
+          enum: [Juego base, Expansión]
+        idBggBase:
+          type: [integer, 'null']
+          description: Para expansiones, id BGG del juego base
+        anio:
+          type: [integer, 'null']
+        edadMinima:
+          type: [integer, 'null']
+        jugadoresMin:
+          type: [integer, 'null']
+        jugadoresMax:
+          type: [integer, 'null']
+        duracion:
+          type: [integer, 'null']
+          description: Minutos
+        calificacion:
+          type: [number, 'null']
+          description: Null si tiene menos votos que el mínimo de bgg.json
+        dificultad:
+          type: [string, 'null']
+          enum: [Fácil, Intermedio, Difícil, null]
+        peso:
+          type: [number, 'null']
+          description: Peso crudo de BGG (1-5)
+        urlImagenBgg:
+          type: [string, 'null']
+
+    BggCaratula:
+      type: object
+      required: [estado, pathImagen, urlPublica]
+      properties:
+        estado:
+          type: string
+          enum: [lista, pendiente, sin-imagen]
+        pathImagen:
+          type: [string, 'null']
+          description: Ruta relativa al bucket `ludoteca`
+        urlPublica:
+          type: [string, 'null']
+
+    BggFichaRespuesta:
+      type: object
+      required: [ficha, origen, caratula, idJuego]
+      properties:
+        ficha:
+          $ref: '#/components/schemas/BggFicha'
+        origen:
+          type: string
+          enum: [cache, bgg, cache-desactualizada]
+        caratula:
+          $ref: '#/components/schemas/BggCaratula'
+        idJuego:
+          type: [integer, 'null']
+          description: Juego del catálogo ya enlazado a este idBgg
+
     PrestamoJuntaRequest:
       type: object
       additionalProperties: false

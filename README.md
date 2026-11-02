@@ -81,6 +81,35 @@ sin `/` final) antes de `pnpm build`; sin ella solo se emiten título y descripc
 estáticas van en WebP; `static/logos/og-image.jpg` (1200×630) es la excepción, porque algunos
 scrapers no leen WebP.
 
+## Proxy de BoardGameGeek (#8)
+
+Auto-completado de fichas para el inventario: `GET /admin/bgg/search`, `GET /admin/bgg/{id}` y
+`POST /admin/bgg/{id}/caratula` (contrato en `static/openapi.yaml`). Requieren sesión de staff con
+`inventario:editar`. El proxy escribe solo en la caché `JuegoBgg`; el `Juego` se crea o enlaza
+(`Juego.idBgg`) cuando el staff guarda la ficha (#19).
+
+Variables (`.env.example`):
+
+- `BGG_API_TOKEN`: token de la API de BGG. Sin token y sin mock responde 503.
+- `BGG_MOCK=1`: no hace llamadas de red; lee `fixtures/bgg/thing/<id>.xml` y
+  los `<item>` de `fixtures/bgg/search/*.xml` cuyo nombre contiene la consulta (subcadena, como BGG; `exacta=1` exige igualdad). Ids de ejemplo: 13 (base), 325 (expansión de 13), 174430
+  (con carátula grande) y 30549 (sin imagen). Para que un juego aparezca en las búsquedas hay que agregarlo a un XML de `search/`.
+- `BGG_MOCK_FALLA=timeout|429|503` (solo con mock): simula una caída para probar
+  `cache-desactualizada` y el manejo de rate limit.
+- `BGG_CACHE_TTL`: validez de la caché, `<n>(m|h|d)`; por defecto `30d`.
+
+Las carátulas del mock **no están en git**: antes de usar `BGG_MOCK=1` corre una vez
+`pnpm bgg:imagenes-mock`, que las genera en `fixtures/bgg/img/` (incluye una de varios MB para probar
+el procesamiento). Si faltan, el mock usa una imagen plana y avisa por consola. Cuando tengas token,
+`BGG_API_TOKEN=… pnpm bgg:capturar <idBgg…>` reemplaza los XML por respuestas reales (el diff de git
+muestra cambios de formato). `pnpm bgg:test` corre las pruebas sin DB y `pnpm bgg:benchmark` el
+benchmark de carátulas ([`docs/bgg-caratulas.md`](docs/bgg-caratulas.md)).
+
+Las traducciones BGG → dominio (umbrales de dificultad, tipos, calificación mínima de votos, tamaño de
+carátula, búsqueda) están en `src/lib/data/bgg.json`, validado por `src/lib/schemas/bgg.ts`: un JSON
+inválido rompe el arranque en vez de producir datos raros. En `pnpm dev`, `/admin/inventario` incluye
+una demo del buscador.
+
 ## Documentación de la API
 
 Con el servidor de desarrollo en ejecución, la documentación interactiva está disponible en:
