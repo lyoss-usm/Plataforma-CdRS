@@ -85,7 +85,8 @@ scrapers no leen WebP.
 
 Auto-completado de fichas para el inventario: `GET /admin/bgg/search`, `GET /admin/bgg/{id}` y
 `POST /admin/bgg/{id}/caratula` (contrato en `static/openapi.yaml`). Requieren sesión de staff con
-`inventario:editar`. El proxy escribe solo en la caché `JuegoBgg`; el `Juego` se crea o enlaza
+`inventario:editar`. El proxy escribe solo en la caché `JuegoBgg`, que no expira: `GET …/{id}?refrescar=1`
+(botón "Actualizar desde BGG") fuerza una nueva consulta y, si BGG falla, se sirve la caché; el `Juego` se crea o enlaza
 (`Juego.idBgg`) cuando el staff guarda la ficha (#19).
 
 Variables (`.env.example`):
@@ -96,7 +97,6 @@ Variables (`.env.example`):
   (con carátula grande) y 30549 (sin imagen). Para que un juego aparezca en las búsquedas hay que agregarlo a un XML de `search/`.
 - `BGG_MOCK_FALLA=timeout|429|503` (solo con mock): simula una caída para probar
   `cache-desactualizada` y el manejo de rate limit.
-- `BGG_CACHE_TTL`: validez de la caché, `<n>(m|h|d)`; por defecto `30d`.
 
 Las carátulas del mock **no están en git**: antes de usar `BGG_MOCK=1` corre una vez
 `pnpm bgg:imagenes-mock`, que las genera en `fixtures/bgg/img/` (incluye una de varios MB para probar

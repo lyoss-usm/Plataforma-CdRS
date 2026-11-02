@@ -687,14 +687,21 @@ paths:
         - BGG
       summary: Ficha de un juego de BGG (con caché)
       description: |
-        Stale-while-revalidate: devuelve la caché si está fresca (`BGG_CACHE_TTL`); si no, consulta BGG
-        (≤ 3 s) y hace upsert **solo en `JuegoBgg`** (el `Juego` se crea al guardar la ficha). Si BGG
-        falla y hay caché responde `origen: cache-desactualizada`. No procesa la imagen: si
+        Devuelve la caché, que no expira. Si no hay caché, o con `refrescar=1`, consulta BGG (≤ 3 s) y
+        hace upsert **solo en `JuegoBgg`** (el `Juego` se crea al guardar la ficha). Si BGG falla y hay
+        caché responde `origen: cache-desactualizada`. No procesa la imagen: si
         `caratula.estado` es `pendiente`, el cliente llama a `POST /admin/bgg/{idBgg}/caratula`.
       security:
         - sesionSupabase: []
       parameters:
         - $ref: '#/components/parameters/IdBgg'
+        - name: refrescar
+          in: query
+          description: Con `1`, ignora la caché y vuelve a consultar BGG
+          schema:
+            type: string
+            enum:
+              - '1'
       responses:
         '200':
           description: Ficha normalizada al dominio

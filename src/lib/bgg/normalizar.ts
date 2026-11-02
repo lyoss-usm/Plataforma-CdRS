@@ -150,14 +150,3 @@ export function parseBusqueda(xml: string, config: BggConfig): ResultadoBusqueda
 		})
 		.slice(0, config.busqueda.maximoResultados);
 }
-
-export const TTL_POR_DEFECTO_MS = 30 * 24 * 60 * 60 * 1000;
-const UNIDADES_MS = { m: 60_000, h: 3_600_000, d: 86_400_000 } as const;
-
-/** Duración `<n>(m|h|d)` → ms. Devuelve `null` si el formato no es válido. */
-export function parseTtl(valor: string | undefined): number | null {
-	const match = /^(\d+)([mhd])$/.exec(valor?.trim() ?? '');
-	if (!match) return null;
-	const ms = Number(match[1]) * UNIDADES_MS[match[2] as keyof typeof UNIDADES_MS];
-	return ms > 0 ? ms : null;
-}

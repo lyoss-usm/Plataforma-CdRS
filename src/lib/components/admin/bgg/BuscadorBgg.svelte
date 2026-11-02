@@ -14,6 +14,7 @@
 
 	const consulta = new ConsultaBgg();
 	let elegido = $state<number | null>(null);
+	const elegida = $derived(consulta.resultados.find((r) => r.idBgg === elegido) ?? null);
 
 	async function elegir(sugerencia: BggSugerencia) {
 		elegido = sugerencia.idBgg;
@@ -114,6 +115,19 @@
 					<dd class="text-on-surface">{valor ?? '—'}</dd>
 				</div>
 			{/each}
+			{#if elegida}
+				<div class="col-span-full">
+					<button
+						type="button"
+						onclick={() => elegida && consulta.refrescar(elegida)}
+						disabled={consulta.ocupado}
+						class="text-body-sm flex cursor-pointer items-center gap-1 font-medium text-primary underline-offset-2 hover:underline disabled:cursor-not-allowed disabled:opacity-50"
+					>
+						<Icon name="refresh-cw" class="h-4 w-4" />
+						Actualizar desde BGG
+					</button>
+				</div>
+			{/if}
 			{#if consulta.respuesta.caratula.urlPublica}
 				<div class="col-span-full">
 					<img

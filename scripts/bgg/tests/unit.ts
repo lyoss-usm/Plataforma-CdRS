@@ -6,9 +6,7 @@ import {
 	ErrorJuegoInexistente,
 	dificultadDesdePeso,
 	parseBusqueda,
-	parseFicha,
-	parseTtl,
-	TTL_POR_DEFECTO_MS
+	parseFicha
 } from '../../../src/lib/bgg/normalizar.ts';
 import { bggConfigSchema, type BggConfig } from '../../../src/lib/schemas/bgg.ts';
 import { generarImagenGrande } from '../imagenes-sinteticas.ts';
@@ -82,15 +80,6 @@ assert.throws(() => bggConfigSchema.parse({ ...base, tipos: { boardgame: 'Otro' 
 assert.throws(() => bggConfigSchema.parse({ ...base, caratula: { ...base.caratula, calidad: 0 } }));
 assert.throws(() => bggConfigSchema.parse({ ...base, busqueda: undefined }));
 
-// --- TTL ---
-assert.equal(parseTtl('30d'), 30 * 86_400_000);
-assert.equal(parseTtl('12h'), 12 * 3_600_000);
-assert.equal(parseTtl('90m'), 90 * 60_000);
-for (const invalido of ['', undefined, '30', 'd', '0d', '-1d', '1.5d', '30 días']) {
-	assert.equal(parseTtl(invalido), null, `TTL inválido: ${invalido}`);
-}
-assert.equal(TTL_POR_DEFECTO_MS, 30 * 86_400_000);
-
 // --- Procesamiento de carátulas ---
 const grande = await generarImagenGrande(4000, 'jpeg', 95);
 assert.ok(grande.length > 1024 * 1024, 'la imagen de prueba debe superar 1 MiB');
@@ -102,4 +91,4 @@ await assert.rejects(
 	/excede/
 );
 
-console.log('BGG: ficha, búsqueda, config, TTL y carátulas válidos');
+console.log('BGG: ficha, búsqueda, config y carátulas válidos');

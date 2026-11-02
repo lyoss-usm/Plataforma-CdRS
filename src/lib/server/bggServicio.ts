@@ -20,7 +20,7 @@ import {
 } from '$lib/schemas/bgg';
 import { tipoSchema } from '$lib/schemas/enums';
 import type { StaffSesion } from './auth';
-import { ErrorBgg, bggMockActivo, pedirBgg, ttlCacheMs } from './bgg';
+import { ErrorBgg, bggMockActivo, pedirBgg } from './bgg';
 import type { ClienteSupabase } from './supabase';
 import { leerImagenMock } from './bggMock';
 
@@ -155,14 +155,14 @@ async function idJuegoDe(supabase: ClienteSupabase, idBgg: number): Promise<numb
 	return (data?.idJuego as number | undefined) ?? null;
 }
 
-// --- Ficha (stale-while-revalidate) ------------------------------------------------------------
+// --- Ficha: la caché no expira; `refrescar` fuerza BGG y, si falla, se sirve la caché ---------
 
 export async function obtenerFicha(
 	supabase: ClienteSupabase,
-	idBgg: number
+	idBgg: number,
+	refrescar = false
 ): Promise<BggFichaRespuesta | null> {
 	const cache = await leerCache(supabase, idBgg);
-	const fresca = cache && Date.now() - Date.parse(cache.actualizadoEn) < ttlCacheMs();
 
 	const responder = async (fila: Fila, origen: BggFichaRespuesta['origen']) => ({
 		ficha: aFicha(fila),
@@ -171,7 +171,7 @@ export async function obtenerFicha(
 		idJuego: await idJuegoDe(supabase, idBgg)
 	});
 
-	if (cache && fresca) return responder(cache, 'cache');
+	if (cache && !refrescar) return responder(cache, 'cache');
 
 	try {
 		const xml = await pedirBgg('thing', { id: String(idBgg), stats: '1' });

@@ -1,7 +1,6 @@
 import { env } from '$env/dynamic/private';
 import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { TTL_POR_DEFECTO_MS, parseTtl } from '$lib/bgg/normalizar';
 
 const BASE_BGG = 'https://boardgamegeek.com/xmlapi2';
 const TIMEOUT_MS = 3000;
@@ -27,18 +26,6 @@ export class ErrorBgg extends Error {
 }
 
 export const bggMockActivo = () => env.BGG_MOCK === '1';
-
-let ttlAvisado = false;
-/** Validez de la caché (`BGG_CACHE_TTL`, `<n>(m|h|d)`); si es inválida usa 30d y avisa una vez. */
-export function ttlCacheMs(): number {
-	const ms = parseTtl(env.BGG_CACHE_TTL);
-	if (ms !== null) return ms;
-	if (env.BGG_CACHE_TTL && !ttlAvisado) {
-		ttlAvisado = true;
-		console.warn(`[bgg] BGG_CACHE_TTL inválido ("${env.BGG_CACHE_TTL}"): se usa 30d`);
-	}
-	return TTL_POR_DEFECTO_MS;
-}
 
 const XML_VACIO = '<?xml version="1.0" encoding="utf-8"?><items total="0"></items>';
 

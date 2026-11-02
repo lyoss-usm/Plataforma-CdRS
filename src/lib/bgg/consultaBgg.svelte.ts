@@ -105,16 +105,23 @@ export class ConsultaBgg {
 	}
 
 	/** Trae la ficha (con caché) y luego procesa la carátula en una llamada aparte. */
-	async seleccionar(sugerencia: BggSugerencia): Promise<BggFichaRespuesta | null> {
+	async seleccionar(
+		sugerencia: BggSugerencia,
+		refrescar = false
+	): Promise<BggFichaRespuesta | null> {
 		const senal = this.#nuevaConsulta();
 		this.error = null;
 		this.caratulaFallida = false;
 		this.fase = 'consultando-bgg';
-		this.#reintentar = async () => void (await this.seleccionar(sugerencia));
+		this.#reintentar = async () => void (await this.seleccionar(sugerencia, refrescar));
 
 		try {
 			let datos = bggFichaRespuestaSchema.parse(
-				await pedirJson(`/admin/bgg/${sugerencia.idBgg}`, {}, senal)
+				await pedirJson(
+					`/admin/bgg/${sugerencia.idBgg}${refrescar ? '?refrescar=1' : ''}`,
+					{},
+					senal
+				)
 			);
 			this.respuesta = datos;
 
@@ -140,6 +147,11 @@ export class ConsultaBgg {
 			this.#fallar(e, senal);
 			return null;
 		}
+	}
+
+	/** Fuerza una nueva consulta a BGG para la ficha mostrada (la caché no expira sola). */
+	refrescar(sugerencia: BggSugerencia) {
+		return this.seleccionar(sugerencia, true);
 	}
 
 	reintentar() {
