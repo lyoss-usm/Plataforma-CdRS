@@ -17,6 +17,7 @@ const juegoDetailsShape = {
 	calificacion: z.number().min(0).max(10).nullable(),
 	dificultad: dificultadSchema.nullable(),
 	pathImagen: nullableTextSchema,
+	idBgg: integerIdSchema.nullable(),
 	manual: nullableUrlSchema,
 	video: nullableUrlSchema
 };

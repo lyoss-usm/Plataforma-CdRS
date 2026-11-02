@@ -119,6 +119,7 @@ const juegos: Juego[] = [
 		calificacion: 8.2,
 		dificultad: 'Intermedio',
 		pathImagen: '/ludoteca/catan.jpg',
+		idBgg: null,
 		manual: null,
 		video: null
 	},
@@ -134,6 +135,7 @@ const juegos: Juego[] = [
 		calificacion: 8.0,
 		dificultad: 'Intermedio',
 		pathImagen: null,
+		idBgg: null,
 		manual: null,
 		video: null
 	},
@@ -149,6 +151,7 @@ const juegos: Juego[] = [
 		calificacion: 7.9,
 		dificultad: 'Fácil',
 		pathImagen: '/ludoteca/dixit.jpg',
+		idBgg: null,
 		manual: null,
 		video: null
 	},
@@ -164,6 +167,7 @@ const juegos: Juego[] = [
 		calificacion: 7.5,
 		dificultad: 'Fácil',
 		pathImagen: '/ludoteca/codenames.jpg',
+		idBgg: null,
 		manual: null,
 		video: null
 	},
@@ -179,6 +183,7 @@ const juegos: Juego[] = [
 		calificacion: 9.1,
 		dificultad: 'Difícil',
 		pathImagen: '/ludoteca/scythe.png',
+		idBgg: null,
 		manual: null,
 		video: null
 	},
@@ -194,6 +199,7 @@ const juegos: Juego[] = [
 		calificacion: 7.4,
 		dificultad: 'Fácil',
 		pathImagen: '/ludoteca/ticket-to-ride.jpg',
+		idBgg: null,
 		manual: null,
 		video: null
 	},
@@ -209,6 +215,7 @@ const juegos: Juego[] = [
 		calificacion: 7.6,
 		dificultad: 'Intermedio',
 		pathImagen: '/ludoteca/pandemic.jpg',
+		idBgg: null,
 		manual: null,
 		video: null
 	},
@@ -224,6 +231,7 @@ const juegos: Juego[] = [
 		calificacion: 8.8,
 		dificultad: 'Difícil',
 		pathImagen: '/ludoteca/gloomhaven.jpg',
+		idBgg: null,
 		manual: null,
 		video: null
 	}
