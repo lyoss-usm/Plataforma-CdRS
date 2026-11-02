@@ -24,3 +24,6 @@ vite.config.ts.timestamp-*
 
 # Archivos temporales
 *.temp.*
+
+# Imágenes del mock de BGG (se generan con pnpm bgg:imagenes-mock)
+fixtures/bgg/img/
