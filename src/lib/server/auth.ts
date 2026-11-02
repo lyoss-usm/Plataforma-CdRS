@@ -58,7 +58,9 @@ export function permisoRequerido(url: URL): NombrePermiso | null {
 
 	if (pathname.startsWith('/admin/prestamos')) return 'prestamos:junta';
 	if (pathname.startsWith('/admin/solicitudes')) return 'solicitudes:atender';
-	if (pathname.startsWith('/admin/inventario')) return 'inventario:editar';
+	if (pathname.startsWith('/admin/inventario') || pathname.startsWith('/admin/bgg')) {
+		return 'inventario:editar';
+	}
 	if (pathname.startsWith('/admin/miembros') && searchParams.get('tab') === 'moderacion') {
 		return 'moderacion:suspender';
 	}
