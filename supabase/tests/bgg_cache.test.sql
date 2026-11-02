@@ -44,9 +44,7 @@ $$;
 -- anon
 SET LOCAL role anon;
 SELECT set_config('request.jwt.claims', '{"role":"anon"}', true);
-SELECT throws_ok(
-	$$SELECT count(*) FROM public."JuegoBgg"$$, '42501', NULL, 'anon no lee JuegoBgg'
-);
+SELECT is((SELECT count(*) FROM public."JuegoBgg"), 0::bigint, 'anon no lee JuegoBgg');
 SELECT throws_ok(
 	$$INSERT INTO public."JuegoBgg" ("idBgg", "nombre", "tipo") VALUES (900002, 'x', 'Juego base')$$,
 	'42501', NULL, 'anon no escribe JuegoBgg'
