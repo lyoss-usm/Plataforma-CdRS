@@ -133,20 +133,64 @@ export type ResultadoBusquedaBgg = {
 	tipo: Tipo | null;
 };
 
-export function parseBusqueda(xml: string, config: BggConfig): ResultadoBusquedaBgg[] {
-	return esperarItems(xml)
-		.flatMap((item) => {
-			const nombre = nombrePrincipal(item);
-			const idBgg = Number(item['@_id']);
-			if (!nombre || !Number.isInteger(idBgg) || idBgg <= 0) return [];
-			return [
-				{
-					idBgg,
-					nombre,
-					anio: entero(item.yearpublished, config),
-					tipo: config.tipos[item['@_type']] ?? null
-				}
-			];
-		})
-		.slice(0, config.busqueda.maximoResultados);
+const minusculasSinTildes = (texto: string) =>
+	texto
+		.normalize('NFD')
+		.replace(/[\u0300-\u036f]/g, '')
+		.toLowerCase();
+
+/** 0 = nombre exacto, 1 = empieza con la consulta, 2 = una palabra empieza con ella, 3 = el resto. */
+export function relevancia(nombre: string, consulta: string): number {
+	const plano = (t: string) =>
+		minusculasSinTildes(t)
+			.replace(/[^a-z0-9]+/g, ' ')
+			.trim();
+	const n = plano(nombre);
+	const q = plano(consulta);
+	if (n === q) return 0;
+	if (n.startsWith(q)) return 1;
+	return ` ${n}`.includes(` ${q}`) ? 2 : 3;
+}
+
+export type BusquedaBgg = { resultados: ResultadoBusquedaBgg[]; total: number };
+
+/**
+ * BGG devuelve todas las coincidencias sin paginar, sin orden por relevancia y con las expansiones
+ * repetidas (una vez por tipo). Se deduplica por id (prefiriendo la expansión), se ordena por
+ * relevancia y recién entonces se aplica el tope; `total` cuenta los resultados únicos.
+ */
+export function parseBusqueda(xml: string, config: BggConfig, consulta: string): BusquedaBgg {
+	const porId = new Map<number, ResultadoBusquedaBgg>();
+
+	for (const item of esperarItems(xml)) {
+		const nombre = nombrePrincipal(item);
+		const idBgg = Number(item['@_id']);
+		if (!nombre || !Number.isInteger(idBgg) || idBgg <= 0) continue;
+
+		const resultado = {
+			idBgg,
+			nombre,
+			anio: entero(item.yearpublished, config),
+			tipo: config.tipos[item['@_type']] ?? null
+		};
+		const previo = porId.get(idBgg);
+		if (!previo || (previo.tipo !== 'Expansión' && resultado.tipo === 'Expansión')) {
+			porId.set(idBgg, resultado);
+		}
+	}
+
+	const ordenados = [...porId.values()]
+		.map((r) => ({ r, rango: relevancia(r.nombre, consulta) }))
+		.sort(
+			(a, b) =>
+				a.rango - b.rango ||
+				a.r.nombre.length - b.r.nombre.length ||
+				a.r.nombre.localeCompare(b.r.nombre, 'es')
+		)
+		.map(({ r }) => r);
+
+	return {
+		resultados: ordenados.slice(0, config.busqueda.maximoResultados),
+		total: ordenados.length
+	};
 }

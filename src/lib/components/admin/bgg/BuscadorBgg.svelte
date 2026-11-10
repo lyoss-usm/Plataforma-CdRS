@@ -66,7 +66,7 @@
 		<ul
 			class="flex flex-col divide-y divide-outline-variant/40 rounded-base glass-border surface-level-1"
 		>
-			{#each consulta.resultados as r (r.idBgg)}
+			{#each consulta.visibles as r (r.idBgg)}
 				<li>
 					<button
 						type="button"
@@ -93,6 +93,22 @@
 				</li>
 			{/each}
 		</ul>
+
+		{#if consulta.hayMas}
+			<button
+				type="button"
+				onclick={() => consulta.mostrarMas()}
+				class="text-body-sm cursor-pointer self-start font-medium text-primary underline-offset-2 hover:underline"
+			>
+				Mostrar más ({consulta.resultados.length - consulta.mostrados} restantes)
+			</button>
+		{/if}
+		{#if consulta.total > consulta.resultados.length}
+			<p class="text-body-sm text-on-surface-variant">
+				Hay {consulta.total} resultados y se muestran los {consulta.resultados.length} más relevantes:
+				afina la búsqueda para ver el resto.
+			</p>
+		{/if}
 	{:else if consulta.fase === 'listo' && consulta.origenBusqueda && consulta.origenBusqueda !== 'local-sin-bgg' && !consulta.respuesta}
 		<p class="text-body-sm text-on-surface-variant">
 			Sin resultados para «{consulta.consulta.trim()}».

@@ -633,6 +633,11 @@ paths:
         hay resultados sigue automáticamente a BGG, y si BGG falla responde `origen: local-sin-bgg` con
         la lista vacía. Con `fuente=bgg` omite la base local y consulta BGG directo. La búsqueda de
         BGG solo entrega id, nombre y año.
+
+        BGG no pagina ni ordena por relevancia y repite las expansiones: el servidor deduplica por id,
+        ordena (nombre exacto, prefijo, palabra, resto) y devuelve hasta `maximoResultados` (200, en
+        `bgg.json`). `total` cuenta los resultados únicos; si supera `resultados.length`, la búsqueda
+        se cortó. El cliente los muestra de a `porPagina` sin nuevas llamadas.
       security:
         - sesionSupabase: []
       parameters:
@@ -863,12 +868,15 @@ components:
 
     BggBusquedaRespuesta:
       type: object
-      required: [resultados, origen]
+      required: [resultados, total, origen]
       properties:
         resultados:
           type: array
           items:
             $ref: '#/components/schemas/BggSugerencia'
+        total:
+          type: integer
+          description: Resultados únicos antes del tope
         origen:
           type: string
           enum: [local, bgg, local-sin-bgg]

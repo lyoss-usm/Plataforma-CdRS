@@ -1,19 +1,1172 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Fixture escrito a mano; sin imagen y con muchos datos vacíos -->
-<items termsofuse="https://boardgamegeek.com/xmlapi/termsofuse">
-  <item type="boardgame" id="30549">
-    <name type="primary" sortindex="1" value="Pandemic" />
-    <yearpublished value="2008" />
-    <minplayers value="2" />
-    <maxplayers value="4" />
-    <playingtime value="45" />
-    <minage value="8" />
-    <statistics page="1">
-      <ratings>
-        <usersrated value="110000" />
-        <average value="7.58" />
-        <averageweight value="2.4" />
-      </ratings>
-    </statistics>
-  </item>
+<?xml version="1.0" encoding="utf-8"?><items termsofuse="https://boardgamegeek.com/xmlapi/termsofuse"><item type="boardgame" id="30549">
+         <thumbnail>https://cf.geekdo-images.com/S3ybV1LAp-8SnHIXLLjVqA__small/img/oqViRj6nVxK3m36NluTxU1PZkrk=/fit-in/200x150/filters:strip_icc()/pic1534148.jpg</thumbnail>
+      <image>https://cf.geekdo-images.com/S3ybV1LAp-8SnHIXLLjVqA__original/img/IsrvRLpUV1TEyZsO5rC-btXaPz0=/0x0/filters:format(jpeg)/pic1534148.jpg</image>
+   	                                  				
+				<name type="primary" sortindex="1" value="Pandemic" />
+			
+						                               				
+				<name type="alternate" sortindex="1" value="EPIZOotic" />
+			    				
+				<name type="alternate" sortindex="1" value="Pandemia" />
+			    				
+				<name type="alternate" sortindex="1" value="Pandemia 10 Aniversario" />
+			    				
+				<name type="alternate" sortindex="1" value="Pandemia: Una Nuova Sfida" />
+			    				
+				<name type="alternate" sortindex="1" value="Pandemic, 10 Jahre Jubiläumsedition" />
+			    				
+				<name type="alternate" sortindex="1" value="Pandemic, Edición 10º Aniversario" />
+			    				
+				<name type="alternate" sortindex="1" value="Pandemic: 10° Anniversario" />
+			    				
+				<name type="alternate" sortindex="1" value="Pandemic: 10th Anniversary Edition" />
+			    				
+				<name type="alternate" sortindex="1" value="Pandemic: Edition 10ème anniversaire" />
+			    				
+				<name type="alternate" sortindex="1" value="Pandemic: Una nuova sfida" />
+			    				
+				<name type="alternate" sortindex="1" value="Pandémie" />
+			    				
+				<name type="alternate" sortindex="1" value="Pandemie" />
+			    				
+				<name type="alternate" sortindex="1" value="Πανδημία" />
+			    				
+				<name type="alternate" sortindex="1" value="Пандемия" />
+			    				
+				<name type="alternate" sortindex="1" value="Пандемія" />
+			    				
+				<name type="alternate" sortindex="1" value="פנדמיק" />
+			    				
+				<name type="alternate" sortindex="1" value="جائحة" />
+			    				
+				<name type="alternate" sortindex="1" value="เกมโรคระบาด" />
+			    				
+				<name type="alternate" sortindex="1" value="パンデミック" />
+			    				
+				<name type="alternate" sortindex="1" value="パンデミック：10周年記念版" />
+			    				
+				<name type="alternate" sortindex="1" value="パンデミック：新たなる試練" />
+			    				
+				<name type="alternate" sortindex="1" value="瘟疫危机" />
+			    				
+				<name type="alternate" sortindex="1" value="瘟疫危機" />
+			    				
+				<name type="alternate" sortindex="1" value="팬데믹" />
+			
+						               													<description>In Pandemic, several virulent diseases have broken out simultaneously all over the world! The players are disease-fighting specialists whose mission is to treat disease hotspots while researching cures for each of four plagues before they get out of hand.
+
+The game board depicts several major population centers on Earth. On each turn, a player can use up to four actions to travel between cities, treat infected populaces, discover a cure, or build a research station. A deck of cards provides the players with these abilities, but sprinkled throughout this deck are Epidemic! cards that accelerate and intensify the diseases' activity. A second, separate deck of cards controls the "normal" spread of the infections.
+
+Taking a unique role within the team, players must plan their strategy to mesh with their specialists' strengths in order to conquer the diseases. For example, the Operations Expert can build research stations which are needed to find cures for the diseases and which allow for greater mobility between cities; the Scientist needs only four cards of a particular disease to cure it instead of the normal five&amp;mdash;but the diseases are spreading quickly and time is running out. If one or more diseases spreads beyond recovery or if too much time elapses, the players all lose. If they cure the four diseases, they all win!
+
+The 2013 edition of Pandemic includes two new characters&amp;mdash;the Contingency Planner and the Quarantine Specialist&amp;mdash;not available in earlier editions of the game.
+
+Pandemic is the first game in the Pandemic series.
+
+</description>
+										      	               				<yearpublished value="2008" />
+						               				<minplayers value="2" />
+						               				<maxplayers value="4" />
+						      			<poll name="suggested_numplayers" title="User Suggested Number of Players" totalvotes="2207">
+			
+		<results numplayers="1">		
+					<result value="Best" numvotes="178" />
+					<result value="Recommended" numvotes="796" />
+					<result value="Not Recommended" numvotes="697" />
+				</results>					
+			
+		<results numplayers="2">		
+					<result value="Best" numvotes="429" />
+					<result value="Recommended" numvotes="1317" />
+					<result value="Not Recommended" numvotes="180" />
+				</results>					
+			
+		<results numplayers="3">		
+					<result value="Best" numvotes="676" />
+					<result value="Recommended" numvotes="1151" />
+					<result value="Not Recommended" numvotes="52" />
+				</results>					
+			
+		<results numplayers="4">		
+					<result value="Best" numvotes="1353" />
+					<result value="Recommended" numvotes="536" />
+					<result value="Not Recommended" numvotes="67" />
+				</results>					
+			
+		<results numplayers="4+">		
+					<result value="Best" numvotes="23" />
+					<result value="Recommended" numvotes="169" />
+					<result value="Not Recommended" numvotes="1025" />
+				</results>					
+	</poll>
+<poll-summary name="suggested_numplayers"  title="User Suggested Number of Players">
+  <result name="bestwith" value="Best with 4 players" />
+  <result name="recommmendedwith" value="Recommended with 1–4 players" />
+</poll-summary> 			               				<playingtime value="45" />
+						               				<minplaytime value="45" />
+						               				<maxplaytime value="45" />
+						               				<minage value="8" />
+						      			<poll name="suggested_playerage" title="User Suggested Player Age" totalvotes="627">
+			<results>		
+					<result value="2" numvotes="0" />
+					<result value="3" numvotes="0" />
+					<result value="4" numvotes="1" />
+					<result value="5" numvotes="6" />
+					<result value="6" numvotes="40" />
+					<result value="8" numvotes="193" />
+					<result value="10" numvotes="242" />
+					<result value="12" numvotes="117" />
+					<result value="14" numvotes="23" />
+					<result value="16" numvotes="3" />
+					<result value="18" numvotes="0" />
+					<result value="21 and up" numvotes="2" />
+				</results>					
+	</poll> 			      			<poll name="language_dependence" title="Language Dependence" totalvotes="345">
+			
+		<results>		
+					<result level="1" value="No necessary in-game text" numvotes="10" />
+					<result level="2" value="Some necessary text - easily memorized or small crib sheet" numvotes="283" />
+					<result level="3" value="Moderate in-game text - needs crib sheet or paste ups" numvotes="48" />
+					<result level="4" value="Extensive use of text - massive conversion needed to be playable" numvotes="3" />
+					<result level="5" value="Unplayable in another language" numvotes="1" />
+				</results>					
+	</poll> 			      			 			      				
+		 			
+
+			
+		
+					<link type="boardgamecategory" id="2145" value="Medical" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamecategory" id="1097" value="Travel" />
+		
+									
+			
+
+			      				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2001" value="Action Points" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2956" value="Chaining" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2912" value="Contracts" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2023" value="Cooperative Game" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2850" value="Events" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2040" value="Hand Management" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="3099" value="Multi-Use Cards" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2078" value="Point to Point Movement" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2004" value="Set Collection" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2070" value="Simulation" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2819" value="Solo / Solitaire Game" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="3100" value="Tags" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2008" value="Trading" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2015" value="Variable Player Powers" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2897" value="Variable Set-up" />
+		
+									
+			
+
+			      				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="64952" value="Components: Map (Global Scale)" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="65191" value="Components: Multi-Use Cards" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="67583" value="Containers: Unique Shape" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="104952" value="Digital Implementations: Apple App Store" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="70360" value="Digital Implementations: Board Game Arena" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="78432" value="Digital Implementations: Google Play" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="77349" value="Digital Implementations: Steam" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="3430" value="Game: Pandemic" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="61854" value="Medical: Diseases" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="109134" value="Misc: BGG Hall of Fame" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="105030" value="Misc: Dice Tower Hall of Fame" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="78680" value="Misc: Made by Panda" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="78198" value="Misc: Watch It Played How To Videos" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="63526" value="Occupation: Dispatcher" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="63524" value="Occupation: Medic / Doctor / Nurses" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="63525" value="Occupation: Researcher / Scientist" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="65851" value="Players: Games with expansions that add solo play" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="113768" value="Players: Games with expansions that change player count" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="62881" value="Region: The World" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="66167" value="Theme: Science" />
+		
+									
+			
+
+			      				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="205666" value="Pandemic: Gen Con 2016 Promos – Z-Force Team Member/Game Convention" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="446028" value="Pandemic: Government Shutdown" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="137136" value="Pandemic: In the Lab" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="446025" value="Pandemic: Isolation" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="40849" value="Pandemic: On the Brink" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="185403" value="Pandemic: Promo Roles" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="168703" value="Pandemic: State of Emergency" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="221935" value="Pandemic: Survival Promos – Crisis Mitigator/Relocation Specialist" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="382181" value="Pandemic: Teacher Promo Card" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="48791" value="Pandemie: Uitbreiding &quot;De Generalist&quot;" />
+		
+									
+			
+
+			      			
+
+			      				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="333623" value="Pandemic: Folded Space Insert" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="281195" value="Pandemic: 10th Anniversary Edition ─ Painted Figures" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="146049" value="Pandemic: Base Replacement Deck" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="272771" value="Pandemic: Biohazard Containment Unit" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="275025" value="Pandemic: Biohazard Containment Unit – Extra Dividers" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="156254" value="Pandemic: Character Germs" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="156249" value="Pandemic: Character Meeples" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="303581" value="Pandemic: e-Raptor Insert" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="374422" value="Pandemic: GolonkoCrafts 3D Printed Tokens (Base Game Set)" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="374835" value="Pandemic: GolonkoCrafts 3D Printed Tokens (w/ 5th Disease)" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="475007" value="Pandemic: LabGradeGaming Glowing Vials Set" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="454542" value="Pandemic: Meeple Source Realistic Wooden Viruses Tokens" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="352076" value="Pandemic: Meeple Source Research Center Upgrade Pack" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="203751" value="Pandemic: Nugget Games Storage Box" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="203108" value="Pandemic: Set of Pawns for Roles" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="378772" value="Pandemic: Spielmaterial.de Upgrade" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="352075" value="Pandemic: State of Emergency – Meeple Source Upgrade Set (28 pcs)" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="348646" value="Pandemic: The GiftForge Insert" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="365815" value="Pandemic: Tower Rex 108-Piece Wooden Token Set" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="365814" value="Pandemic: Tower Rex Organizer" />
+		
+									
+			
+
+			      			
+
+			      			
+
+			      			
+
+			      				
+		 			
+
+			
+		
+					<link type="boardgameimplementation" id="260428" value="Fall of Rome" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameimplementation" id="198928" value="Iberia" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameimplementation" id="436217" value="The Lord of the Rings: Fate of the Fellowship" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameimplementation" id="314040" value="Pandemic Legacy: Season 0" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameimplementation" id="161936" value="Pandemic Legacy: Season 1" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameimplementation" id="221107" value="Pandemic Legacy: Season 2" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameimplementation" id="329670" value="Pandemic: Hot Zone – Europe" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameimplementation" id="301919" value="Pandemic: Hot Zone – North America" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameimplementation" id="234671" value="Pandemic: Rising Tide" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameimplementation" id="150658" value="Pandemic: The Cure" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameimplementation" id="192153" value="Reign of Cthulhu" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameimplementation" id="370913" value="Star Wars: The Clone Wars" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameimplementation" id="342848" value="World of Warcraft: Wrath of the Lich King" />
+		
+									
+			
+
+			      			
+
+			      	      	      				
+		 			
+
+			
+		
+					<link type="boardgamedesigner" id="378" value="Matt Leacock" />
+		
+									
+			
+
+			      				
+		 			
+
+			
+		
+					<link type="boardgameartist" id="9731" value="Josh Cappel" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameartist" id="33088" value="Christian Hanisch" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameartist" id="11935" value="Régis Moulun" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameartist" id="14057" value="Chris Quilliams" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameartist" id="16910" value="Tom Thiel" />
+		
+									
+			
+
+			      	      				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="538" value="Z-Man Games" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="3320" value="(Unknown)" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="23043" value="ADC Blackfire Entertainment" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="4304" value="Albi" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="15889" value="Asterion Press" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="34501" value="Boardgame Space" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="7162" value="Brain Games" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="50696" value="CoolPlay" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="2366" value="Devir" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="6784" value="Enigma (Bergsala Enigma)" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="5657" value="Filosofia Éditions" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="15605" value="Galápagos Jogos" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="12540" value="Game Harbor" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="8820" value="Gémklub" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="23382" value="HaKubia" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="1391" value="Hobby Japan" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="6275" value="HomoLudicus" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="15983" value="Jolly Thinkers" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="6214" value="Kaissa Chess &amp; Games" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="8291" value="Korea Boardgames" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="5812" value="Lacerta" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="3218" value="Lautapelit.fi" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="9325" value="Lifestyle Boardgames Ltd" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="7992" value="MINDOK" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="32395" value="NeoTroy Games" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="44407" value="Nordic Games ehf" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="29085" value="Paladium Games" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="39" value="Pegasus Spiele" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="4696" value="Quined White Goblin Games" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="7466" value="Rebel Sp. z o.o." />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="33998" value="Siam Board Games" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="3888" value="Stratelibri" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="8759" value="Wargames Club Publishing" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="35809" value="Zhiyanjia" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="10739" value="Взрослые дети" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="44209" value="Ігромаг" />
+		
+									
+			
+
+			
+	
+
+	
+
+	
+	
+	
+   		<statistics page="1">
+								<ratings >
+			<usersrated value="136864" />
+			<average value="7.50945" />
+			<bayesaverage value="7.3996" />
+
+			<ranks>
+															<rank type="subtype" id="1" name="boardgame" friendlyname="Board Game Rank" value="176" bayesaverage="7.3996" />
+																				<rank type="family" id="5497" name="strategygames" friendlyname="Strategy Game Rank" value="182" bayesaverage="7.32565" />
+											<rank type="family" id="5499" name="familygames" friendlyname="Family Game Rank" value="34" bayesaverage="7.3855" />
+												</ranks>
+
+			<stddev value="1.33932" />
+			<median value="0" />
+			<owned value="230200" />
+			<trading value="3433" />
+			<wanting value="612" />
+			<wishing value="12061" />
+			<numcomments value="20947" />
+			<numweights value="6337" />
+			<averageweight value="2.3925" />
+			</ratings>
+								</statistics>
+     
+	
+          
+</item>
 </items>

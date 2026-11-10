@@ -92,18 +92,24 @@ Auto-completado de fichas para el inventario: `GET /admin/bgg/search`, `GET /adm
 Variables (`.env.example`):
 
 - `BGG_API_TOKEN`: token de la API de BGG. Sin token y sin mock responde 503.
-- `BGG_MOCK=1`: no hace llamadas de red; lee `fixtures/bgg/thing/<id>.xml` y
-  los `<item>` de `fixtures/bgg/search/*.xml` cuyo nombre contiene la consulta (subcadena, como BGG; `exacta=1` exige igualdad). Ids de ejemplo: 13 (base), 325 (expansión de 13), 174430
-  (con carátula grande) y 30549 (sin imagen). Para que un juego aparezca en las búsquedas hay que agregarlo a un XML de `search/`.
+- `BGG_MOCK=1`: no hace llamadas de red; lee `fixtures/bgg/thing/<id>.xml` y, para buscar, reúne los
+  `<item>` de `fixtures/bgg/search/*.xml` cuyo nombre contiene la consulta (subcadena, como BGG; `exacta=1`
+  exige igualdad). Los fixtures son respuestas reales capturadas con `pnpm bgg:capturar`: ids 13
+  (Catan), 325 (Seafarers, expansión de 13), 174430 (Gloomhaven) y 30549 (Pandemic). `999001` y
+  `search/sintetico.xml` son sintéticos (valores vacíos y pocos votos). Para que un juego aparezca en las
+  búsquedas hay que agregarlo a un XML de `search/`.
 - `BGG_MOCK_FALLA=timeout|429|503` (solo con mock): simula una caída para probar
   `cache-desactualizada` y el manejo de rate limit.
 
 Las carátulas del mock **no están en git**: antes de usar `BGG_MOCK=1` corre una vez
 `pnpm bgg:imagenes-mock`, que las genera en `fixtures/bgg/img/` (incluye una de varios MB para probar
-el procesamiento). Si faltan, el mock usa una imagen plana y avisa por consola. Cuando tengas token,
-`BGG_API_TOKEN=… pnpm bgg:capturar <idBgg…>` reemplaza los XML por respuestas reales (el diff de git
-muestra cambios de formato). `pnpm bgg:test` corre las pruebas sin DB y `pnpm bgg:benchmark` el
+el procesamiento). Si faltan, el mock usa una imagen plana y avisa por consola. Para recapturar,
+`pnpm bgg:capturar <idBgg…> --q <texto>` (lee `BGG_API_TOKEN` de `.env`; valida las respuestas con el
+parser, pausa entre peticiones y reintenta ante 429/503). El diff de git muestra cambios de formato. `pnpm bgg:test` corre las pruebas sin DB y `pnpm bgg:benchmark` el
 benchmark de carátulas ([`docs/bgg-caratulas.md`](docs/bgg-caratulas.md)).
+
+BGG no pagina ni ordena la búsqueda y repite las expansiones: el servidor deduplica, ordena por
+relevancia y devuelve hasta 200 resultados; el buscador los muestra de a 20 con "Mostrar más".
 
 Las traducciones BGG → dominio (umbrales de dificultad, tipos, calificación mínima de votos, tamaño de
 carátula, búsqueda) están en `src/lib/data/bgg.json`, validado por `src/lib/schemas/bgg.ts`: un JSON

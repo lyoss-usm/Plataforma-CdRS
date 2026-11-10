@@ -1,4 +1,181 @@
-<?xml version="1.0" encoding="utf-8"?>
-<items total="1" termsofuse="https://boardgamegeek.com/xmlapi/termsofuse">
-  <item type="boardgame" id="30549"><name type="primary" value="Pandemic" /><yearpublished value="2008" /></item>
-</items>
+<?xml version="1.0" encoding="utf-8"?><items total="45" termsofuse="https://boardgamegeek.com/xmlapi/termsofuse">			<item type="boardgame" id="375090">
+			<name type="primary" value="3rd World Labour: Pandemic Edition"/>			
+							<yearpublished value="2022" />
+					</item>
+			<item type="boardgame" id="329712">
+			<name type="primary" value="American Pandemic: The Party Card Game"/>			
+							<yearpublished value="2021" />
+					</item>
+			<item type="boardgame" id="307384">
+			<name type="primary" value="Clinic: Deluxe Edition – COVID-19 Pandemic"/>			
+							<yearpublished value="2020" />
+					</item>
+			<item type="boardgame" id="374540">
+			<name type="primary" value="HE.R.O: The Pandemic"/>			
+							<yearpublished value="2023" />
+					</item>
+			<item type="boardgame" id="30549">
+			<name type="primary" value="Pandemic"/>			
+							<yearpublished value="2008" />
+					</item>
+			<item type="boardgame" id="429445">
+			<name type="primary" value="Pandemic Iberia: Festival"/>			
+							<yearpublished value="2024" />
+					</item>
+			<item type="boardgame" id="314040">
+			<name type="primary" value="Pandemic Legacy: Season 0"/>			
+							<yearpublished value="2020" />
+					</item>
+			<item type="boardgame" id="161936">
+			<name type="primary" value="Pandemic Legacy: Season 1"/>			
+							<yearpublished value="2015" />
+					</item>
+			<item type="boardgame" id="221107">
+			<name type="primary" value="Pandemic Legacy: Season 2"/>			
+							<yearpublished value="2017" />
+					</item>
+			<item type="boardgame" id="466784">
+			<name type="primary" value="The Pandemic Wars"/>			
+							<yearpublished value="2020" />
+					</item>
+			<item type="boardgame" id="157789">
+			<name type="primary" value="Pandemic: Contagion"/>			
+							<yearpublished value="2014" />
+					</item>
+			<item type="boardgame" id="192153">
+			<name type="alternate" value="Pandemic: Czas Cthulhu"/>			
+							<yearpublished value="2016" />
+					</item>
+			<item type="boardgame" id="260428">
+			<name type="alternate" value="Pandemic: Fall of Rome"/>			
+							<yearpublished value="2018" />
+					</item>
+			<item type="boardgame" id="205666">
+			<name type="primary" value="Pandemic: Gen Con 2016 Promos – Z-Force Team Member/Game Convention"/>			
+							<yearpublished value="2016" />
+					</item>
+			<item type="boardgame" id="446028">
+			<name type="primary" value="Pandemic: Government Shutdown"/>			
+							<yearpublished value="2014" />
+					</item>
+			<item type="boardgame" id="329670">
+			<name type="primary" value="Pandemic: Hot Zone – Europe"/>			
+							<yearpublished value="2021" />
+					</item>
+			<item type="boardgame" id="301919">
+			<name type="primary" value="Pandemic: Hot Zone – North America"/>			
+							<yearpublished value="2020" />
+					</item>
+			<item type="boardgame" id="198928">
+			<name type="alternate" value="Pandemic: Iberia"/>			
+							<yearpublished value="2016" />
+					</item>
+			<item type="boardgame" id="137136">
+			<name type="primary" value="Pandemic: In the Lab"/>			
+							<yearpublished value="2013" />
+					</item>
+			<item type="boardgame" id="446025">
+			<name type="primary" value="Pandemic: Isolation"/>			
+							<yearpublished value="2013" />
+					</item>
+			<item type="boardgame" id="40849">
+			<name type="primary" value="Pandemic: On the Brink"/>			
+							<yearpublished value="2009" />
+					</item>
+			<item type="boardgame" id="185403">
+			<name type="primary" value="Pandemic: Promo Roles"/>			
+							<yearpublished value="2015" />
+					</item>
+			<item type="boardgame" id="280789">
+			<name type="primary" value="Pandemic: Rapid Response"/>			
+							<yearpublished value="2019" />
+					</item>
+			<item type="boardgame" id="234671">
+			<name type="primary" value="Pandemic: Rising Tide"/>			
+							<yearpublished value="2017" />
+					</item>
+			<item type="boardgame" id="168703">
+			<name type="primary" value="Pandemic: State of Emergency"/>			
+							<yearpublished value="2015" />
+					</item>
+			<item type="boardgame" id="221935">
+			<name type="primary" value="Pandemic: Survival Promos – Crisis Mitigator/Relocation Specialist"/>			
+							<yearpublished value="2016" />
+					</item>
+			<item type="boardgame" id="382181">
+			<name type="primary" value="Pandemic: Teacher Promo Card"/>			
+							<yearpublished value="2021" />
+					</item>
+			<item type="boardgame" id="150658">
+			<name type="primary" value="Pandemic: The Cure"/>			
+							<yearpublished value="2014" />
+					</item>
+			<item type="boardgame" id="207017">
+			<name type="primary" value="Pandemic: The Cure – Experimental Meds"/>			
+							<yearpublished value="2016" />
+					</item>
+			<item type="boardgame" id="324628">
+			<name type="primary" value="People vs Pandemic"/>			
+							<yearpublished value="2020" />
+					</item>
+			<item type="boardgame" id="304868">
+			<name type="primary" value="Rapid Response System (fan expansion for Pandemic: The Cure)"/>			
+							<yearpublished value="2020" />
+					</item>
+				<item type="boardgameexpansion" id="307384">
+			<name type="primary" value="Clinic: Deluxe Edition – COVID-19 Pandemic"/>			
+							<yearpublished value="2020" />
+					</item>
+			<item type="boardgameexpansion" id="374540">
+			<name type="primary" value="HE.R.O: The Pandemic"/>			
+							<yearpublished value="2023" />
+					</item>
+			<item type="boardgameexpansion" id="429445">
+			<name type="primary" value="Pandemic Iberia: Festival"/>			
+							<yearpublished value="2024" />
+					</item>
+			<item type="boardgameexpansion" id="205666">
+			<name type="primary" value="Pandemic: Gen Con 2016 Promos – Z-Force Team Member/Game Convention"/>			
+							<yearpublished value="2016" />
+					</item>
+			<item type="boardgameexpansion" id="446028">
+			<name type="primary" value="Pandemic: Government Shutdown"/>			
+							<yearpublished value="2014" />
+					</item>
+			<item type="boardgameexpansion" id="137136">
+			<name type="primary" value="Pandemic: In the Lab"/>			
+							<yearpublished value="2013" />
+					</item>
+			<item type="boardgameexpansion" id="446025">
+			<name type="primary" value="Pandemic: Isolation"/>			
+							<yearpublished value="2013" />
+					</item>
+			<item type="boardgameexpansion" id="40849">
+			<name type="primary" value="Pandemic: On the Brink"/>			
+							<yearpublished value="2009" />
+					</item>
+			<item type="boardgameexpansion" id="185403">
+			<name type="primary" value="Pandemic: Promo Roles"/>			
+							<yearpublished value="2015" />
+					</item>
+			<item type="boardgameexpansion" id="168703">
+			<name type="primary" value="Pandemic: State of Emergency"/>			
+							<yearpublished value="2015" />
+					</item>
+			<item type="boardgameexpansion" id="221935">
+			<name type="primary" value="Pandemic: Survival Promos – Crisis Mitigator/Relocation Specialist"/>			
+							<yearpublished value="2016" />
+					</item>
+			<item type="boardgameexpansion" id="382181">
+			<name type="primary" value="Pandemic: Teacher Promo Card"/>			
+							<yearpublished value="2021" />
+					</item>
+			<item type="boardgameexpansion" id="207017">
+			<name type="primary" value="Pandemic: The Cure – Experimental Meds"/>			
+							<yearpublished value="2016" />
+					</item>
+			<item type="boardgameexpansion" id="304868">
+			<name type="primary" value="Rapid Response System (fan expansion for Pandemic: The Cure)"/>			
+							<yearpublished value="2020" />
+					</item>
+	</items>

@@ -32,7 +32,9 @@ export const bggConfigSchema = z.object({
 	}),
 	busqueda: z.object({
 		largoMinimo: positiveIntegerSchema,
+		// Tope que devuelve el servidor (BGG no pagina); el cliente los muestra de a `porPagina`.
 		maximoResultados: positiveIntegerSchema,
+		porPagina: positiveIntegerSchema,
 		debounceMs: z.number().int().nonnegative()
 	})
 });
@@ -58,6 +60,8 @@ export type BggSugerencia = z.infer<typeof bggSugerenciaSchema>;
 
 export const bggBusquedaRespuestaSchema = z.object({
 	resultados: z.array(bggSugerenciaSchema),
+	// Resultados únicos antes del tope; si supera `resultados.length`, la búsqueda se cortó.
+	total: z.number().int().nonnegative(),
 	origen: bggOrigenBusquedaSchema
 });
 export type BggBusquedaRespuesta = z.infer<typeof bggBusquedaRespuestaSchema>;

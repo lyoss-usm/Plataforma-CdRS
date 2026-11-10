@@ -21,7 +21,8 @@
 	},
 	"busqueda": {
 		"largoMinimo": 2,
-		"maximoResultados": 20,
+		"maximoResultados": 200,
+		"porPagina": 20,
 		"debounceMs": 400
 	}
 }

@@ -13,7 +13,7 @@
 		"db:seed": "node --experimental-strip-types scripts/seed/generate.ts",
 		"bgg:benchmark": "node --experimental-strip-types scripts/bgg/benchmark-caratulas.ts",
 		"bgg:imagenes-mock": "node --experimental-strip-types scripts/bgg/generar-imagenes-mock.ts",
-		"bgg:capturar": "node --experimental-strip-types scripts/bgg/capturar-fixtures.ts",
+		"bgg:capturar": "node --env-file-if-exists=.env --experimental-strip-types scripts/bgg/capturar-fixtures.ts",
 		"bgg:test": "node --experimental-strip-types scripts/bgg/tests/unit.ts",
 		"db:seed:clean": "node --experimental-strip-types scripts/seed/clean.ts",
 		"db:reset:seed": "pnpx supabase db reset --local && pnpm db:seed",

@@ -221,14 +221,14 @@ async function buscarEnBgg(
 	supabase: ClienteSupabase,
 	consulta: string,
 	exacta: boolean
-): Promise<BggSugerencia[]> {
+): Promise<{ resultados: BggSugerencia[]; total: number }> {
 	const xml = await pedirBgg('search', {
 		query: consulta,
 		type: 'boardgame,boardgameexpansion',
 		...(exacta ? { exact: '1' } : {})
 	});
-	const encontrados = parseBusqueda(xml, bggConfig);
-	if (encontrados.length === 0) return [];
+	const { resultados: encontrados, total } = parseBusqueda(xml, bggConfig, consulta);
+	if (encontrados.length === 0) return { resultados: [], total: 0 };
 
 	const ids = encontrados.map((r) => r.idBgg);
 	const [enCache, enCatalogo] = await Promise.all([
@@ -240,11 +240,14 @@ async function buscarEnBgg(
 		(enCatalogo.data ?? []).map((f) => [f.idBgg as number, f.idJuego as number])
 	);
 
-	return encontrados.map((r) => ({
-		...r,
-		idJuego: juegos.get(r.idBgg) ?? null,
-		enCache: idsCache.has(r.idBgg)
-	}));
+	return {
+		total,
+		resultados: encontrados.map((r) => ({
+			...r,
+			idJuego: juegos.get(r.idBgg) ?? null,
+			enCache: idsCache.has(r.idBgg)
+		}))
+	};
 }
 
 /**
@@ -258,18 +261,18 @@ export async function buscar(
 	exacta: boolean
 ): Promise<BggBusquedaRespuesta> {
 	if (fuente === 'bgg') {
-		return { resultados: await buscarEnBgg(supabase, consulta, exacta), origen: 'bgg' };
+		return { ...(await buscarEnBgg(supabase, consulta, exacta)), origen: 'bgg' };
 	}
 
 	const local = await buscarLocal(supabase, consulta);
-	if (local.length > 0) return { resultados: local, origen: 'local' };
+	if (local.length > 0) return { resultados: local, total: local.length, origen: 'local' };
 
 	try {
-		return { resultados: await buscarEnBgg(supabase, consulta, exacta), origen: 'bgg' };
+		return { ...(await buscarEnBgg(supabase, consulta, exacta)), origen: 'bgg' };
 	} catch (e) {
 		if (e instanceof ErrorBgg || e instanceof ErrorFormatoBgg) {
 			console.warn(`[bgg] búsqueda "${consulta}" sin BGG: ${e.message}`);
-			return { resultados: [], origen: 'local-sin-bgg' };
+			return { resultados: [], total: 0, origen: 'local-sin-bgg' };
 		}
 		throw e;
 	}

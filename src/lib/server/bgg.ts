@@ -57,11 +57,12 @@ const normalizar = (texto: string) =>
 
 /**
  * Búsqueda en modo mock: reúne los `<item>` de todos los `fixtures/bgg/search/*.xml` y deja los
- * cuyo nombre contiene la consulta (BGG coincide por subcadena; con `exact=1`, por igualdad).
+ * cuyo nombre contiene la consulta (BGG coincide por subcadena; con `exact=1`, por igualdad). No
+ * deduplica ni ordena: BGG repite las expansiones y no ordena por relevancia.
  */
 async function buscarEnFixtures(consulta: string, exacta: boolean): Promise<string> {
 	const buscada = normalizar(consulta.trim());
-	const items = new Map<string, string>();
+	const items: string[] = [];
 
 	for (const archivo of await readdir(join(DIR_FIXTURES, 'search')).catch(() => [])) {
 		if (!archivo.endsWith('.xml')) continue;
@@ -71,11 +72,11 @@ async function buscarEnFixtures(consulta: string, exacta: boolean): Promise<stri
 			const nombre = /<name\b[^>]*\bvalue="([^"]*)"/.exec(item)?.[1];
 			if (!id || !nombre) continue;
 			const candidato = normalizar(nombre);
-			if (exacta ? candidato === buscada : candidato.includes(buscada)) items.set(id, item);
+			if (exacta ? candidato === buscada : candidato.includes(buscada)) items.push(item);
 		}
 	}
 
-	return `<?xml version="1.0" encoding="utf-8"?><items total="${items.size}">${[...items.values()].join('')}</items>`;
+	return `<?xml version="1.0" encoding="utf-8"?><items total="${items.length}">${items.join('')}</items>`;
 }
 
 /**

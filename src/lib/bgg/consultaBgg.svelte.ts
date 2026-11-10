@@ -44,6 +44,10 @@ export class ConsultaBgg {
 	soloBgg = $state(false);
 	fase = $state<FaseBgg>('inactivo');
 	resultados = $state<BggSugerencia[]>([]);
+	/** Resultados únicos que halló la búsqueda; si supera `resultados.length`, el servidor la cortó. */
+	total = $state(0);
+	/** Cuántos resultados se muestran: la búsqueda se pagina localmente, sin nuevas llamadas. */
+	mostrados = $state(bggConfig.busqueda.porPagina);
 	origenBusqueda = $state<BggBusquedaRespuesta['origen'] | null>(null);
 	respuesta = $state<BggFichaRespuesta | null>(null);
 	error = $state<string | null>(null);
@@ -55,6 +59,18 @@ export class ConsultaBgg {
 	#controlador: AbortController | null = null;
 	#temporizador: ReturnType<typeof setTimeout> | undefined;
 	#reintentar: (() => Promise<void>) | null = null;
+
+	get visibles() {
+		return this.resultados.slice(0, this.mostrados);
+	}
+
+	get hayMas() {
+		return this.mostrados < this.resultados.length;
+	}
+
+	mostrarMas() {
+		this.mostrados += bggConfig.busqueda.porPagina;
+	}
 
 	get ocupado() {
 		return (
@@ -72,6 +88,7 @@ export class ConsultaBgg {
 		if (q.length < this.largoMinimo) {
 			this.#cancelar();
 			this.resultados = [];
+			this.total = 0;
 			this.origenBusqueda = null;
 			this.error = null;
 			this.fase = 'inactivo';
@@ -97,6 +114,8 @@ export class ConsultaBgg {
 				await pedirJson(`/admin/bgg/search?q=${encodeURIComponent(q)}&fuente=${fuente}`, {}, senal)
 			);
 			this.resultados = datos.resultados;
+			this.total = datos.total;
+			this.mostrados = bggConfig.busqueda.porPagina;
 			this.origenBusqueda = datos.origen;
 			this.fase = 'listo';
 		} catch (e) {

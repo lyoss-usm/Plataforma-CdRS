@@ -9,6 +9,7 @@ const imagenes: { archivo: string; generar: () => Promise<Buffer> }[] = [
 	// Gloomhaven: original grande (> 1 MiB) para ejercitar el procesamiento.
 	{ archivo: '174430.jpg', generar: () => generarImagenGrande(4000, 'jpeg', 95) },
 	{ archivo: '13.jpg', generar: () => generarImagenGrande(1200, 'jpeg', 85) },
+	{ archivo: '30549.jpg', generar: () => generarImagenGrande(1000, 'jpeg', 85) },
 	{ archivo: '325.png', generar: () => generarImagenGrande(800, 'png') }
 ];
 
