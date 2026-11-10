@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Fixture SINTÉTICO (id ficticio): casos borde que los juegos reales no cubren. Expansión sin imagen,
+     con valores "0" de BGG (sin dato), pocos votos y peso 0. No lo reemplaza scripts/bgg/capturar-fixtures.ts. -->
+<items termsofuse="https://boardgamegeek.com/xmlapi/termsofuse">
+  <item type="boardgameexpansion" id="999001">
+    <name type="primary" sortindex="1" value="Catan: Expansión de Prueba" />
+    <yearpublished value="0" />
+    <minplayers value="3" />
+    <maxplayers value="4" />
+    <playingtime value="0" />
+    <minage value="0" />
+    <link type="boardgameexpansion" id="13" value="Catan" inbound="true" />
+    <statistics page="1">
+      <ratings>
+        <usersrated value="8" />
+        <average value="7.5" />
+        <averageweight value="0" />
+      </ratings>
+    </statistics>
+  </item>
+</items>

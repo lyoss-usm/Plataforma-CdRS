@@ -1,61 +1,28 @@
 import type { IconName } from '$lib/icons';
 import type { AdminRole } from '$lib/stores/adminSession.svelte';
 
-export type LoanType = 'general' | 'junta';
-
 export type AdminRoute =
 	| '/admin'
 	| '/admin/prestamos'
-	| '/admin/prestamos?tipo=general'
-	| '/admin/prestamos?tipo=junta'
 	| '/admin/solicitudes'
 	| '/admin/inventario'
 	| '/admin/miembros'
 	| '/admin/miembros?tab=moderacion';
 
-export type LoanRoute = '/admin/prestamos?tipo=general' | '/admin/prestamos?tipo=junta';
-
-export const loanRouteFor: Record<LoanType, LoanRoute> = {
-	general: '/admin/prestamos?tipo=general',
-	junta: '/admin/prestamos?tipo=junta'
-};
-
 export const moderacionRoute: AdminRoute = '/admin/miembros?tab=moderacion';
 
-export const roleMeta: Record<
-	AdminRole,
-	{ label: string; defaultTipo: LoanType; allowed: LoanType[]; badge: string }
-> = {
+export const roleMeta: Record<AdminRole, { label: string; badge: string }> = {
 	junior: {
 		label: 'Junior',
-		defaultTipo: 'junta',
-		allowed: ['junta'],
 		badge: 'border-primary/40 bg-primary/10 text-primary'
 	},
 	senior: {
 		label: 'Senior',
-		defaultTipo: 'general',
-		allowed: ['general', 'junta'],
 		badge: 'border-secondary/40 bg-secondary/10 text-secondary'
 	},
 	directivo: {
 		label: 'Directivo',
-		defaultTipo: 'general',
-		allowed: ['general', 'junta'],
 		badge: 'border-tertiary/40 bg-tertiary/10 text-tertiary'
-	}
-};
-
-export const loanTypeMeta: Record<LoanType, { label: string; description: string }> = {
-	general: {
-		label: 'Generales',
-		description:
-			'Préstamos presenciales fuera de junta: identificación por RUT/ROL, sin retención de documento.'
-	},
-	junta: {
-		label: 'Juntas',
-		description:
-			'Préstamos presenciales en Juntas Masivas: se retiene un documento del solicitante.'
 	}
 };
 
@@ -84,15 +51,13 @@ export interface QuickAction {
 	roles: AdminRole[];
 }
 
-function loanSlotFor(role: AdminRole): NavSlot {
-	return {
-		id: 'prestamos',
-		href: loanRouteFor[roleMeta[role].defaultTipo],
-		label: 'Préstamos',
-		icon: 'box'
-	};
-}
-
+// Préstamos = cajero de Juntas Masivas (wiki § 1.3). El préstamo general es la solicitud web (§ 1.2).
+const prestamosSlot: NavSlot = {
+	id: 'prestamos',
+	href: '/admin/prestamos',
+	label: 'Préstamos',
+	icon: 'boxes'
+};
 const homeSlot: NavSlot = { id: 'home', href: '/admin', label: 'Home', icon: 'home' };
 const solicitudesSlot: NavSlot = {
 	id: 'solicitudes',
@@ -108,9 +73,9 @@ const miembrosSlot: NavSlot = {
 };
 
 export const bottomSlotsByRole: Record<AdminRole, NavSlot[]> = {
-	junior: [loanSlotFor('junior'), homeSlot, miembrosSlot],
-	senior: [loanSlotFor('senior'), homeSlot, solicitudesSlot],
-	directivo: [loanSlotFor('directivo'), homeSlot, solicitudesSlot]
+	junior: [prestamosSlot, homeSlot, miembrosSlot],
+	senior: [prestamosSlot, homeSlot, solicitudesSlot],
+	directivo: [prestamosSlot, homeSlot, solicitudesSlot]
 };
 
 export const sidebarSections: { title: string; links: SidebarLink[] }[] = [
@@ -133,7 +98,7 @@ export const sidebarSections: { title: string; links: SidebarLink[] }[] = [
 				id: 'prestamos',
 				href: '/admin/prestamos',
 				label: 'Préstamos',
-				icon: 'box',
+				icon: 'boxes',
 				roles: ['junior', 'senior', 'directivo']
 			},
 			{
@@ -185,17 +150,9 @@ export const quickActions: QuickAction[] = [
 		id: 'juntas',
 		label: 'Juntas',
 		description: 'Registro de préstamos en Juntas Masivas, con documento retenido',
-		href: loanRouteFor.junta,
+		href: '/admin/prestamos',
 		icon: 'boxes',
 		roles: ['junior', 'senior', 'directivo']
-	},
-	{
-		id: 'prestamos-generales',
-		label: 'Préstamos Generales',
-		description: 'Presenciales sin retención de documento, por RUT/ROL',
-		href: loanRouteFor.general,
-		icon: 'box',
-		roles: ['senior', 'directivo']
 	},
 	{
 		id: 'solicitudes',

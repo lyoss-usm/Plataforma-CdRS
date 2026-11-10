@@ -7,8 +7,11 @@
 	import ModeracionPanel from '$lib/components/admin/moderacion/ModeracionPanel.svelte';
 	import { moderacionRoute } from '$lib/data/admin';
 	import { adminSession } from '$lib/stores/adminSession.svelte';
+	import type { PageProps } from './$types';
 
 	type MembersTab = 'miembros' | 'moderacion';
+
+	let { data }: PageProps = $props();
 
 	const role = $derived(adminSession.user.role);
 	const canManageModeracion = $derived(role === 'directivo');
@@ -61,6 +64,13 @@
 	{#if tab === 'moderacion'}
 		<ModeracionPanel />
 	{:else}
-		<MiembrosPanel />
+		<MiembrosPanel
+			staffPage={data.staffPage}
+			cargos={data.cargos}
+			permisosPorCargo={data.permisosPorCargo}
+			filtros={data.filtros}
+			puedeGestionar={data.puedeGestionar}
+			errorCarga={data.errorCarga}
+		/>
 	{/if}
 </SectionPage>

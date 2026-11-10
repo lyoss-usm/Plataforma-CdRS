@@ -17,10 +17,10 @@ export const dominiosCorreoInstitucional = [
 	'externos.usm.cl'
 ] as const;
 
-const correoInstitucionalSchema = z
+export const correoInstitucionalSchema = z
 	.string()
 	.trim()
-	.email()
+	.email('Ingresa un correo electrónico válido')
 	.refine(
 		(correo) => {
 			const dominio = correo.split('@').at(-1)?.toLowerCase();
@@ -46,3 +46,7 @@ export type Sansano = z.infer<typeof sansanoSchema>;
 
 export const createSansanoSchema = z.object(sansanoShape);
 export type CreateSansanoDto = z.infer<typeof createSansanoSchema>;
+
+/** Alta rápida desde el cajero (§ 1.3): sansano común, sin cargo ni cuenta. */
+export const altaSansanoSchema = createSansanoSchema.omit({ idCargo: true, authUserId: true });
+export type AltaSansanoDto = z.infer<typeof altaSansanoSchema>;

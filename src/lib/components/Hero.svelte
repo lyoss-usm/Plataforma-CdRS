@@ -2,86 +2,9 @@
 	import { resolve } from '$app/paths';
 	import LogoCoin from '$lib/components/LogoCoin.svelte';
 	import StarField from '$lib/components/StarField.svelte';
+	import { landing } from '$lib/data/landing';
 
-	const events = [
-		{
-			src: '/eventos/evento-1.jpg',
-			alt: 'Dados sobre una mesa durante una sesión',
-			caption: 'Noche de dados',
-			cols: 'col-span-2 row-span-2',
-			rot: '-rotate-1'
-		},
-		{
-			src: '/eventos/evento-2.jpg',
-			alt: 'Juego de mesa en una mesa de eventos',
-			caption: 'Torneo de mesa',
-			cols: '',
-			rot: 'rotate-2'
-		},
-		{
-			src: '/eventos/evento-3.jpg',
-			alt: 'Reunión festiva del club',
-			caption: 'Fiesta de cierre',
-			cols: '',
-			rot: '-rotate-2'
-		},
-		{
-			src: '/eventos/evento-4.jpg',
-			alt: 'Amigos jugando en grupo',
-			caption: 'Mesa de verano',
-			cols: 'row-span-2',
-			rot: 'rotate-1'
-		},
-		{
-			src: '/eventos/evento-5.jpg',
-			alt: 'Partida de mesa con gente al fondo',
-			caption: 'Campeonato del club',
-			cols: 'col-span-2',
-			rot: '-rotate-1'
-		},
-		{
-			src: '/eventos/evento-6.jpg',
-			alt: 'Sesión de rol en vivo',
-			caption: 'Rol en vivo',
-			cols: '',
-			rot: 'rotate-2'
-		},
-		{
-			src: '/eventos/evento-7.jpg',
-			alt: 'Juegos y accesorios de mesa',
-			caption: 'Salón de juegos',
-			cols: '',
-			rot: '-rotate-2'
-		},
-		{
-			src: '/eventos/evento-8.jpg',
-			alt: 'Convención con público',
-			caption: 'Convención',
-			cols: '',
-			rot: 'rotate-1'
-		},
-		{
-			src: '/eventos/evento-9.jpg',
-			alt: 'Cartas sobre la mesa',
-			caption: 'Tarde de cartas',
-			cols: '',
-			rot: '-rotate-2'
-		},
-		{
-			src: '/eventos/evento-10.jpg',
-			alt: 'Tablero de ajedrez',
-			caption: 'Ajedrez rápido',
-			cols: '',
-			rot: 'rotate-2'
-		},
-		{
-			src: '/eventos/evento-11.jpg',
-			alt: 'Juegos de mesa variados',
-			caption: 'Ludoteca abierta',
-			cols: '',
-			rot: '-rotate-1'
-		}
-	];
+	const events = landing.eventos;
 </script>
 
 <section
@@ -118,7 +41,7 @@
 			</div>
 
 			<img
-				src="/rolo/rolo_admirando_arriba_fix.png"
+				src="/rolo/rolo_admirando_arriba_fix.webp"
 				alt="Rolo admirando la moneda del club"
 				class="-mt-6 w-60 select-none sm:w-72"
 				width="436"
@@ -128,7 +51,7 @@
 
 		<div class="mt-8 flex flex-wrap justify-center gap-4">
 			<a
-				href={resolve("/catalogo")}
+				href={resolve('/catalogo')}
 				class="rounded-base border border-primary/50 bg-primary/10 px-6 py-3 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow"
 				>Ver catálogo</a
 			>
@@ -160,7 +83,7 @@
 	</div>
 
 	<img
-		src="/rolo/rolo_corriendo_apurado_fix.png"
+		src="/rolo/rolo_corriendo_apurado_fix.webp"
 		alt="Rolo corriendo apurado de regreso al catálogo"
 		class="pointer-events-none absolute bottom-2 left-0 z-10 hidden w-40 drop-shadow-lg select-none md:block lg:w-52"
 		loading="lazy"

@@ -6,20 +6,22 @@
 	import FichaJuego from './FichaJuego.svelte';
 	import QrEscaneoModal from './QrEscaneoModal.svelte';
 	import AltaSansanoModal from './AltaSansanoModal.svelte';
-	import {
-		meson,
-		parsearRut,
-		formatearRut,
-		RUT_STAFF,
-		type DatosAltaSansano,
-		type FichaBusqueda
-	} from '$lib/data/junta.svelte';
-	import type { Documento, Sansano } from '$lib/schemas';
+	import IdentificadorInput from '$lib/components/forms/IdentificadorInput.svelte';
+	import { LARGO_RUT } from '$lib/schemas';
+	import { parsearRut, formatearRut, type DatosAltaSansano } from '$lib/data/junta.svelte';
+	import type {
+		AltaSansanoDto,
+		BusquedaEjemplar,
+		BusquedaSolicitante,
+		DevolucionDto,
+		Documento,
+		FichaEjemplar,
+		PrestamoEnCurso,
+		PrestamoJuntaDto,
+		Sansano,
+		Suspension
+	} from '$lib/schemas';
 	import { notificaciones } from '$lib/stores/notificaciones.svelte';
-
-	type TipoCajero = 'general' | 'junta';
-
-	let { tipo = 'junta' }: { tipo?: TipoCajero } = $props();
 
 	const documentos: { value: Documento; label: string }[] = [
 		{ value: 'Carnet', label: 'Carnet' },
@@ -29,41 +31,84 @@
 	];
 
 	let busqueda = $state('');
-	let ficha = $state<FichaBusqueda | null>(null);
+	let ficha = $state<FichaEjemplar | null>(null);
+	let prestamoFicha = $state<PrestamoEnCurso | null>(null);
 	let errorBusqueda = $state<string | null>(null);
+	let buscandoFicha = $state(false);
+	let enviando = $state(false);
 
 	let qrAbierto = $state(false);
 
 	let documento = $state<Documento | null>(null);
 	let rutEntrada = $state('');
 	let sansano = $state<Sansano | null>(null);
+	let suspension = $state<Suspension | null>(null);
+	let prestamoPersona = $state<PrestamoEnCurso | null>(null);
 	let errorRut = $state<string | null>(null);
+	let buscandoSansano = $state(false);
 	let noExiste = $state(false);
 	let altaAbierta = $state(false);
+	let errorAlta = $state<string | null>(null);
+	let creandoSansano = $state(false);
 
 	let errorIniciar = $state<string | null>(null);
 
-	const suspension = $derived(sansano ? meson.suspensionActiva(sansano.rutSansano) : null);
 	const prestable = $derived(ficha !== null && ficha.ejemplar.estadoEjemplar === 'En bodega');
-	const prestamoPersona = $derived(
-		sansano ? meson.prestamoActivoDePersona(sansano.rutSansano) : null
-	);
-	const prestamoFicha = $derived(
-		ficha ? meson.prestamoActivoPorEjemplar(ficha.ejemplar.idEjemplar) : null
-	);
 	const prestamoAterminar = $derived(prestamoPersona ?? prestamoFicha);
-	const requiereDocumento = $derived(tipo === 'junta');
 	const listo = $derived(
-		Boolean(
-			ficha && prestable && sansano && (requiereDocumento ? documento : true) && suspension === null
-		)
+		Boolean(ficha && prestable && sansano && documento && suspension === null)
 	);
 
-	function usarFicha(id: string) {
-		const encontrada = meson.ejemplarConJuego(id);
+	type Respuesta<T> = { ok: true; datos: T } | { ok: false; status: number; error: string };
+
+	/** Llama al API del cajero y normaliza errores de red, de sesión y de validación. */
+	async function pedir<T>(url: string, init?: RequestInit): Promise<Respuesta<T>> {
+		try {
+			const res = await fetch(url, init);
+
+			// Sin sesión, el hook de /admin redirige a /login y fetch sigue la redirección.
+			if (res.redirected) {
+				return { ok: false, status: 401, error: 'Tu sesión expiró. Vuelve a iniciar sesión.' };
+			}
+
+			const cuerpo = await res.json().catch(() => null);
+
+			if (!res.ok) {
+				const error: string = cuerpo?.error ?? 'Error del servidor';
+				const detalles = cuerpo?.detalles ? Object.values(cuerpo.detalles).flat().join(', ') : '';
+
+				return { ok: false, status: res.status, error: detalles ? `${error}: ${detalles}` : error };
+			}
+
+			return { ok: true, datos: cuerpo as T };
+		} catch {
+			return { ok: false, status: 0, error: 'Error de red al comunicarse con el servidor.' };
+		}
+	}
+
+	function conJson(method: 'POST' | 'PATCH', body: unknown): RequestInit {
+		return { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) };
+	}
+
+	async function usarFicha(id: string) {
 		busqueda = id;
-		ficha = encontrada;
-		errorBusqueda = encontrada ? null : `El código «${id}» no existe en el catálogo.`;
+		buscandoFicha = true;
+		const respuesta = await pedir<BusquedaEjemplar>(
+			`/admin/prestamos/ejemplares/${encodeURIComponent(id)}`
+		);
+		buscandoFicha = false;
+
+		if (!respuesta.ok) {
+			ficha = null;
+			prestamoFicha = null;
+			errorBusqueda =
+				respuesta.status === 404 ? `El código «${id}» no existe en el catálogo.` : respuesta.error;
+			return;
+		}
+
+		ficha = respuesta.datos.ficha;
+		prestamoFicha = respuesta.datos.prestamoActivo;
+		errorBusqueda = null;
 	}
 
 	function buscar() {
@@ -76,13 +121,44 @@
 		}
 
 		errorIniciar = null;
-		usarFicha(id);
+		void usarFicha(id);
 	}
 
 	function alEscaneado(id: string) {
 		qrAbierto = false;
 		errorIniciar = null;
-		usarFicha(id);
+		void usarFicha(id);
+	}
+
+	function aplicarSolicitante(datos: BusquedaSolicitante) {
+		sansano = datos.sansano;
+		suspension = datos.suspension;
+		prestamoPersona = datos.prestamoActivo;
+		rutEntrada = formatearRut(datos.sansano.rutSansano, datos.sansano.digitoVerificador);
+		noExiste = false;
+		errorRut = null;
+		errorIniciar = null;
+
+		if (datos.prestamoActivo && documento === null) {
+			documento = datos.prestamoActivo.prestamo.tipoDocumento;
+		}
+	}
+
+	async function cargarSolicitante(rut: number) {
+		buscandoSansano = true;
+		const respuesta = await pedir<BusquedaSolicitante>(`/admin/prestamos/sansanos/${rut}`);
+		buscandoSansano = false;
+
+		if (respuesta.ok) {
+			aplicarSolicitante(respuesta.datos);
+			return;
+		}
+
+		sansano = null;
+		suspension = null;
+		prestamoPersona = null;
+		noExiste = respuesta.status === 404;
+		errorRut = noExiste ? null : respuesta.error;
 	}
 
 	function identificar() {
@@ -95,32 +171,49 @@
 
 		errorRut = null;
 		errorIniciar = null;
-		const encontrado = meson.sansanoPorRut(rut.rut);
-
-		if (encontrado) {
-			const activo = meson.prestamoActivoDePersona(encontrado.rutSansano);
-
-			if (activo && requiereDocumento && documento === null) {
-				documento = activo.prestamo.tipoDocumento;
-			}
-		}
-
-		sansano = encontrado;
-		noExiste = encontrado === null;
+		void cargarSolicitante(rut.rut);
 	}
 
-	function crearSansano(datos: DatosAltaSansano) {
-		const creado = meson.crearSansano(datos);
+	async function crearSansano(datos: DatosAltaSansano) {
+		const alta: AltaSansanoDto = {
+			rutSansano: datos.rut,
+			digitoVerificador: datos.digitoVerificador,
+			rolSansano: datos.rol,
+			nombreSansano: datos.nombre,
+			telefono: datos.telefono,
+			correoInstitucional: datos.correo
+		};
+
+		creandoSansano = true;
+		errorAlta = null;
+		const respuesta = await pedir<{ sansano: Sansano }>(
+			'/admin/prestamos/sansanos',
+			conJson('POST', alta)
+		);
+		creandoSansano = false;
+
+		if (!respuesta.ok) {
+			errorAlta = respuesta.error;
+			return;
+		}
+
 		altaAbierta = false;
-		noExiste = false;
-		sansano = creado;
-		rutEntrada = formatearRut(creado.rutSansano, creado.digitoVerificador);
-		errorRut = null;
-		errorIniciar = null;
+		aplicarSolicitante({
+			sansano: respuesta.datos.sansano,
+			suspension: null,
+			prestamoActivo: null
+		});
+	}
+
+	function cerrarAlta() {
+		altaAbierta = false;
+		errorAlta = null;
 	}
 
 	function limpiarSolicitante() {
 		sansano = null;
+		suspension = null;
+		prestamoPersona = null;
 		documento = null;
 		rutEntrada = '';
 		noExiste = false;
@@ -130,6 +223,7 @@
 
 	function limpiarFicha() {
 		ficha = null;
+		prestamoFicha = null;
 		busqueda = '';
 		errorBusqueda = null;
 		errorIniciar = null;
@@ -144,72 +238,82 @@
 			return;
 		}
 
-		const contexto = prestamoFicha;
-		sansano = contexto.sansano;
-		rutEntrada = formatearRut(contexto.sansano.rutSansano, contexto.sansano.digitoVerificador);
-		documento = contexto.prestamo.tipoDocumento;
-		noExiste = false;
-		errorRut = null;
-		errorIniciar = null;
+		documento = prestamoFicha.prestamo.tipoDocumento;
+		void cargarSolicitante(prestamoFicha.sansano.rutSansano);
 	}
 
-	function terminarYCargar() {
+	async function terminarYCargar() {
 		const activo = prestamoAterminar;
 
 		if (!activo) {
 			return;
 		}
 
-		const devuelto = meson.terminarPrestamo(activo.prestamo.idPrestamo, RUT_STAFF);
+		const devolucion: DevolucionDto = {
+			idPrestamo: activo.prestamo.idPrestamo,
+			estadoFinal: 'Para revisar'
+		};
 
-		if (!devuelto) {
+		enviando = true;
+		errorIniciar = null;
+		const respuesta = await pedir('/admin/prestamos', conJson('PATCH', devolucion));
+		enviando = false;
+
+		if (!respuesta.ok) {
+			errorIniciar = respuesta.error;
 			return;
 		}
 
 		notificaciones.mostrar(
 			'info',
-			`Préstamo #${devuelto.idPrestamo} terminado`,
+			`Préstamo #${activo.prestamo.idPrestamo} terminado`,
 			`${activo.ejemplar.idEjemplar} ${activo.juego.nombreJuego} terminó con ${activo.sansano.nombreSansano} y quedó «Para revisar». Escanea el juego nuevo para darle otro préstamo.`,
 			{ duracion: 8000 }
 		);
-		errorIniciar = null;
 
-		if (ficha && ficha.ejemplar.idEjemplar === activo.ejemplar.idEjemplar) {
+		if (prestamoPersona?.prestamo.idPrestamo === activo.prestamo.idPrestamo) {
+			prestamoPersona = null;
+		}
+
+		if (ficha?.ejemplar.idEjemplar === activo.ejemplar.idEjemplar) {
 			limpiarFicha();
 		}
 	}
 
-	function iniciar() {
-		if (!ficha || !sansano || (requiereDocumento && !documento)) {
+	async function iniciar() {
+		if (!ficha || !sansano || !documento) {
 			return;
 		}
 
-		const resultado = meson.crearPrestamoPresencial({
-			idEjemplar: ficha.ejemplar.idEjemplar,
-			rutSansano: sansano.rutSansano,
-			documento: requiereDocumento ? documento : null,
-			rutPrestador: RUT_STAFF
-		});
+		const fichaActual = ficha;
+		const solicitante = sansano;
+		const prestamo: PrestamoJuntaDto = {
+			idEjemplar: fichaActual.ejemplar.idEjemplar,
+			rutSansano: solicitante.rutSansano,
+			tipoDocumento: documento
+		};
 
-		if (!resultado.ok) {
-			errorIniciar = resultado.motivo;
+		enviando = true;
+		errorIniciar = null;
+		const respuesta = await pedir<{ idPrestamo: number }>(
+			'/admin/prestamos',
+			conJson('POST', prestamo)
+		);
+		enviando = false;
+
+		if (!respuesta.ok) {
+			errorIniciar = respuesta.error;
 			return;
 		}
 
 		notificaciones.mostrar(
 			'success',
-			`Préstamo #${resultado.prestamo.idPrestamo} iniciado`,
-			`Solicitud #${resultado.solicitud.idSolicitud} aprobada · ${ficha.ejemplar.idEjemplar} ${ficha.juego.nombreJuego} con ${sansano.nombreSansano}. El ejemplar quedó en «Prestado».`
+			`Préstamo #${respuesta.datos.idPrestamo} iniciado`,
+			`${fichaActual.ejemplar.idEjemplar} ${fichaActual.juego.nombreJuego} con ${solicitante.nombreSansano}. El ejemplar quedó en «Prestado».`
 		);
-		errorIniciar = null;
-		ficha = null;
-		busqueda = '';
-		errorBusqueda = null;
-		documento = null;
-		rutEntrada = '';
-		sansano = null;
-		noExiste = false;
-		errorRut = null;
+
+		limpiarFicha();
+		limpiarSolicitante();
 	}
 </script>
 
@@ -287,10 +391,15 @@
 					<button
 						type="button"
 						onclick={buscar}
+						disabled={buscandoFicha}
 						aria-label="Buscar juego por código"
-						class="flex w-12 shrink-0 cursor-pointer items-center justify-center self-stretch rounded-base border border-primary/50 bg-primary/10 text-primary transition hover:bg-primary/20 hover:ice-glow"
+						class="flex w-12 shrink-0 cursor-pointer items-center justify-center self-stretch rounded-base border border-primary/50 bg-primary/10 text-primary transition hover:bg-primary/20 hover:ice-glow disabled:cursor-not-allowed disabled:opacity-40"
 					>
-						<Icon name="search" class="h-5 w-5" strokeWidth={1.8} />
+						<Icon
+							name={buscandoFicha ? 'loader-circle' : 'search'}
+							class="h-5 w-5 {buscandoFicha ? 'animate-spin' : ''}"
+							strokeWidth={1.8}
+						/>
 					</button>
 				</div>
 			</FormField>
@@ -386,11 +495,10 @@
 				error={errorRut}
 			>
 				<div class="flex gap-2">
-					<input
+					<IdentificadorInput
 						id="cajero-rut"
-						type="text"
-						inputmode="numeric"
 						bind:value={rutEntrada}
+						largoMaximo={LARGO_RUT}
 						oninput={() => {
 							errorRut = null;
 							noExiste = false;
@@ -410,10 +518,15 @@
 					<button
 						type="button"
 						onclick={identificar}
+						disabled={buscandoSansano}
 						aria-label="Identificar por RUT"
-						class="flex w-12 shrink-0 cursor-pointer items-center justify-center self-stretch rounded-base border border-primary/50 bg-primary/10 text-primary transition hover:bg-primary/20 hover:ice-glow"
+						class="flex w-12 shrink-0 cursor-pointer items-center justify-center self-stretch rounded-base border border-primary/50 bg-primary/10 text-primary transition hover:bg-primary/20 hover:ice-glow disabled:cursor-not-allowed disabled:opacity-40"
 					>
-						<Icon name="search" class="h-5 w-5" strokeWidth={1.8} />
+						<Icon
+							name={buscandoSansano ? 'loader-circle' : 'search'}
+							class="h-5 w-5 {buscandoSansano ? 'animate-spin' : ''}"
+							strokeWidth={1.8}
+						/>
 					</button>
 				</div>
 			</FormField>
@@ -436,25 +549,16 @@
 		{/if}
 
 		<div class="mt-4">
-			{#if requiereDocumento}
-				<Dropdown
-					label="Documento retenido"
-					items={documentos}
-					value={documento}
-					onchange={(valor) => {
-						documento = valor as Documento;
-						errorIniciar = null;
-					}}
-					placeholder="Carnet · TNE · TUI · Otro"
-				/>
-			{:else}
-				<div
-					class="text-body-sm flex items-start gap-2 rounded-base border border-glass-border bg-black/20 p-2.5 text-on-surface-variant"
-				>
-					<Icon name="info" class="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.8} />
-					<p>Identificación por RUT/ROL. No se retiene documento.</p>
-				</div>
-			{/if}
+			<Dropdown
+				label="Documento retenido"
+				items={documentos}
+				value={documento}
+				onchange={(valor) => {
+					documento = valor as Documento;
+					errorIniciar = null;
+				}}
+				placeholder="Carnet · TNE · TUI · Otro (si no deja ninguno)"
+			/>
 		</div>
 	</section>
 
@@ -511,7 +615,7 @@
 					</span>
 				</li>
 				<li class="flex items-center gap-2">
-					{#if requiereDocumento ? documento : true}
+					{#if documento}
 						<Icon name="check" class="h-4 w-4 shrink-0" strokeWidth={2} />
 					{:else}
 						<Icon
@@ -522,11 +626,7 @@
 					{/if}
 					<span class="flex flex-wrap items-baseline gap-x-1">
 						<span class="text-on-surface-variant">Documento retenido:</span>
-						{#if requiereDocumento}
-							<span>{documento ?? 'Pendiente'}</span>
-						{:else}
-							<span>No se retiene · RUT/ROL</span>
-						{/if}
+						<span>{documento ?? 'Pendiente'}</span>
 					</span>
 				</li>
 			</ul>
@@ -560,7 +660,7 @@
 					<Icon name="circle-alert" class="mt-0.5 h-4 w-4 shrink-0" strokeWidth={1.8} />
 					<p>Falta identificar al solicitante para iniciar el préstamo.</p>
 				</div>
-			{:else if requiereDocumento && !documento}
+			{:else if !documento}
 				<div
 					class="text-body-sm mt-3 flex items-start gap-2 rounded-base border border-glass-border bg-black/20 p-3 text-on-surface-variant"
 				>
@@ -581,15 +681,20 @@
 			<button
 				type="button"
 				onclick={prestamoAterminar ? terminarYCargar : iniciar}
-				disabled={!prestamoAterminar && !listo}
+				disabled={(!prestamoAterminar && !listo) || enviando}
 				class="mt-4 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-base border border-primary/50 bg-primary/10 px-6 py-3 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow disabled:cursor-not-allowed disabled:opacity-40"
 			>
-				<Icon
-					name={prestamoAterminar ? 'arrow-left-right' : 'check'}
-					class="h-4 w-4"
-					strokeWidth={2}
-				/>
-				{prestamoAterminar ? 'Terminar préstamo y prestar otro juego' : 'Iniciar préstamo'}
+				{#if enviando}
+					<Icon name="loader-circle" class="h-4 w-4 animate-spin" strokeWidth={2} />
+					Registrando en la base de datos...
+				{:else}
+					<Icon
+						name={prestamoAterminar ? 'arrow-left-right' : 'check'}
+						class="h-4 w-4"
+						strokeWidth={2}
+					/>
+					{prestamoAterminar ? 'Terminar préstamo y prestar otro juego' : 'Iniciar préstamo'}
+				{/if}
 			</button>
 		</section>
 	{/if}
@@ -602,7 +707,9 @@
 {#if altaAbierta}
 	<AltaSansanoModal
 		rutInicial={rutEntrada}
-		oncerrar={() => (altaAbierta = false)}
+		error={errorAlta}
+		enviando={creandoSansano}
+		oncerrar={cerrarAlta}
 		oncrear={crearSansano}
 	/>
 {/if}
