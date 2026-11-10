@@ -1,13 +1,11 @@
 <script lang="ts">
 	import Icon from '$lib/components/Icon.svelte';
 	import type { IconName } from '$lib/icons';
-	import type { FaseBgg } from '$lib/bgg/consultaBgg.svelte';
+	import type { EstadoPaso, PasoProgreso } from '$lib/bgg/consultaBgg.svelte';
 	import type { BggBusquedaRespuesta, BggFichaRespuesta } from '$lib/schemas/bgg';
 
 	interface Props {
-		fase: FaseBgg;
-		/** Con "Buscar directo en BGG" no hay paso local. */
-		soloBgg?: boolean;
+		pasos: PasoProgreso[];
 		origenBusqueda?: BggBusquedaRespuesta['origen'] | null;
 		origenFicha?: BggFichaRespuesta['origen'] | null;
 		caratulaFallida?: boolean;
@@ -16,8 +14,7 @@
 	}
 
 	let {
-		fase,
-		soloBgg = false,
+		pasos,
 		origenBusqueda = null,
 		origenFicha = null,
 		caratulaFallida = false,
@@ -25,38 +22,26 @@
 		onReintentar
 	}: Props = $props();
 
-	type Paso = { fase: FaseBgg; etiqueta: string };
-	const pasos = $derived<Paso[]>([
-		...(soloBgg
-			? []
-			: [{ fase: 'buscando-local' as const, etiqueta: 'Buscando en la base local' }]),
-		{ fase: 'consultando-bgg', etiqueta: 'Consultando BoardGameGeek' },
-		{ fase: 'procesando-caratula', etiqueta: 'Procesando la carátula' }
-	]);
-
-	const orden: FaseBgg[] = ['buscando-local', 'consultando-bgg', 'procesando-caratula', 'listo'];
-
-	type Estado = 'pendiente' | 'en-curso' | 'hecho' | 'error';
-	function estadoDe(paso: Paso): Estado {
-		if (fase === 'inactivo') return 'pendiente';
-		if (fase === 'error') return paso.fase === 'consultando-bgg' ? 'error' : 'pendiente';
-		const actual = orden.indexOf(fase);
-		const propio = orden.indexOf(paso.fase);
-		if (fase === 'listo' || propio < actual) return 'hecho';
-		return propio === actual ? 'en-curso' : 'pendiente';
-	}
-
-	const icono: Record<Estado, IconName> = {
-		pendiente: 'info',
+	const icono: Record<EstadoPaso, IconName> = {
+		pendiente: 'chevron-right',
 		'en-curso': 'loader-circle',
 		hecho: 'check',
+		omitido: 'info',
 		error: 'circle-alert'
 	};
-	const color: Record<Estado, string> = {
+	const color: Record<EstadoPaso, string> = {
 		pendiente: 'text-on-surface-variant/50',
 		'en-curso': 'text-primary',
 		hecho: 'text-primary',
+		omitido: 'text-on-surface-variant',
 		error: 'text-error'
+	};
+	const lector: Record<EstadoPaso, string> = {
+		pendiente: '(pendiente)',
+		'en-curso': '(en curso)',
+		hecho: '(listo)',
+		omitido: '(omitido)',
+		error: '(falló)'
 	};
 
 	const aviso = $derived.by(() => {
@@ -73,26 +58,17 @@
 	});
 </script>
 
-{#if fase !== 'inactivo'}
+{#if pasos.length > 0}
 	<div class="flex flex-col gap-3" aria-live="polite" aria-atomic="false">
 		<ol class="flex flex-col gap-1.5">
-			{#each pasos as paso (paso.fase)}
-				{@const estado = estadoDe(paso)}
-				<li class="text-body-sm flex items-center gap-2 {color[estado]}">
+			{#each pasos as paso (paso.clave)}
+				<li class="text-body-sm flex items-center gap-2 {color[paso.estado]}">
 					<Icon
-						name={icono[estado]}
-						class="h-4 w-4 shrink-0 {estado === 'en-curso' ? 'animate-spin' : ''}"
+						name={icono[paso.estado]}
+						class="h-4 w-4 shrink-0 {paso.estado === 'en-curso' ? 'animate-spin' : ''}"
 					/>
 					<span>{paso.etiqueta}</span>
-					<span class="sr-only">
-						{estado === 'hecho'
-							? '(listo)'
-							: estado === 'en-curso'
-								? '(en curso)'
-								: estado === 'error'
-									? '(falló)'
-									: '(pendiente)'}
-					</span>
+					<span class="sr-only">{lector[paso.estado]}</span>
 				</li>
 			{/each}
 		</ol>

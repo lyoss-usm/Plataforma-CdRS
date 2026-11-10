@@ -53,8 +53,7 @@
 	</label>
 
 	<ProgresoBgg
-		fase={consulta.fase}
-		soloBgg={consulta.soloBgg}
+		pasos={consulta.pasos}
 		origenBusqueda={consulta.origenBusqueda}
 		origenFicha={consulta.respuesta?.origen ?? null}
 		caratulaFallida={consulta.caratulaFallida}

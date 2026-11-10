@@ -16,6 +16,9 @@ export type FaseBgg =
 	| 'listo'
 	| 'error';
 
+export type EstadoPaso = 'pendiente' | 'en-curso' | 'hecho' | 'omitido' | 'error';
+export type PasoProgreso = { clave: string; etiqueta: string; estado: EstadoPaso };
+
 class ErrorConsulta extends Error {}
 
 const esAborto = (e: unknown) => e instanceof DOMException && e.name === 'AbortError';
@@ -53,6 +56,10 @@ export class ConsultaBgg {
 	error = $state<string | null>(null);
 	/** La carátula no se pudo procesar: la ficha sigue usable y se puede reintentar. */
 	caratulaFallida = $state(false);
+	/** Se procesó una carátula nueva en esta consulta (no estaba ya disponible). */
+	caratulaProcesada = $state(false);
+	/** Qué consulta se muestra: la búsqueda o la ficha de un resultado elegido. */
+	contexto = $state<'busqueda' | 'ficha'>('busqueda');
 
 	readonly largoMinimo = bggConfig.busqueda.largoMinimo;
 
@@ -70,6 +77,94 @@ export class ConsultaBgg {
 
 	mostrarMas() {
 		this.mostrados += bggConfig.busqueda.porPagina;
+	}
+
+	/**
+	 * Pasos de la consulta con lo que realmente pasó: lo que el servidor resolvió con la base local
+	 * o la caché queda "omitido", no "hecho", para no aparentar llamadas a BGG que no ocurrieron.
+	 */
+	get pasos(): PasoProgreso[] {
+		if (this.fase === 'inactivo') return [];
+		return this.contexto === 'busqueda' ? this.#pasosBusqueda() : this.#pasosFicha();
+	}
+
+	#pasosBusqueda(): PasoProgreso[] {
+		const { fase, origenBusqueda: origen } = this;
+		const listo = fase === 'listo';
+		const bgg: PasoProgreso = {
+			clave: 'bgg',
+			etiqueta: 'Consultando BoardGameGeek',
+			estado: 'pendiente'
+		};
+
+		if (this.soloBgg) {
+			bgg.estado = fase === 'error' ? 'error' : listo ? 'hecho' : 'en-curso';
+			return [bgg];
+		}
+
+		const n = this.resultados.length;
+		const local: PasoProgreso = {
+			clave: 'local',
+			etiqueta: 'Buscando en la base local',
+			estado: fase === 'error' ? 'error' : listo ? 'hecho' : 'en-curso'
+		};
+
+		if (listo && origen === 'local') {
+			local.etiqueta = `Base local: ${n} ${n === 1 ? 'resultado' : 'resultados'}`;
+			return [
+				local,
+				{ ...bgg, etiqueta: 'BoardGameGeek: no hizo falta consultarlo', estado: 'omitido' }
+			];
+		}
+		if (listo) {
+			local.etiqueta = 'Base local: sin resultados';
+			bgg.estado = origen === 'local-sin-bgg' ? 'error' : 'hecho';
+			if (origen === 'local-sin-bgg') bgg.etiqueta = 'BoardGameGeek no respondió';
+		}
+		return [local, bgg];
+	}
+
+	#pasosFicha(): PasoProgreso[] {
+		const { fase, respuesta } = this;
+		const origen = respuesta?.origen;
+		const bgg: PasoProgreso = {
+			clave: 'bgg',
+			etiqueta: 'Consultando BoardGameGeek',
+			estado: fase === 'error' && !respuesta ? 'error' : 'en-curso'
+		};
+		const caratula: PasoProgreso = {
+			clave: 'caratula',
+			etiqueta: 'Procesando la carátula',
+			estado: 'pendiente'
+		};
+
+		if (!respuesta) return [bgg, caratula];
+
+		if (origen === 'cache') {
+			Object.assign(bgg, { etiqueta: 'Ficha tomada de la caché guardada', estado: 'omitido' });
+		} else if (origen === 'cache-desactualizada') {
+			Object.assign(bgg, {
+				etiqueta: 'BoardGameGeek no respondió: ficha de la caché',
+				estado: 'error'
+			});
+		} else {
+			Object.assign(bgg, { etiqueta: 'Ficha consultada en BoardGameGeek', estado: 'hecho' });
+		}
+
+		if (fase === 'procesando-caratula') {
+			caratula.estado = 'en-curso';
+		} else if (fase === 'listo' || fase === 'error') {
+			if (this.caratulaFallida) {
+				Object.assign(caratula, { etiqueta: 'No se pudo procesar la carátula', estado: 'error' });
+			} else if (this.caratulaProcesada) {
+				Object.assign(caratula, { etiqueta: 'Carátula procesada', estado: 'hecho' });
+			} else if (respuesta.caratula.estado === 'sin-imagen') {
+				Object.assign(caratula, { etiqueta: 'Sin carátula en BoardGameGeek', estado: 'omitido' });
+			} else {
+				Object.assign(caratula, { etiqueta: 'Carátula ya disponible', estado: 'omitido' });
+			}
+		}
+		return [bgg, caratula];
 	}
 
 	get ocupado() {
@@ -103,6 +198,7 @@ export class ConsultaBgg {
 		if (q.length < this.largoMinimo) return;
 
 		const senal = this.#nuevaConsulta();
+		this.contexto = 'busqueda';
 		this.respuesta = null;
 		this.error = null;
 		this.fase = this.soloBgg ? 'consultando-bgg' : 'buscando-local';
@@ -129,8 +225,11 @@ export class ConsultaBgg {
 		refrescar = false
 	): Promise<BggFichaRespuesta | null> {
 		const senal = this.#nuevaConsulta();
+		this.contexto = 'ficha';
+		this.respuesta = null;
 		this.error = null;
 		this.caratulaFallida = false;
+		this.caratulaProcesada = false;
 		this.fase = 'consultando-bgg';
 		this.#reintentar = async () => void (await this.seleccionar(sugerencia, refrescar));
 
@@ -151,8 +250,9 @@ export class ConsultaBgg {
 						`/admin/bgg/${sugerencia.idBgg}/caratula`,
 						{ method: 'POST' },
 						senal
-					)) as { caratula?: unknown };
+					)) as { caratula?: unknown; bytes?: number | null };
 					datos = { ...datos, caratula: bggCaratulaSchema.parse(resultado.caratula) };
+					this.caratulaProcesada = typeof resultado.bytes === 'number';
 					this.respuesta = datos;
 				} catch (e) {
 					if (esAborto(e)) throw e;
