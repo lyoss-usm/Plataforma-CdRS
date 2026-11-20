@@ -57,6 +57,7 @@ const catalogGame = {
 	calificacion: 7.5,
 	dificultad: 'Intermedio' as const,
 	pathImagen: '/ludoteca/catan.jpg',
+	idBgg: 13,
 	manual: null,
 	video: null,
 	disponible: true
@@ -70,6 +71,7 @@ const cases = [
 			nombreJuego: 'Catan',
 			tipo: 'Juego base',
 			idJuegoBase: null,
+			idBgg: null,
 			edadMinima: 10,
 			jugadoresMin: 3,
 			jugadoresMax: 4,

@@ -119,9 +119,11 @@ try {
 		body: solicitud(suspendido.rut),
 		prefer: 'return=minimal'
 	});
+	// Las solicitudes web entran solo por rpc/crear_solicitud_web; el rechazo de suspendidos por esa
+	// vía lo cubre supabase/tests/solicitud_web.test.sql.
 	r.ok(
-		'anon: solicitud de un RUT suspendido rechazada con sansano_suspendido',
-		bloqueada.status === 400 && bloqueada.cuerpo?.hint === 'sansano_suspendido',
+		'anon no inserta Solicitud directo (RUT suspendido)',
+		esPermisoDenegado(bloqueada),
 		`HTTP ${bloqueada.status} ${JSON.stringify(bloqueada.cuerpo).slice(0, 120)}`
 	);
 
@@ -141,7 +143,11 @@ try {
 		body: solicitud(libre.rut),
 		prefer: 'return=minimal'
 	});
-	r.igual('anon crea una solicitud Pendiente', pendiente.status, 201);
+	r.ok(
+		'anon no inserta Solicitud Pendiente directo (debe usar rpc/crear_solicitud_web)',
+		esPermisoDenegado(pendiente),
+		`HTTP ${pendiente.status}`
+	);
 
 	const lecturaSolicitud = await rest(null, `Solicitud?rutSansano=eq.${libre.rut}`);
 	r.ok(

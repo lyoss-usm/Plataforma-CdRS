@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import { landing } from '$lib/data/landing';
 
 	const navLinks = landing.navegacion;
@@ -45,7 +46,7 @@
 				>
 				{#each navLinks as link (link.href)}
 					<a
-						href={link.href}
+						href={resolve(`/${link.href}` as '/')}
 						class="text-body-md text-on-surface-variant transition hover:text-on-surface"
 					>
 						{link.label}
@@ -57,6 +58,7 @@
 				<span class="font-mono text-label-md tracking-wider text-on-surface-variant uppercase"
 					>Redes</span
 				>
+				<!-- eslint-disable svelte/no-navigation-without-resolve -- URLs externas (redes del club) -->
 				{#each socials as social (social.name)}
 					<a
 						href={social.url}
@@ -76,6 +78,7 @@
 						<span class="font-mono text-label-md tracking-wider uppercase">{social.handle}</span>
 					</a>
 				{/each}
+				<!-- eslint-enable svelte/no-navigation-without-resolve -->
 			</div>
 		</div>
 
