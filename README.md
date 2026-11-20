@@ -113,8 +113,9 @@ relevancia y devuelve hasta 200 resultados; el buscador los muestra de a 20 con 
 
 Las traducciones BGG → dominio (umbrales de dificultad, tipos, calificación mínima de votos, tamaño de
 carátula, búsqueda) están en `src/lib/data/bgg.json`, validado por `src/lib/schemas/bgg.ts`: un JSON
-inválido rompe el arranque en vez de producir datos raros. En `pnpm dev`, `/admin/inventario` incluye
-una demo del buscador.
+inválido rompe el arranque en vez de producir datos raros. El buscador (`BuscadorBgg`) se integrará
+en el formulario de inventario (#19); mientras tanto, el proxy se prueba con las URLs `/admin/bgg/*`
+(con sesión de Senior o Directivo) o desde Swagger en `/docs/api`.
 
 ## Documentación de la API
 
