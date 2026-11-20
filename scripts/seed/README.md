@@ -13,7 +13,7 @@ archivos para poblar el bucket público `ludoteca`, declarado en `supabase/confi
 Con Supabase local iniciado, el bucket se puede poblar manualmente con:
 
 ```bash
-pnpm exec supabase seed buckets --local
+pnpm exec supabase seed buckets
 ```
 
 De manera predeterminada, las URLs generadas apuntan a:

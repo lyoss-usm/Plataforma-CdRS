@@ -59,7 +59,7 @@ anterior a esta configuración, ejecuta `make reset-seed` para aplicar las migra
 cuentas. Para comprobar las restricciones por rol (sin cargo, Junior, Senior, Directivo) hay tres
 capas de pruebas, todas contra Supabase local: `make test-db` (RLS en SQL), `make test-auth` (API de
 Supabase y servidor web, requiere `.env`) y `make test-security` (ambas). Si cambias
-`supabase/config.toml`, reinicia Supabase (`make stop` y luego `pnpx supabase start`) para que Auth lo aplique.
+`supabase/config.toml`, reinicia Supabase (`make stop` y luego `make start`) para que Auth lo aplique.
 
 ### Gestión del staff (invitaciones)
 
@@ -67,7 +67,7 @@ Supabase y servidor web, requiere `.env`) y `make test-security` (ambas). Si cam
 autoridad es la base de datos: la RLS y las funciones `invitar_staff()`/`eliminar_staff()` validan
 `usuarios:gestionar` con la sesión del Directivo, y eliminar borra también la cuenta de Auth. La
 service role se usa en un único punto del servidor, enviar el correo de invitación, y solo después de
-que `invitar_staff()` lo aprobó: copia la clave de `pnpx supabase status` a
+que `invitar_staff()` lo aprobó: copia la clave de `pnpm exec supabase status` a
 `SUPABASE_SERVICE_ROLE_KEY` en `.env`. En local los correos llegan a Mailpit
 ([http://127.0.0.1:54324](http://127.0.0.1:54324)) y el enlace aterriza en `/auth/confirmar`, donde
 el invitado crea su contraseña.

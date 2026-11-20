@@ -32,13 +32,13 @@ init:
 
 start:
 	@echo "Iniciando entorno supabase local..."
-	@pnpx supabase start
+	@pnpm exec supabase start
 	@echo "Iniciando servidor de desarrollo..."
 	@pnpm run dev
 
 stop:
 	@echo "Deteniendo entorno supabase local..."
-	@pnpx supabase stop --no-backup
+	@pnpm exec supabase stop --no-backup
 
 test-schemas:
 	@node --experimental-strip-types scripts/schemas/test.ts
@@ -65,7 +65,7 @@ test-seed-integration:
 	@pnpm test:seed:integration
 
 test-db:
-	@pnpx supabase test db
+	@pnpm exec supabase test db
 
 test-auth:
 	@pnpm build
