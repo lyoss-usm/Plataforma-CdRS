@@ -1,30 +1,7 @@
 <script lang="ts">
-	const items = [
-		{
-			titulo: 'Club de Rol Sansano',
-			img: '/logos/cdrs-banner.png',
-			alt: 'Banner del Club de Rol Sansano',
-			cuadrado: true,
-			texto:
-				'El Club de Rol Sansano (CdRS) surge como iniciativa estudiantil de la UTFSM en 2015, con el propósito de generar un espacio de esparcimiento, de recreación e integración comunitaria a través de los juegos de mesa y de rol, dentro del marco de la cultura Geek.'
-		},
-		{
-			titulo: 'Misión',
-			img: '/logos/sticker_gradiente.webp',
-			alt: 'Sticker del club',
-			cuadrado: false,
-			texto:
-				'El CdRS tiene como misión promover y fomentar la cultura Geek a través de la creación de actividades, eventos y espacios que integren a la comunidad sansana con la región de Valparaíso. Nos comprometemos a trabajar con el nivel de calidad que caracteriza a la UTFSM, reflejando excelencia en cada una de nuestras acciones.'
-		},
-		{
-			titulo: 'Visión',
-			img: '/logos/sticker_solido.webp',
-			alt: 'Sticker del club',
-			cuadrado: false,
-			texto:
-				'Aspiramos a ser una iniciativa reconocida en la región por la creación de espacios para la cultura Geek, fortaleciendo los lazos entre la comunidad sansana y la región de Valparaiso. Además, buscamos fomentar el desarrollo integral de nuestros miembros mediante una sana convivencia, la colaboración y el trabajo en equipo.'
-		}
-	];
+	import { landing } from '$lib/data/landing';
+
+	const items = landing.nosotros;
 </script>
 
 <section

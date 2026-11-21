@@ -210,6 +210,7 @@ function gameDetails(faker: Faker, index: number, label: string, supabaseUrl: st
 		calificacion: Number((5 + (index % 50) / 10).toFixed(1)),
 		dificultad: difficulty[index % difficulty.length],
 		pathImagen: buildGameImageUrl(supabaseUrl, index),
+		idBgg: null,
 		manual: `https://example.test/manuales/seed-${index + 1}.pdf`,
 		video: `https://example.test/videos/seed-${index + 1}`
 	};

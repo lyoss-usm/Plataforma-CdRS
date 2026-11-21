@@ -1,0 +1,28 @@
+{
+	"dificultad": {
+		"facilHasta": 2,
+		"intermedioHasta": 3.5
+	},
+	"tipos": {
+		"boardgame": "Juego base",
+		"boardgameexpansion": "Expansión"
+	},
+	"calificacion": {
+		"decimales": 1,
+		"minimoVotos": 30
+	},
+	"sinDato": [0],
+	"caratula": {
+		"ladoMaximo": 1024,
+		"calidad": 80,
+		"formato": "jpeg",
+		"pesoMaximoBytes": 1048576,
+		"hostsPermitidos": ["cf.geekdo-images.com"]
+	},
+	"busqueda": {
+		"largoMinimo": 2,
+		"maximoResultados": 200,
+		"porPagina": 20,
+		"debounceMs": 400
+	}
+}

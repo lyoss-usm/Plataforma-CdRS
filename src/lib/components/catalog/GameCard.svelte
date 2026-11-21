@@ -9,6 +9,7 @@
 
 	let { juego, onPedir }: Props = $props();
 	let imagenFallida = $state(false);
+	const sePuedeSolicitar = $derived(juego.disponible && juego.tipo === 'Juego base');
 
 	function formatearJugadores(minimo: number | null, maximo: number | null): string {
 		if (minimo === null && maximo === null) {
@@ -98,10 +99,14 @@
 			· {juego.duracion === null ? 'Duración sin informar' : `${juego.duracion} min`}
 			· {juego.edadMinima === null ? 'Edad sin informar' : `${juego.edadMinima}+`}
 		</p>
+
+		{#if juego.tipo === 'Expansión' && juego.disponible}
+			<p class="font-mono text-xs text-primary">Solicítala junto a su juego base</p>
+		{/if}
 	</div>
 {/snippet}
 
-{#if juego.disponible}
+{#if sePuedeSolicitar}
 	<button
 		type="button"
 		onclick={() => onPedir?.(juego)}

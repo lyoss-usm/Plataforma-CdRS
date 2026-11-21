@@ -1,0 +1,1419 @@
+<?xml version="1.0" encoding="utf-8"?><items termsofuse="https://boardgamegeek.com/xmlapi/termsofuse"><item type="boardgame" id="174430">
+         <thumbnail>https://cf.geekdo-images.com/sZYp_3BTDGjh2unaZfZmuA__small/img/veqFeP4d_3zNhFc3GNBkV95rBEQ=/fit-in/200x150/filters:strip_icc()/pic2437871.jpg</thumbnail>
+      <image>https://cf.geekdo-images.com/sZYp_3BTDGjh2unaZfZmuA__original/img/7d-lj5Gd1e8PFnD97LYFah2c45M=/0x0/filters:format(jpeg)/pic2437871.jpg</image>
+   	                                  				
+				<name type="primary" sortindex="1" value="Gloomhaven" />
+			
+						                               				
+				<name type="alternate" sortindex="1" value="Gloomhaven: Aventures à Havrenuit" />
+			    				
+				<name type="alternate" sortindex="1" value="Gloomhaven: Мрачная Гавань" />
+			    				
+				<name type="alternate" sortindex="1" value="Homályrév" />
+			    				
+				<name type="alternate" sortindex="1" value="グルームヘイヴン" />
+			    				
+				<name type="alternate" sortindex="1" value="幽港迷城" />
+			    				
+				<name type="alternate" sortindex="1" value="글룸헤이븐" />
+			
+						               													<description>Gloomhaven  is a game of Euro-inspired tactical combat in a persistent world of shifting motives. Players will take on the roles of wandering adventurers with their own special sets of skills and their own reasons for traveling to this dark corner of the world. Players must work together out of necessity to clear out menacing dungeons and forgotten ruins. In the process, they will enhance their abilities with experience and loot, discover new locations to explore and plunder, and expand an ever-branching story fueled by the decisions they make.
+ This is a game with a persistent and changing world that is ideally played over many game sessions. After a scenario, players will make decisions about what to do next, which will determine how the story continues, kind of like a &amp;ldquo;Choose Your Own Adventure&amp;rdquo; book. Playing through a scenario is a co-operative affair where players will fight against automated monsters using an innovative card system to determine the order of play and what a player does on their turn.
+
+Each turn, a player chooses two cards to play out of their hand. The number on the top card determines their initiative for the round. Each card also has a top and bottom power, and when it is a player&amp;rsquo;s turn in the initiative order, they determine whether to use the top power of one card and the bottom power of the other, or vice-versa. Players must be careful, though, because over time they will permanently lose cards from their hands. If they take too long to clear a dungeon, they may end u exhausted and be forced to retreat.
+
+</description>
+										      	               				<yearpublished value="2017" />
+						               				<minplayers value="1" />
+						               				<maxplayers value="4" />
+						      			<poll name="suggested_numplayers" title="User Suggested Number of Players" totalvotes="1654">
+			
+		<results numplayers="1">		
+					<result value="Best" numvotes="156" />
+					<result value="Recommended" numvotes="717" />
+					<result value="Not Recommended" numvotes="398" />
+				</results>					
+			
+		<results numplayers="2">		
+					<result value="Best" numvotes="415" />
+					<result value="Recommended" numvotes="906" />
+					<result value="Not Recommended" numvotes="96" />
+				</results>					
+			
+		<results numplayers="3">		
+					<result value="Best" numvotes="822" />
+					<result value="Recommended" numvotes="545" />
+					<result value="Not Recommended" numvotes="41" />
+				</results>					
+			
+		<results numplayers="4">		
+					<result value="Best" numvotes="504" />
+					<result value="Recommended" numvotes="670" />
+					<result value="Not Recommended" numvotes="178" />
+				</results>					
+			
+		<results numplayers="4+">		
+					<result value="Best" numvotes="6" />
+					<result value="Recommended" numvotes="55" />
+					<result value="Not Recommended" numvotes="943" />
+				</results>					
+	</poll>
+<poll-summary name="suggested_numplayers"  title="User Suggested Number of Players">
+  <result name="bestwith" value="Best with 3 players" />
+  <result name="recommmendedwith" value="Recommended with 1–4 players" />
+</poll-summary> 			               				<playingtime value="120" />
+						               				<minplaytime value="60" />
+						               				<maxplaytime value="120" />
+						               				<minage value="14" />
+						      			<poll name="suggested_playerage" title="User Suggested Player Age" totalvotes="338">
+			<results>		
+					<result value="2" numvotes="5" />
+					<result value="3" numvotes="0" />
+					<result value="4" numvotes="0" />
+					<result value="5" numvotes="0" />
+					<result value="6" numvotes="0" />
+					<result value="8" numvotes="7" />
+					<result value="10" numvotes="45" />
+					<result value="12" numvotes="95" />
+					<result value="14" numvotes="156" />
+					<result value="16" numvotes="23" />
+					<result value="18" numvotes="3" />
+					<result value="21 and up" numvotes="4" />
+				</results>					
+	</poll> 			      			<poll name="language_dependence" title="Language Dependence" totalvotes="72">
+			
+		<results>		
+					<result level="1" value="No necessary in-game text" numvotes="1" />
+					<result level="2" value="Some necessary text - easily memorized or small crib sheet" numvotes="0" />
+					<result level="3" value="Moderate in-game text - needs crib sheet or paste ups" numvotes="2" />
+					<result level="4" value="Extensive use of text - massive conversion needed to be playable" numvotes="48" />
+					<result level="5" value="Unplayable in another language" numvotes="21" />
+				</results>					
+	</poll> 			      			 			      				
+		 			
+
+			
+		
+					<link type="boardgamecategory" id="1022" value="Adventure" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamecategory" id="1020" value="Exploration" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamecategory" id="1010" value="Fantasy" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamecategory" id="1046" value="Fighting" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamecategory" id="1047" value="Miniatures" />
+		
+									
+			
+
+			      				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2689" value="Action Queue" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2839" value="Action Retrieval" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2018" value="Campaign / Battle Card Driven" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2857" value="Card Play Conflict Resolution" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2893" value="Communication Limits" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2023" value="Cooperative Game" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2854" value="Critical Hits and Failures" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="3004" value="Deck Construction" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2676" value="Grid Movement" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2040" value="Hand Management" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2026" value="Hexagon Grid" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2824" value="Legacy Game" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2975" value="Line of Sight" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2011" value="Modular Board" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2947" value="Movement Points" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="3099" value="Multi-Use Cards" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2965" value="Multiple Maps" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2851" value="Narrative Choice / Paragraph" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2846" value="Once-Per-Game Abilities" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2685" value="Player Elimination" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2028" value="Role Playing" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2822" value="Scenario / Mission / Campaign Game" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2020" value="Simultaneous Action Selection" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2819" value="Solo / Solitaire Game" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2027" value="Storytelling" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="3100" value="Tags" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamemechanic" id="2015" value="Variable Player Powers" />
+		
+									
+			
+
+			      				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="59218" value="Category: Dungeon Crawler" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="75241" value="Components: Forteller Audio Narration" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="67953" value="Components: Map (City Scale)" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="25158" value="Components: Miniatures" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="65191" value="Components: Multi-Use Cards" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="66335" value="Components: Standees" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="68438" value="Creatures: Demons" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="7005" value="Creatures: Dragons" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="5615" value="Creatures: Monsters" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="8374" value="Crowdfunding: Kickstarter" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="77349" value="Digital Implementations: Steam" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="73596" value="Digital Implementations: TableTop Simulator Mod (TTS)" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="45610" value="Game: Gloomhaven" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="24281" value="Mechanism: Campaign Games" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="25404" value="Mechanism: Legacy" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="78680" value="Misc: Made by Panda" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="113768" value="Players: Games with expansions that change player count" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamefamily" id="5666" value="Players: Games with Solitaire Rules" />
+		
+									
+			
+
+			      				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="365186" value="The Crimson Scales" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="367749" value="The Crimson Scales: Class Pack Add-on" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="367751" value="The Crimson Scales: Trail of Ashes" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="451931" value="Gloomhaven: 2025 ConQuests" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="312632" value="Gloomhaven: Assault on the Morning Star (Promo Scenario)" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="310777" value="Gloomhaven: Beyond the End of the World (Promo Scenario)" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="380753" value="Gloomhaven: Envelope X Reward" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="250337" value="Gloomhaven: Forgotten Circles" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="312635" value="Gloomhaven: Memories of Gloomhaven (Promo Scenario)" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="236232" value="Gloomhaven: Removable Sticker Set" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="298195" value="Gloomhaven: Return of the Lost Cabal (Promo Scenario)" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="297586" value="Gloomhaven: Secrets of the Lost Cabal (Promo Scenario)" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="226868" value="Gloomhaven: Solo Scenarios" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="310773" value="Gloomhaven: The Catacombs of Chaos (Promo Scenario)" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="231934" value="Gloomhaven: The End of the World (Promo Scenario)" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="300402" value="Gloomhaven: The Lucky Meeple (Promo Scenario)" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="310754" value="Gloomhaven: The Tower of Misfortune (Promo Scenario)" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="312638" value="Gloomhaven: Twilight of the Lost Cabal (Promo Scenario)" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameexpansion" id="455986" value="Gloomhaven: Warriors from Lands Beyond" />
+		
+									
+			
+
+			      			
+
+			      				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="334735" value="Gloomhaven: reDrewno Insert" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="418048" value="Frosthaven/Gloomhaven: Laserox Vitality Dial Set" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="452936" value="Gloomhaven (Second Edition): Class Upgrade Pack" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="289347" value="Gloomhaven: Adventure Tokens – Altar" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="306515" value="Gloomhaven: Adventure Tokens – Barrel" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="289346" value="Gloomhaven: Adventure Tokens – Bear Trap" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="289348" value="Gloomhaven: Adventure Tokens – Bookcase" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="289343" value="Gloomhaven: Adventure Tokens – Boulder" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="306373" value="Gloomhaven: Adventure Tokens – Bush" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="288415" value="Gloomhaven: Adventure Tokens – Cabinet" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="289344" value="Gloomhaven: Adventure Tokens – Chest" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="306378" value="Gloomhaven: Adventure Tokens – Crate" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="306513" value="Gloomhaven: Adventure Tokens – Crystal" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="289345" value="Gloomhaven: Adventure Tokens – Door" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="289349" value="Gloomhaven: Adventure Tokens – Fountain" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="288414" value="Gloomhaven: Adventure Tokens – Log" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="289350" value="Gloomhaven: Adventure Tokens – Nest" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="288418" value="Gloomhaven: Adventure Tokens – Poison Gas" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="288420" value="Gloomhaven: Adventure Tokens – Pressure Plate" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="306376" value="Gloomhaven: Adventure Tokens – Rock Column" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="289342" value="Gloomhaven: Adventure Tokens – Rubble" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="306517" value="Gloomhaven: Adventure Tokens – Sarcophagus" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="306374" value="Gloomhaven: Adventure Tokens – Shelf" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="287230" value="Gloomhaven: Adventure Tokens – Spike Pit" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="288416" value="Gloomhaven: Adventure Tokens – Stairs" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="306516" value="Gloomhaven: Adventure Tokens – Stone Pillar" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="287231" value="Gloomhaven: Adventure Tokens – Stump" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="287229" value="Gloomhaven: Adventure Tokens – Table" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="306514" value="Gloomhaven: Adventure Tokens – Totem" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="288417" value="Gloomhaven: Adventure Tokens – Wall Section" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="272787" value="Gloomhaven: Broken Token Character Trays" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="272783" value="Gloomhaven: Broken Token Organizer" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="275029" value="Gloomhaven: Broken Token Organizer – Extra Dividers" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="280078" value="Gloomhaven: Broken Token Organizer – Forgotten Circles Upgrade" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="272784" value="Gloomhaven: Broken Token Tuck Boxes" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="393273" value="Gloomhaven: Challenge Coin" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="282059" value="Gloomhaven: Crafting Kingdoms Playmats" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="455714" value="Gloomhaven: CZYY Acrylic Status Effects Markers" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="455715" value="Gloomhaven: CZYY Standee Bases Pack with Health Tracker and Status Token Slots" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="308555" value="Gloomhaven: E-Raptor Insert" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="261980" value="Gloomhaven: Folded Space Insert" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="451595" value="Gloomhaven: Folded Space Map Archive" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="367191" value="Gloomhaven: Forgotten Circles – Tower Rex Organizer" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="365880" value="Gloomhaven: Forgotten Circles – Tower Rex Organizer Upgrade" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="336186" value="Gloomhaven: Gaming Trunk Character&#039;s Tray" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="272804" value="Gloomhaven: Gloom Tavern Organizer" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="367868" value="Gloomhaven: Go7 Gaming Top Tray" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="250857" value="Gloomhaven: HP/XP Trackers" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="261252" value="Gloomhaven: Laserox GloomBox Organizer" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="306362" value="Gloomhaven: Laserox Monster Bases" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="418046" value="Gloomhaven: Laserox Sigil Set" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="293088" value="Gloomhaven: Metal Coin Upgrade" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="250858" value="Gloomhaven: Miniatures" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="454746" value="Gloomhaven: Molten Mesh Gaming Attack Deck Organizer" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="454744" value="Gloomhaven: Molten Mesh Gaming Element &amp; Round Tracker" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="454743" value="Gloomhaven: Molten Mesh Gaming Initiative Tracker" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="454747" value="Gloomhaven: Molten Mesh Gaming Monster Organizer" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="454741" value="Gloomhaven: Molten Mesh Gaming Player Character Dashboard" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="454742" value="Gloomhaven: Molten Mesh Gaming Player Character Dashboard &amp; Storage Vault" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="454745" value="Gloomhaven: Molten Mesh Gaming Token Organizer" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="366336" value="Gloomhaven: Momo Monster Playmat" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="273547" value="Gloomhaven: Player Mat" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="338418" value="Gloomhaven: Saim Lab Insert" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="448146" value="Gloomhaven: Smonex Organizer" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="348625" value="Gloomhaven: The GiftForge Insert" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="365831" value="Gloomhaven: Tower Rex Character Dashboard" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="365799" value="Gloomhaven: Tower Rex Dashboard" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="267166" value="Gloomhaven: Tower Rex Organizer" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameaccessory" id="265296" value="Gloomhaven: WarBox Insert" />
+		
+									
+			
+
+			      				
+		 			
+
+			
+		
+					<link type="boardgameintegration" id="295770" value="Frosthaven" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameintegration" id="291457" value="Gloomhaven: Jaws of the Lion" />
+		
+									
+			
+
+			      			
+
+			      			
+
+			      				
+		 			
+
+			
+		
+					<link type="boardgameimplementation" id="390478" value="Gloomhaven (Second Edition)" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameimplementation" id="340909" value="Gloomholdin&#039;" />
+		
+									
+			
+
+			      			
+
+			      	      	      				
+		 			
+
+			
+		
+					<link type="boardgamedesigner" id="69802" value="Isaac Childres" />
+		
+									
+			
+
+			      				
+		 			
+
+			
+		
+					<link type="boardgameartist" id="77084" value="Alexandr Elichev" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameartist" id="173812" value="Lucile Mathieu" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameartist" id="78961" value="Josh T. McDowell" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgameartist" id="84269" value="Alvaro Nebot" />
+		
+									
+			
+
+			      	      				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="27425" value="Cephalofair Games" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="4304" value="Albi" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="46179" value="Albi Polska" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="3475" value="Arclight Games" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="22380" value="Feuerland Spiele" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="15605" value="Galápagos Jogos" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="40478" value="Games Warehouse" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="8820" value="Gémklub" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="18852" value="Hobby World" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="8291" value="Korea Boardgames" />
+		
+									
+				
+		 			
+
+			
+		
+					<link type="boardgamepublisher" id="23756" value="MYBG Co., Ltd." />
+		
+									
+			
+
+			
+	
+
+	
+
+	
+	
+	
+   		<statistics page="1">
+								<ratings >
+			<usersrated value="67980" />
+			<average value="8.52909" />
+			<bayesaverage value="8.28698" />
+
+			<ranks>
+															<rank type="subtype" id="1" name="boardgame" friendlyname="Board Game Rank" value="4" bayesaverage="8.28698" />
+																				<rank type="family" id="5496" name="thematic" friendlyname="Thematic Rank" value="2" bayesaverage="8.26151" />
+											<rank type="family" id="5497" name="strategygames" friendlyname="Strategy Game Rank" value="5" bayesaverage="8.25045" />
+												</ranks>
+
+			<stddev value="1.74047" />
+			<median value="0" />
+			<owned value="105764" />
+			<trading value="1327" />
+			<wanting value="1158" />
+			<wishing value="22626" />
+			<numcomments value="11858" />
+			<numweights value="2781" />
+			<averageweight value="3.9205" />
+			</ratings>
+								</statistics>
+     
+	
+          
+</item>
+</items>

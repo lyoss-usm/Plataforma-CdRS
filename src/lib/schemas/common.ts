@@ -13,4 +13,8 @@ export const dateSchema = z.iso.date();
 
 export const rutSchema = positiveIntegerSchema;
 export const rolSchema = positiveIntegerSchema;
-export const telefonoSchema = positiveIntegerSchema;
+export const telefonoSchema = z
+	.number()
+	.int()
+	.min(10_000_000, 'Ingresa los 8 dígitos posteriores a +56 9')
+	.max(99_999_999, 'Ingresa los 8 dígitos posteriores a +56 9');

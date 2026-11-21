@@ -5,7 +5,7 @@
 	import BaneoModal from './BaneoModal.svelte';
 	import { meson, formatearRut } from '$lib/data/junta.svelte';
 	import { notificaciones } from '$lib/stores/notificaciones.svelte';
-	import type { Sansano, Suspension } from '$lib/schemas';
+	import { formatearTelefono, type Sansano, type Suspension } from '$lib/schemas';
 
 	interface Props {
 		sansano: Sansano;
@@ -127,7 +127,9 @@
 					<p class="text-body-sm break-all text-on-surface-variant">
 						{sansano.correoInstitucional}
 					</p>
-					<p class="font-mono text-sm text-on-surface-variant">+56 {sansano.telefono}</p>
+					<p class="font-mono text-sm text-on-surface-variant">
+						{formatearTelefono(sansano.telefono)}
+					</p>
 					{#if cargo}
 						<span class="mt-2 inline-block">
 							<StatusBadge tone="neutral">{cargo.nombreCargo}</StatusBadge>

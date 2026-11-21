@@ -84,10 +84,12 @@ SELECT ok(
 	'anon sigue usando buscar_catalogo'
 );
 
-SELECT lives_ok(
+SELECT throws_ok(
 	$$INSERT INTO public."Solicitud" ("rutSansano", "idEjemplar", "fechaSolicitud", "fechaSeleccionada", "estadoSolicitud")
 	  VALUES (50000010, 'TEST-RLS-1', now(), current_date + 1, 'Pendiente')$$,
-	'anon crea una Solicitud Pendiente'
+	'42501',
+	NULL,
+	'anon no inserta Solicitudes directamente'
 );
 SELECT throws_ok(
 	$$INSERT INTO public."Solicitud" ("rutSansano", "idEjemplar", "fechaSolicitud", "fechaSeleccionada", "estadoSolicitud")
@@ -99,26 +101,26 @@ SELECT throws_ok(
 SELECT throws_ok(
 	$$INSERT INTO public."Solicitud" ("rutSansano", "idEjemplar", "fechaSolicitud", "fechaSeleccionada", "estadoSolicitud")
 	  VALUES (50000011, 'TEST-RLS-1', now(), current_date + 1, 'Pendiente')$$,
-	'P0001',
-	'El sansano 50000011 tiene una suspensión activa',
-	'suspensión permanente bloquea el INSERT'
+	'42501',
+	NULL,
+	'anon tampoco inserta directamente para un Sansano con suspensión permanente'
 );
 SELECT throws_ok(
 	$$INSERT INTO public."Solicitud" ("rutSansano", "idEjemplar", "fechaSolicitud", "fechaSeleccionada", "estadoSolicitud")
 	  VALUES (50000012, 'TEST-RLS-1', now(), current_date + 1, 'Pendiente')$$,
-	'P0001',
-	'El sansano 50000012 tiene una suspensión activa',
-	'suspensión con fechaTermino futura bloquea el INSERT'
-);
-SELECT lives_ok(
-	$$INSERT INTO public."Solicitud" ("rutSansano", "idEjemplar", "fechaSolicitud", "fechaSeleccionada", "estadoSolicitud")
-	  VALUES (50000013, 'TEST-RLS-1', now(), current_date + 1, 'Pendiente')$$,
-	'suspensión vencida no bloquea'
-);
-SELECT throws_ok(
-	$$SELECT public.suspension_activa(50000011)$$,
 	'42501',
 	NULL,
+	'anon tampoco inserta directamente para un Sansano con suspensión temporal'
+);
+SELECT throws_ok(
+	$$INSERT INTO public."Solicitud" ("rutSansano", "idEjemplar", "fechaSolicitud", "fechaSeleccionada", "estadoSolicitud")
+	  VALUES (50000013, 'TEST-RLS-1', now(), current_date + 1, 'Pendiente')$$,
+	'42501',
+	NULL,
+	'anon no inserta directamente aunque la suspensión esté vencida'
+);
+SELECT ok(
+	NOT has_function_privilege('anon', 'public.suspension_activa(integer)', 'EXECUTE'),
 	'anon no puede consultar suspension_activa'
 );
 SELECT throws_ok(
@@ -136,15 +138,15 @@ RESET role;
 SELECT pg_temp.como('10000000-0000-4000-8000-000000000001', 'test.junior@usm.cl');
 SELECT is(public.cargo_actual(), 'Junior', 'cargo_actual() distingue Junior');
 SELECT ok(public.tiene_permiso('prestamos:junta'), 'Junior tiene prestamos:junta');
-SELECT ok(NOT public.tiene_permiso('prestamos:general'), 'Junior no tiene prestamos:general');
+SELECT ok(NOT public.tiene_permiso('solicitudes:atender'), 'Junior no atiende solicitudes web');
 RESET role;
 
 SELECT pg_temp.como('10000000-0000-4000-8000-000000000003', 'test.directivo@usm.cl');
 SELECT is(public.cargo_actual(), 'Directivo', 'cargo_actual() distingue Directivo');
 SELECT is(
 	(SELECT cardinality(permisos) FROM public.perfil_staff()),
-	9,
-	'perfil_staff() devuelve los 9 permisos del Directivo'
+	8,
+	'perfil_staff() devuelve los 8 permisos del Directivo'
 );
 RESET role;
 

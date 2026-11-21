@@ -7,7 +7,7 @@
 		class="flex w-full max-w-2xl flex-col items-center gap-4 rounded-base border border-glass-border surface-level-1 px-8 py-14 text-center"
 	>
 		<img
-			src="/rolo/rolo_corriendo_apurado_fix.png"
+			src="/rolo/rolo_corriendo_apurado_fix.webp"
 			alt="Rolo corriendo con una sección en construcción"
 			class="w-32 select-none"
 			width="128"

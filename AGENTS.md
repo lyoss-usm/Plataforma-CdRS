@@ -28,7 +28,7 @@ Entorno/db (Makefile):
 ```bash
 make init                 # pnpm install + .env
 make seed-small|medium|large   # seed faker contra Supabase local
-make reset-seed           # supabase db reset --local + seed
+make reset-seed           # supabase db reset + seed
 make test-seed            # factories/zod sin DB
 make stop                 # apaga Supabase local
 ```
@@ -41,9 +41,12 @@ no formatear archivos ajenos a la tarea.
 
 - pnpm (no npm); Node ≥ 22.13.
 - Supabase local vía Makefile; seed faker en `scripts/seed` (`pnpm db:seed --profile <size>`).
+- Supabase CLI v3 fijado en devDependencies: usar `pnpm exec supabase` (nunca `pnpx`, que baja la
+  última versión). En v3 los comandos de db apuntan a local; contra la nube: `--remote` (+ `--yes` en CI).
 - Zod 4: schemas en `src/lib/schemas/` son la **única fuente** de tipos y validación (front + backend).
 - Iconos: `@lucide/svelte` (ya instalado) vía registro `src/lib/icons.ts` + `Icon.svelte`; no agregar librerías.
-- Swagger en `/docs/api`; actualizar `static/openapi.yaml` al tocar endpoints (README).
+- Swagger en `/docs/api` (solo en dev; 404 en producción); actualizar `static/openapi.yaml` al
+  tocar endpoints (README).
 
 ## Convenciones
 

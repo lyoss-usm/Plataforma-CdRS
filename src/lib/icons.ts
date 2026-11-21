@@ -16,6 +16,7 @@ export type IconName =
 	| 'globe'
 	| 'home'
 	| 'info'
+	| 'loader-circle'
 	| 'pencil'
 	| 'plus'
 	| 'qr-code'
