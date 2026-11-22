@@ -10,8 +10,7 @@ export const modulos = [
 	'solicitudes',
 	'inventario',
 	'moderacion',
-	'bgg',
-	'estados'
+	'bgg'
 ] as const;
 
 export type Modulo = (typeof modulos)[number];
@@ -52,7 +51,6 @@ export function moduloDeRuta(url: Pick<URL, 'pathname' | 'searchParams'>): Modul
 	if (bajo('/admin/solicitudes')) return 'solicitudes';
 	if (bajo('/admin/inventario')) return 'inventario';
 	if (bajo('/admin/bgg')) return 'bgg';
-	if (bajo('/admin/estados')) return 'estados';
 	if (bajo('/admin/miembros') && searchParams.get('tab') === 'moderacion') return 'moderacion';
 
 	return null;

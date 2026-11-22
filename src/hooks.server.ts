@@ -1,10 +1,21 @@
-import { json, redirect, type Handle } from '@sveltejs/kit';
+import { json, redirect, type Handle, type ServerInit } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
-import { building } from '$app/environment';
+import { building, dev } from '$app/environment';
 import { flags } from '$lib/flags';
 import { rutaApagada } from '$lib/schemas/flags';
 import { esRutaAdmin, obtenerStaff } from '$lib/server/auth';
+import { bggMockActivo } from '$lib/server/bgg';
 import { crearClienteSupabase } from '$lib/server/supabase';
+
+// Un mock (`*_MOCK`) reemplaza un servicio externo por datos de prueba. No se bloquea en producción
+// porque los tests de auth corren sobre un build real (`vite preview`), pero se avisa en los logs.
+export const init: ServerInit = () => {
+	if (!dev && !building && bggMockActivo()) {
+		console.warn(
+			'[BGG] BGG_MOCK=1 en un build de producción: el proxy responde con fixtures, no con BGG.'
+		);
+	}
+};
 
 const supabase: Handle = async ({ event, resolve }) => {
 	// Al prerenderizar no hay sesión ni cookies (y puede faltar el .env en CI).

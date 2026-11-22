@@ -67,6 +67,10 @@ no formatear archivos ajenos a la tarea.
 - a11y: acción clicable = `<button>` real; evitar `aria-disabled` en `<div>`.
 - Maquetas "tracer bullet": rutas reales con datos mock tipados con los schemas; variantes demo solo
   bajo `import.meta.env.DEV`. No romper pantallas ya entregadas.
+- Interruptores (README § Variables de entorno): apagar un módulo por despliegue = feature flag
+  `PUBLIC_FLAG_<MODULO>` en `src/lib/schemas/flags.ts`; herramienta que nunca llega a producción =
+  `dev`/`import.meta.env.DEV` (no una variable); doble de un servicio externo = `<SERVICIO>_MOCK`
+  (privada). Toda variable nueva va en `.env.example` con comentario y en la tabla del README.
 
 ## Flujo de trabajo
 

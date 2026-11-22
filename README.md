@@ -41,6 +41,33 @@ Este repositorio es para el **Sistema de Gestion de Prestamos e Inventario** dis
 > make help
 > ```
 
+## Variables de entorno
+
+`make init` crea `.env` desde `.env.example`. Las `PUBLIC_*` llegan al navegador; las de tipo **dev**
+no son variables, dependen del modo del build (`pnpm dev`) y no existen en producción.
+
+| Variable / condición        | Tipo          | Uso                                                                           |
+| --------------------------- | ------------- | ----------------------------------------------------------------------------- |
+| `SUPABASE_URL`              | Configuración | URL de Supabase (local: `http://127.0.0.1:54321`)                             |
+| `SUPABASE_ANON_KEY`         | Configuración | Clave pública; la app actúa con la sesión del usuario y la RLS                |
+| `SUPABASE_SERVICE_ROLE_KEY` | Configuración | Solo servidor: envía las invitaciones del staff                               |
+| `DATABASE_URL`              | Configuración | Postgres directo para el seed y las pruebas (la app no la usa)                |
+| `PUBLIC_SITE_URL`           | Configuración | Dominio público sin `/` final, para las imágenes al compartir el link         |
+| `BGG_API_TOKEN`             | Configuración | Token de BoardGameGeek; sin token ni mock el proxy responde 503               |
+| `AUTH_TEST_PORT`            | Configuración | Puerto del servidor de `make test-auth` (por defecto `4317`)                  |
+| `BGG_MOCK`                  | Mock          | `1`: el proxy lee fixtures en vez de BGG (en producción avisa en los logs)    |
+| `BGG_MOCK_FALLA`            | Mock          | `timeout`, `429` o `503`: simula una caída de BGG (solo con `BGG_MOCK=1`)     |
+| `PUBLIC_FLAG_CATALOGO`      | Flag          | Catálogo público (`/catalogo`, `/api/catalogo`, enlaces de la landing)        |
+| `PUBLIC_FLAG_FORMULARIO`    | Flag          | Formulario de solicitud (`/api/solicitudes/*`; también se apaga sin catálogo) |
+| `PUBLIC_FLAG_SOLICITUDES`   | Flag          | Solicitudes Web (`/admin/solicitudes`)                                        |
+| `PUBLIC_FLAG_INVENTARIO`    | Flag          | Inventario (`/admin/inventario`)                                              |
+| `PUBLIC_FLAG_MODERACION`    | Flag          | Moderación (`/admin/miembros?tab=moderacion`)                                 |
+| `PUBLIC_FLAG_BGG`           | Flag          | Proxy de BoardGameGeek (`/admin/bgg/*`)                                       |
+| Swagger                     | dev           | `/docs/api`                                                                   |
+| Guía de estados             | dev           | `/admin/estados`                                                              |
+| Escaneo QR simulado         | dev           | Botón del cajero que simula QR con los IDs del seed                           |
+| Detalle de errores          | dev           | La exportación CSV muestra el mensaje real del error                          |
+
 ## Panel administrativo y autenticación
 
 `/admin/*` exige una sesión de staff (Supabase Auth, solo por invitación) y cada operación se
@@ -80,27 +107,6 @@ Discord y WhatsApp muestren la imagen al compartir el link, define `PUBLIC_SITE_
 sin `/` final) antes de `pnpm build`; sin ella solo se emiten título y descripción. Las imágenes
 estáticas van en WebP; `static/logos/og-image.jpg` (1200×630) es la excepción, porque algunos
 scrapers no leen WebP.
-
-## Módulos por despliegue (feature flags)
-
-Cada módulo se apaga con una variable `PUBLIC_FLAG_<MODULO>` (`1` encendido, `0` apagado; si falta,
-queda encendido). Un módulo apagado desaparece del sidebar, de la barra inferior y de las quick
-actions, sus páginas responden 404 y sus endpoints `{"message":"Not Found"}` con estado 404. La RLS no
-cambia: el flag oculta la funcionalidad, pero la autorización sigue en la base.
-
-| Variable                  | Módulo                                                                        |
-| ------------------------- | ----------------------------------------------------------------------------- |
-| `PUBLIC_FLAG_CATALOGO`    | Catálogo público (`/catalogo`, `/api/catalogo`, enlaces de la landing)        |
-| `PUBLIC_FLAG_FORMULARIO`  | Formulario de solicitud (`/api/solicitudes/*`; también se apaga sin catálogo) |
-| `PUBLIC_FLAG_SOLICITUDES` | Solicitudes Web (`/admin/solicitudes`)                                        |
-| `PUBLIC_FLAG_INVENTARIO`  | Inventario (`/admin/inventario`)                                              |
-| `PUBLIC_FLAG_MODERACION`  | Moderación (`/admin/miembros?tab=moderacion`)                                 |
-| `PUBLIC_FLAG_BGG`         | Proxy de BoardGameGeek (`/admin/bgg/*`)                                       |
-| `PUBLIC_FLAG_ESTADOS`     | Guía de estados (`/admin/estados`)                                            |
-
-Los flags y su mapa de rutas están en `src/lib/schemas/flags.ts`. Un valor distinto de `0` o `1`
-rompe el arranque y el build. La landing es prerenderizada, así que sus enlaces usan el valor del
-build: tras cambiar un flag hay que volver a desplegar.
 
 ## Proxy de BoardGameGeek (#8)
 

@@ -433,8 +433,7 @@ const flagsPiloto = flagsSchema.parse({
 	PUBLIC_FLAG_CATALOGO: '0',
 	PUBLIC_FLAG_SOLICITUDES: '0',
 	PUBLIC_FLAG_MODERACION: '0',
-	PUBLIC_FLAG_BGG: '0',
-	PUBLIC_FLAG_ESTADOS: '0'
+	PUBLIC_FLAG_BGG: '0'
 });
 const apagada = (ruta: string) => rutaApagada(new URL(ruta, 'http://localhost'), flagsPiloto);
 
@@ -445,7 +444,6 @@ for (const ruta of [
 	'/api/solicitudes/opciones',
 	'/admin/solicitudes',
 	'/admin/bgg/search',
-	'/admin/estados',
 	'/admin/miembros?tab=moderacion'
 ]) {
 	if (!apagada(ruta)) {
