@@ -6,6 +6,7 @@
 	import MiembrosPanel from '$lib/components/admin/miembros/MiembrosPanel.svelte';
 	import ModeracionPanel from '$lib/components/admin/moderacion/ModeracionPanel.svelte';
 	import { moderacionRoute } from '$lib/data/admin';
+	import { flags } from '$lib/flags';
 	import { adminSession } from '$lib/stores/adminSession.svelte';
 	import type { PageProps } from './$types';
 
@@ -14,7 +15,8 @@
 	let { data }: PageProps = $props();
 
 	const role = $derived(adminSession.user.role);
-	const canManageModeracion = $derived(role === 'directivo');
+	// Moderación también depende de su flag (#40); apagada, la pestaña desaparece y la ruta da 404.
+	const canManageModeracion = $derived(role === 'directivo' && flags.moderacion);
 	const tab = $derived<MembersTab>(
 		page.url.searchParams.get('tab') === 'moderacion' && canManageModeracion
 			? 'moderacion'

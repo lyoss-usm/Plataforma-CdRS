@@ -12,6 +12,7 @@ import {
 	createSansanoSchema,
 	createSolicitudSchema,
 	errorRol,
+	flagsSchema,
 	formatearIdentificador,
 	juegoSchema,
 	opcionesSolicitudWebSchema,
@@ -19,6 +20,7 @@ import {
 	parsearRol,
 	permisoSchema,
 	respuestaErrorSolicitudWebSchema,
+	rutaApagada,
 	solicitudWebCreadaSchema,
 	suspensionSchema,
 	updateJuegoSchema
@@ -414,6 +416,56 @@ if (formatearIdentificador('2026.12345-6', 10) !== '202612345-6') {
 if (normalizarTelefono('+56 9 1234 5678') !== '12345678') {
 	hasErrors = true;
 	console.error('La normalización del teléfono no dejó solo los 8 dígitos finales');
+}
+
+const todoEncendido = flagsSchema.parse({});
+if (!Object.values(todoEncendido).every(Boolean)) {
+	hasErrors = true;
+	console.error('Los flags sin variable no quedaron encendidos por defecto');
+}
+
+if (flagsSchema.safeParse({ PUBLIC_FLAG_CATALOGO: 'true' }).success) {
+	hasErrors = true;
+	console.error('Se aceptó un flag con un valor distinto de 0 o 1');
+}
+
+const flagsPiloto = flagsSchema.parse({
+	PUBLIC_FLAG_CATALOGO: '0',
+	PUBLIC_FLAG_SOLICITUDES: '0',
+	PUBLIC_FLAG_MODERACION: '0',
+	PUBLIC_FLAG_BGG: '0',
+	PUBLIC_FLAG_ESTADOS: '0'
+});
+const apagada = (ruta: string) => rutaApagada(new URL(ruta, 'http://localhost'), flagsPiloto);
+
+for (const ruta of [
+	'/catalogo',
+	'/api/catalogo',
+	'/api/solicitudes',
+	'/api/solicitudes/opciones',
+	'/admin/solicitudes',
+	'/admin/bgg/search',
+	'/admin/estados',
+	'/admin/miembros?tab=moderacion'
+]) {
+	if (!apagada(ruta)) {
+		hasErrors = true;
+		console.error(`La ruta ${ruta} quedó encendida con su módulo apagado`);
+	}
+}
+
+for (const ruta of [
+	'/',
+	'/admin',
+	'/admin/prestamos',
+	'/admin/inventario',
+	'/admin/miembros',
+	'/catalogos'
+]) {
+	if (apagada(ruta)) {
+		hasErrors = true;
+		console.error(`La ruta ${ruta} quedó apagada sin que su módulo lo esté`);
+	}
 }
 
 if (hasErrors) {

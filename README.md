@@ -81,6 +81,27 @@ sin `/` final) antes de `pnpm build`; sin ella solo se emiten título y descripc
 estáticas van en WebP; `static/logos/og-image.jpg` (1200×630) es la excepción, porque algunos
 scrapers no leen WebP.
 
+## Módulos por despliegue (feature flags)
+
+Cada módulo se apaga con una variable `PUBLIC_FLAG_<MODULO>` (`1` encendido, `0` apagado; si falta,
+queda encendido). Un módulo apagado desaparece del sidebar, de la barra inferior y de las quick
+actions, sus páginas responden 404 y sus endpoints `{"message":"Not Found"}` con estado 404. La RLS no
+cambia: el flag oculta la funcionalidad, pero la autorización sigue en la base.
+
+| Variable                  | Módulo                                                                        |
+| ------------------------- | ----------------------------------------------------------------------------- |
+| `PUBLIC_FLAG_CATALOGO`    | Catálogo público (`/catalogo`, `/api/catalogo`, enlaces de la landing)        |
+| `PUBLIC_FLAG_FORMULARIO`  | Formulario de solicitud (`/api/solicitudes/*`; también se apaga sin catálogo) |
+| `PUBLIC_FLAG_SOLICITUDES` | Solicitudes Web (`/admin/solicitudes`)                                        |
+| `PUBLIC_FLAG_INVENTARIO`  | Inventario (`/admin/inventario`)                                              |
+| `PUBLIC_FLAG_MODERACION`  | Moderación (`/admin/miembros?tab=moderacion`)                                 |
+| `PUBLIC_FLAG_BGG`         | Proxy de BoardGameGeek (`/admin/bgg/*`)                                       |
+| `PUBLIC_FLAG_ESTADOS`     | Guía de estados (`/admin/estados`)                                            |
+
+Los flags y su mapa de rutas están en `src/lib/schemas/flags.ts`. Un valor distinto de `0` o `1`
+rompe el arranque y el build. La landing es prerenderizada, así que sus enlaces usan el valor del
+build: tras cambiar un flag hay que volver a desplegar.
+
 ## Proxy de BoardGameGeek (#8)
 
 Auto-completado de fichas para el inventario: `GET /admin/bgg/search`, `GET /admin/bgg/{id}` y

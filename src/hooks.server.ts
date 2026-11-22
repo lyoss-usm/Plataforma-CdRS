@@ -1,6 +1,8 @@
-import { redirect, type Handle } from '@sveltejs/kit';
+import { json, redirect, type Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { building } from '$app/environment';
+import { flags } from '$lib/flags';
+import { rutaApagada } from '$lib/schemas/flags';
 import { esRutaAdmin, obtenerStaff } from '$lib/server/auth';
 import { crearClienteSupabase } from '$lib/server/supabase';
 
@@ -60,4 +62,17 @@ const registroApi: Handle = async ({ event, resolve }) => {
 	}
 };
 
-export const handle = sequence(supabase, guardAdmin, registroApi);
+// Endpoints de módulos apagados (#40): 404 como si no existieran. Las páginas apagadas responden 404
+// desde su load (admin/+layout.server.ts, catalogo/+page.server.ts) para usar src/routes/+error.svelte.
+const flagsApagados: Handle = async ({ event, resolve }) => {
+	const { pathname } = event.url;
+	const esEndpoint = pathname.startsWith('/api/') || pathname.startsWith('/admin/bgg/');
+
+	if (esEndpoint && rutaApagada(event.url, flags)) {
+		return json({ message: 'Not Found' }, { status: 404 });
+	}
+
+	return resolve(event);
+};
+
+export const handle = sequence(supabase, guardAdmin, registroApi, flagsApagados);
