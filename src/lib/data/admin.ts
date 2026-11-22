@@ -1,6 +1,5 @@
-import { flags } from '$lib/flags';
 import type { IconName } from '$lib/icons';
-import type { Modulo } from '$lib/schemas/flags';
+import type { Flags, Modulo } from '$lib/schemas/flags';
 import type { AdminRole } from '$lib/stores/adminSession.svelte';
 
 export type AdminRoute =
@@ -56,9 +55,6 @@ export interface QuickAction {
 	modulo?: Modulo;
 }
 
-/** Visible si no depende de un módulo o si su módulo está encendido en este despliegue (#40). */
-const encendido = ({ modulo }: { modulo?: Modulo }) => modulo === undefined || flags[modulo];
-
 // Préstamos = cajero de Juntas Masivas (wiki § 1.3). El préstamo general es la solicitud web (§ 1.2).
 const prestamosSlot: NavSlot = {
 	id: 'prestamos',
@@ -94,10 +90,6 @@ const candidatosPorRol: Record<AdminRole, NavSlot[]> = {
 	senior: [prestamosSlot, homeSlot, solicitudesSlot, inventarioSlot],
 	directivo: [prestamosSlot, homeSlot, solicitudesSlot, miembrosSlot]
 };
-
-export const bottomSlotsByRole = Object.fromEntries(
-	Object.entries(candidatosPorRol).map(([rol, slots]) => [rol, slots.filter(encendido).slice(0, 3)])
-) as Record<AdminRole, NavSlot[]>;
 
 const todasLasSecciones: { title: string; links: SidebarLink[] }[] = [
 	{
@@ -169,16 +161,6 @@ const todasLasSecciones: { title: string; links: SidebarLink[] }[] = [
 	}
 ];
 
-export const sidebarSections = todasLasSecciones
-	.map((section) => ({
-		...section,
-		links: section.links.filter(encendido).map((link) => ({
-			...link,
-			children: link.children?.filter(encendido)
-		}))
-	}))
-	.filter((section) => section.links.length > 0);
-
 const todasLasQuickActions: QuickAction[] = [
 	{
 		id: 'juntas',
@@ -225,4 +207,29 @@ const todasLasQuickActions: QuickAction[] = [
 	}
 ];
 
-export const quickActions = todasLasQuickActions.filter(encendido);
+/**
+ * Navegación visible con los módulos encendidos (#40). Recibe los flags en vez de importar
+ * `$lib/flags` para que las pruebas en Node (scripts/auth/tests/web.ts) usen los mismos datos.
+ */
+export function navegacion(flags: Flags) {
+	const encendido = ({ modulo }: { modulo?: Modulo }) => modulo === undefined || flags[modulo];
+
+	return {
+		sidebarSections: todasLasSecciones
+			.map((section) => ({
+				...section,
+				links: section.links.filter(encendido).map((link) => ({
+					...link,
+					children: link.children?.filter(encendido)
+				}))
+			}))
+			.filter((section) => section.links.length > 0),
+		quickActions: todasLasQuickActions.filter(encendido),
+		bottomSlotsByRole: Object.fromEntries(
+			Object.entries(candidatosPorRol).map(([rol, slots]) => [
+				rol,
+				slots.filter(encendido).slice(0, 3)
+			])
+		) as Record<AdminRole, NavSlot[]>
+	};
+}
