@@ -3,8 +3,8 @@
 	import Modal from '$lib/components/admin/primitives/Modal.svelte';
 	import Dropdown from '$lib/components/admin/primitives/Dropdown.svelte';
 	import FormField from '$lib/components/admin/primitives/FormField.svelte';
-	import { meson } from '$lib/data/junta.svelte';
 	import { buscarBggSimulado, type BggSugerencia } from '$lib/data/bggMock';
+	import { usarInventario } from '$lib/stores/inventario.svelte';
 	import { notificaciones } from '$lib/stores/notificaciones.svelte';
 	import { createJuegoSchema, updateJuegoSchema, type Juego } from '$lib/schemas';
 
@@ -27,6 +27,9 @@
 
 	let { juego, onclose }: Props = $props();
 
+	const inventario = usarInventario();
+	let enviando = $state(false);
+
 	const esEdicion = juego !== null;
 
 	const itemsTipo = [
@@ -40,7 +43,7 @@
 		{ value: 'Difícil', label: 'Difícil' }
 	];
 	const itemsBase = $derived(
-		meson.juegos
+		inventario.juegos
 			.filter((j) => j.tipo === 'Juego base' && (juego === null || j.idJuego !== juego.idJuego))
 			.map((j) => ({ value: String(j.idJuego), label: `#${j.idJuego} · ${j.nombreJuego}` }))
 	);
@@ -86,7 +89,7 @@
 	const claseBotonSecundario =
 		'cursor-pointer rounded-base border border-glass-border px-4 py-2 text-on-surface-variant transition hover:bg-white/5 hover:text-on-surface';
 	const claseBotonPrimario =
-		'inline-flex cursor-pointer items-center gap-2 rounded-base border border-primary/50 bg-primary/10 px-4 py-2 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow';
+		'inline-flex cursor-pointer items-center gap-2 rounded-base border border-primary/50 bg-primary/10 px-4 py-2 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow disabled:cursor-not-allowed disabled:opacity-50';
 
 	function marcarTocado(campo: CampoValidable) {
 		tocado[campo] = true;
@@ -181,12 +184,23 @@
 		error = null;
 	}
 
-	function guardar() {
+	async function guardar() {
+		if (enviando) return;
+
 		intentoEnvio = true;
 		error = null;
 
 		if (hayErrores) return;
 
+		enviando = true;
+		try {
+			await enviar();
+		} finally {
+			enviando = false;
+		}
+	}
+
+	async function enviar() {
 		const detalles = {
 			nombreJuego: nombre.trim(),
 			edadMinima: numeroONulo(edad),
@@ -214,7 +228,7 @@
 				return;
 			}
 
-			const resultado = meson.crearJuego(validado.data);
+			const resultado = await inventario.crearJuego(validado.data);
 
 			if (!resultado.ok) {
 				error = resultado.motivo;
@@ -224,7 +238,7 @@
 			notificaciones.mostrar(
 				'success',
 				'Juego creado',
-				`«${resultado.juego?.nombreJuego}» ya aparece en el catálogo como no disponible hasta agregar ejemplares.`
+				`«${resultado.dato?.nombreJuego}» ya aparece en el catálogo como no disponible hasta agregar ejemplares.`
 			);
 			onclose();
 			return;
@@ -246,7 +260,7 @@
 			return;
 		}
 
-		const resultado = meson.actualizarJuego(juego.idJuego, validado.data);
+		const resultado = await inventario.actualizarJuego(juego.idJuego, validado.data);
 
 		if (!resultado.ok) {
 			error = resultado.motivo;
@@ -256,7 +270,7 @@
 		notificaciones.mostrar(
 			'success',
 			'Juego actualizado',
-			`«${resultado.juego?.nombreJuego}» conserva los datos corregidos (incluidos los de BGG).`
+			`«${resultado.dato?.nombreJuego}» conserva los datos corregidos (incluidos los de BGG).`
 		);
 		onclose();
 	}
@@ -510,9 +524,9 @@
 
 		<div class="mt-2 flex flex-wrap items-center justify-end gap-3">
 			<button type="button" onclick={onclose} class={claseBotonSecundario}>Cancelar</button>
-			<button type="submit" class={claseBotonPrimario}>
+			<button type="submit" disabled={enviando} class={claseBotonPrimario}>
 				<Icon name="check" class="h-4 w-4" strokeWidth={2} />
-				{esEdicion ? 'Guardar cambios' : 'Crear juego'}
+				{enviando ? 'Guardando…' : esEdicion ? 'Guardar cambios' : 'Crear juego'}
 			</button>
 		</div>
 	</form>

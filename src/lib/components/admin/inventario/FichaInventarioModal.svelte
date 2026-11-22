@@ -3,8 +3,8 @@
 	import Modal from '$lib/components/admin/primitives/Modal.svelte';
 	import StatusBadge from '$lib/components/admin/primitives/StatusBadge.svelte';
 	import QrEjemplar from './QrEjemplar.svelte';
-	import { meson } from '$lib/data/junta.svelte';
-	import { imprimirQr } from '$lib/qr/imprimirQr';
+	import { imprimirQr, imprimirQrs } from '$lib/qr/imprimirQr';
+	import { usarInventario } from '$lib/stores/inventario.svelte';
 	import { notificaciones } from '$lib/stores/notificaciones.svelte';
 	import type { Ejemplar, Juego } from '$lib/schemas';
 
@@ -39,7 +39,8 @@
 		'Con su dueño': 'neutral'
 	};
 
-	const ejemplares = $derived(meson.ejemplaresDeJuego(juego.idJuego));
+	const inventario = usarInventario();
+	const ejemplares = $derived(inventario.ejemplaresDeJuego(juego.idJuego));
 
 	function detalleJugadores(): string {
 		if (juego.jugadoresMin === null && juego.jugadoresMax === null) return 'Sin informar';
@@ -52,9 +53,7 @@
 	const claseBotonSecundario =
 		'inline-flex cursor-pointer items-center gap-1.5 rounded-base border border-glass-border bg-surface-container-lowest px-3 py-2 font-mono text-xs uppercase tracking-wider text-on-surface-variant transition hover:text-on-surface';
 
-	function imprimir(ejemplar: Ejemplar) {
-		const ok = imprimirQr(ejemplar.idEjemplar, juego.nombreJuego);
-
+	function avisarBloqueo(ok: boolean) {
 		if (!ok) {
 			notificaciones.mostrar(
 				'error',
@@ -63,6 +62,16 @@
 			);
 		}
 	}
+
+	const imprimir = (ejemplar: Ejemplar) =>
+		avisarBloqueo(imprimirQr(ejemplar.idEjemplar, juego.nombreJuego));
+
+	const imprimirTodos = () =>
+		avisarBloqueo(
+			imprimirQrs(
+				ejemplares.map((e) => ({ idEjemplar: e.idEjemplar, nombreJuego: juego.nombreJuego }))
+			)
+		);
 </script>
 
 <Modal title={juego.nombreJuego} size="lg" {onclose}>
@@ -71,7 +80,7 @@
 			<StatusBadge tone={juego.tipo === 'Expansión' ? 'info' : 'neutral'}>{juego.tipo}</StatusBadge>
 			{#if juego.tipo === 'Expansión' && juego.idJuegoBase !== null}
 				<span class="font-mono text-xs text-on-surface-variant/70">
-					base #{juego.idJuegoBase} · {meson.juegoDe(juego.idJuegoBase)?.nombreJuego ?? '—'}
+					base #{juego.idJuegoBase} · {inventario.juegoDe(juego.idJuegoBase)?.nombreJuego ?? '—'}
 				</span>
 			{/if}
 			<span class="font-mono text-xs text-on-surface-variant/70">#{juego.idJuego}</span>
@@ -140,9 +149,17 @@
 		</div>
 
 		<section aria-label="Ejemplares del juego" class="flex flex-col gap-2.5">
-			<h3 class="font-mono text-label-md tracking-wider text-on-surface-variant uppercase">
-				Ejemplares ({ejemplares.length})
-			</h3>
+			<div class="flex flex-wrap items-center justify-between gap-2">
+				<h3 class="font-mono text-label-md tracking-wider text-on-surface-variant uppercase">
+					Ejemplares ({ejemplares.length})
+				</h3>
+				{#if ejemplares.length > 1}
+					<button type="button" onclick={imprimirTodos} class={claseBotonSecundario}>
+						<Icon name="qr-code" class="h-3.5 w-3.5" strokeWidth={2} />
+						Imprimir todos los QR
+					</button>
+				{/if}
+			</div>
 
 			{#if ejemplares.length === 0}
 				<p
