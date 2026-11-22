@@ -82,9 +82,7 @@
 				return completitud === '' ? 'Selecciona la completitud.' : null;
 			case 'comentarios':
 				if (!esExterno) return null;
-				return comentarios.trim() === ''
-					? 'Indica el dueño en los comentarios (campo temporal).'
-					: null;
+				return comentarios.trim() === '' ? 'Indica el dueño en los comentarios.' : null;
 		}
 	}
 
@@ -241,8 +239,7 @@
 		>
 			{#if !esEdicion}
 				<p class="text-body-md text-on-surface-variant">
-					El identificador y el QR los genera el sistema al guardar (wiki §2.1); no se ingresan a
-					mano.
+					El identificador y el QR los genera el sistema al guardar; no se ingresan a mano.
 				</p>
 			{/if}
 
@@ -277,7 +274,7 @@
 			</div>
 
 			<p class="text-body-sm text-on-surface-variant/70">
-				El estado Prestado solo aplicable mediante Préstamos (wiki §1.2/§1.3).
+				El estado Prestado lo asignan los préstamos y la devolución.
 			</p>
 
 			<div class="rounded-base border border-glass-border p-4">
@@ -295,8 +292,7 @@
 							Juego externo (de un tercero)
 						</span>
 						<span class="text-body-sm text-on-surface-variant/70">
-							Si se activa, indica el dueño en los comentarios (campo temporal hasta definir el
-							definitivo, wiki §2.3). El ejemplar sigue prestándose igual.
+							Si se activa, indica el dueño en los comentarios. El ejemplar sigue prestándose igual.
 						</span>
 					</span>
 				</label>

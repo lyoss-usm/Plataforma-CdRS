@@ -479,7 +479,7 @@
 {#if eliminandoJuego}
 	<EliminarInventarioModal
 		titulo="Eliminar juego"
-		mensaje={`«${eliminandoJuego.nombreJuego}» (#${eliminandoJuego.idJuego}) desaparecerá del catálogo. Solo procede sin ejemplares ni expansiones asociadas (FK RESTRICT).`}
+		mensaje={`«${eliminandoJuego.nombreJuego}» (#${eliminandoJuego.idJuego}) desaparecerá del catálogo. Solo procede sin ejemplares ni expansiones asociadas.`}
 		onclose={() => (eliminandoJuego = null)}
 		onConfirmar={confirmarEliminarJuego}
 	/>

@@ -4,6 +4,7 @@
 	import Dropdown from '$lib/components/admin/primitives/Dropdown.svelte';
 	import FormField from '$lib/components/admin/primitives/FormField.svelte';
 	import { buscarBggSimulado, type BggSugerencia } from '$lib/data/bggMock';
+	import { flags } from '$lib/flags';
 	import { usarInventario } from '$lib/stores/inventario.svelte';
 	import { notificaciones } from '$lib/stores/notificaciones.svelte';
 	import { createJuegoSchema, updateJuegoSchema, type Juego } from '$lib/schemas';
@@ -270,7 +271,7 @@
 		notificaciones.mostrar(
 			'success',
 			'Juego actualizado',
-			`«${resultado.dato?.nombreJuego}» conserva los datos corregidos (incluidos los de BGG).`
+			`Los cambios de «${resultado.dato?.nombreJuego}» quedaron guardados.`
 		);
 		onclose();
 	}
@@ -285,7 +286,8 @@
 		class="flex flex-col gap-4"
 		novalidate
 	>
-		{#if import.meta.env.DEV}
+		<!-- Buscador BGG simulado (solo dev, #8): se reemplaza por BuscadorBgg al integrar el proxy real. -->
+		{#if import.meta.env.DEV && flags.bgg}
 			<fieldset class="rounded-base border border-glass-border p-4">
 				<legend
 					class="px-1 font-mono text-[10px] tracking-wider text-on-surface-variant/70 uppercase"
@@ -293,8 +295,7 @@
 					Autocompletado BGG (simulado · DEV)
 				</legend>
 				<p class="text-body-sm mb-3 text-on-surface-variant">
-					Maqueta: el proxy real (/api/bgg) se trabaja en paralelo (#8). Los datos pegados quedan
-					editables en la ficha.
+					Los datos pegados quedan editables en la ficha.
 				</p>
 				<div class="flex flex-col gap-2.5 sm:flex-row">
 					<label class="sr-only" for="juego-bgg">Buscar en BGG simulado</label>
