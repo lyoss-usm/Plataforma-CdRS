@@ -134,3 +134,19 @@ de Supabase a cada petición: si ya iniciaste sesión, los endpoints de `/admin/
 usuario (con su cargo y la RLS que le corresponde). Para probar como anónimo, usa una ventana de
 incógnito. Sin sesión, `/admin/*` responde `303` hacia `/login`, y como Swagger sigue la
 redirección verás un `200` con el HTML del login, no datos.
+
+## Probar en el celular
+
+`pnpm dev:red` sirve la app por HTTPS en la red local (la cámara del cajero exige HTTPS). El celular
+solo necesita el puerto 5173: la app habla con Supabase desde el servidor, no desde el navegador.
+
+1. Conecta el celular a la misma red y corre `pnpm dev:red`; abre la URL `Network` que muestra Vite
+   (`https://<IP>:5173`) y acepta la advertencia del certificado autofirmado.
+2. En el firewall abre solo el `5173/tcp` (y el `54324` si quieres ver Mailpit desde el celular). No
+   abras los demás puertos de Supabase: Postgres (`54322`) usa la contraseña por defecto.
+3. Si cambiaste `supabase/config.toml`, reinicia Supabase (`make stop` y `make start`) para que las
+   invitaciones acepten el enlace `https://<IP>:5173/auth/confirmar`.
+
+| Funciona                                                               | No funciona                                                                          |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Login, cajero (con cámara), inventario, miembros, exportación, Mailpit | Carátulas: `pathImagen` guarda `http://127.0.0.1:54321/…`, que el celular no alcanza |

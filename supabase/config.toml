@@ -150,12 +150,15 @@ max_indexes = 5
 enabled = true
 # The base URL of your website. Used as an allow-list for redirects and for constructing URLs used
 # in emails.
-site_url = "http://127.0.0.1:3000"
+site_url = "http://127.0.0.1:5173"
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
 additional_redirect_urls = [
 	"https://127.0.0.1:3000",
 	"http://localhost:5173/auth/confirmar",
-	"http://127.0.0.1:5173/auth/confirmar"
+	"http://127.0.0.1:5173/auth/confirmar",
+	# `pnpm dev:red` desde el celular: https://<IP de la red>:5173 (glob; `**` cruza los puntos de la IP).
+	# Solo Supabase local: revisar con `supabase config diff` antes de cualquier `config push` a la nube.
+	"https://**:5173/auth/confirmar"
 ]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
