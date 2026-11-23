@@ -292,7 +292,7 @@
 							Juego externo (de un tercero)
 						</span>
 						<span class="text-body-sm text-on-surface-variant/70">
-							Si se activa, indica el dueño en los comentarios. El ejemplar sigue prestándose igual.
+							Si se activa, indica el dueño en los comentarios.
 						</span>
 					</span>
 				</label>
