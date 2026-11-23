@@ -171,74 +171,70 @@
 				<ul class="flex flex-col gap-2.5">
 					{#each ejemplares as ejemplar (ejemplar.idEjemplar)}
 						<li
-							class="flex flex-col gap-2 rounded-base border border-glass-border bg-surface-container-lowest p-3.5"
+							class="flex gap-4 rounded-base border border-glass-border bg-surface-container-lowest p-3.5"
 						>
-							<div class="flex flex-wrap items-center justify-between gap-2">
-								<span class="font-mono font-semibold text-on-surface">
-									{ejemplar.idEjemplar}
-								</span>
-								<span class="flex flex-wrap gap-1.5">
-									<StatusBadge tone={tonoEstado[ejemplar.estadoEjemplar]}>
-										{ejemplar.estadoEjemplar}
-									</StatusBadge>
-									<StatusBadge
-										tone={ejemplar.estadoCompletitud === 'Completo' ? 'success' : 'warning'}
-									>
-										{ejemplar.estadoCompletitud}
-									</StatusBadge>
-									{#if ejemplar.esExterno}
-										<StatusBadge tone="info">Externo</StatusBadge>
-									{/if}
-								</span>
+							<!-- El QR hace de ícono del ejemplar desde tablet; en móvil no aporta (nadie escanea la
+							pantalla de su propio celular) y se imprime con el botón QR. -->
+							<div class="hidden shrink-0 sm:block">
+								<QrEjemplar texto={ejemplar.idEjemplar} tamano={112} />
 							</div>
 
-							{#if ejemplar.situacion || ejemplar.comentarios || ejemplar.componentes}
-								<p class="text-body-sm text-on-surface-variant/80">
-									{[ejemplar.situacion, ejemplar.comentarios, ejemplar.componentes]
-										.filter(Boolean)
-										.join(' · ')}
-								</p>
-							{/if}
-
-							<div class="flex items-center gap-3">
-								<QrEjemplar texto={ejemplar.idEjemplar} tamano={76} />
-								<div class="flex min-w-0 flex-col gap-1.5">
-									<p class="text-body-sm text-on-surface-variant/70">
-										El QR codifica el ID: escanéalo en el mesón o imprímelo para la caja.
-									</p>
-									<div>
-										<button
-											type="button"
-											onclick={() => imprimir(ejemplar)}
-											aria-label={`Imprimir QR de ${ejemplar.idEjemplar}`}
-											class={claseBotonSecundario}
+							<div class="flex min-w-0 flex-1 flex-col gap-2">
+								<div class="flex flex-wrap items-center justify-between gap-2">
+									<span class="font-mono font-semibold text-on-surface">
+										{ejemplar.idEjemplar}
+									</span>
+									<span class="flex flex-wrap gap-1.5">
+										<StatusBadge tone={tonoEstado[ejemplar.estadoEjemplar]}>
+											{ejemplar.estadoEjemplar}
+										</StatusBadge>
+										<StatusBadge
+											tone={ejemplar.estadoCompletitud === 'Completo' ? 'success' : 'warning'}
 										>
-											<Icon name="qr-code" class="h-3.5 w-3.5" strokeWidth={2} />
-											Imprimir QR
-										</button>
-									</div>
+											{ejemplar.estadoCompletitud}
+										</StatusBadge>
+										{#if ejemplar.esExterno}
+											<StatusBadge tone="info">Externo</StatusBadge>
+										{/if}
+									</span>
 								</div>
-							</div>
 
-							<div class="flex flex-wrap gap-2">
-								<button
-									type="button"
-									onclick={() => onEditarEjemplar(juego, ejemplar)}
-									aria-label={`Editar ${ejemplar.idEjemplar}`}
-									class={claseBotonSecundario}
-								>
-									<Icon name="pencil" class="h-3.5 w-3.5" strokeWidth={2} />
-									Editar
-								</button>
-								<button
-									type="button"
-									onclick={() => onEliminarEjemplar(juego, ejemplar)}
-									aria-label={`Eliminar ${ejemplar.idEjemplar}`}
-									class={claseBotonSecundario}
-								>
-									<Icon name="trash-2" class="h-3.5 w-3.5" strokeWidth={2} />
-									Eliminar
-								</button>
+								{#if ejemplar.situacion || ejemplar.comentarios || ejemplar.componentes}
+									<p class="text-body-sm text-on-surface-variant/80">
+										{[ejemplar.situacion, ejemplar.comentarios, ejemplar.componentes]
+											.filter(Boolean)
+											.join(' · ')}
+									</p>
+								{/if}
+								<div class="flex flex-wrap gap-2">
+									<button
+										type="button"
+										onclick={() => imprimir(ejemplar)}
+										aria-label={`Imprimir QR de ${ejemplar.idEjemplar}`}
+										class={claseBotonSecundario}
+									>
+										<Icon name="qr-code" class="h-3.5 w-3.5" strokeWidth={2} />
+										QR
+									</button>
+									<button
+										type="button"
+										onclick={() => onEditarEjemplar(juego, ejemplar)}
+										aria-label={`Editar ${ejemplar.idEjemplar}`}
+										class={claseBotonSecundario}
+									>
+										<Icon name="pencil" class="h-3.5 w-3.5" strokeWidth={2} />
+										Editar
+									</button>
+									<button
+										type="button"
+										onclick={() => onEliminarEjemplar(juego, ejemplar)}
+										aria-label={`Eliminar ${ejemplar.idEjemplar}`}
+										class={claseBotonSecundario}
+									>
+										<Icon name="trash-2" class="h-3.5 w-3.5" strokeWidth={2} />
+										Eliminar
+									</button>
+								</div>
 							</div>
 						</li>
 					{/each}
