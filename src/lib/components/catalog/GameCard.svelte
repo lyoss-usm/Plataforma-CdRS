@@ -9,7 +9,10 @@
 
 	let { juego, onPedir }: Props = $props();
 	let imagenFallida = $state(false);
-	const sePuedeSolicitar = $derived(juego.disponible && juego.tipo === 'Juego base');
+	// Sin `onPedir` (formulario apagado, #40) el catálogo queda solo de consulta.
+	const sePuedeSolicitar = $derived(
+		onPedir !== undefined && juego.disponible && juego.tipo === 'Juego base'
+	);
 
 	function formatearJugadores(minimo: number | null, maximo: number | null): string {
 		if (minimo === null && maximo === null) {
@@ -100,7 +103,7 @@
 			· {juego.edadMinima === null ? 'Edad sin informar' : `${juego.edadMinima}+`}
 		</p>
 
-		{#if juego.tipo === 'Expansión' && juego.disponible}
+		{#if onPedir && juego.tipo === 'Expansión' && juego.disponible}
 			<p class="font-mono text-xs text-primary">Solicítala junto a su juego base</p>
 		{/if}
 	</div>

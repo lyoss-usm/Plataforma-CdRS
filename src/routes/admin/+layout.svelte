@@ -2,7 +2,8 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import Icon from '$lib/components/Icon.svelte';
-	import { bottomSlotsByRole, roleMeta, sidebarSections, type SidebarLink } from '$lib/data/admin';
+	import { navegacion, roleMeta, type SidebarLink } from '$lib/data/admin';
+	import { flags } from '$lib/flags';
 	import { adminSession } from '$lib/stores/adminSession.svelte';
 	import Toast from '$lib/components/admin/primitives/Toast.svelte';
 	import type { LayoutProps } from './$types';
@@ -13,6 +14,8 @@
 	// svelte-ignore state_referenced_locally
 	adminSession.iniciar(data.staff);
 	$effect.pre(() => adminSession.iniciar(data.staff));
+
+	const { bottomSlotsByRole, sidebarSections } = navegacion(flags);
 
 	const role = $derived(adminSession.user.role);
 	const bottomSlots = $derived(bottomSlotsByRole[role]);

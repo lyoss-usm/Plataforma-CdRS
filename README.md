@@ -41,6 +41,33 @@ Este repositorio es para el **Sistema de Gestion de Prestamos e Inventario** dis
 > make help
 > ```
 
+## Variables de entorno
+
+`make init` crea `.env` desde `.env.example`. Las `PUBLIC_*` llegan al navegador; las de tipo **dev**
+no son variables, dependen del modo del build (`pnpm dev`) y no existen en producción.
+
+| Variable / condición        | Tipo          | Uso                                                                           |
+| --------------------------- | ------------- | ----------------------------------------------------------------------------- |
+| `SUPABASE_URL`              | Configuración | URL de Supabase (local: `http://127.0.0.1:54321`)                             |
+| `SUPABASE_ANON_KEY`         | Configuración | Clave pública; la app actúa con la sesión del usuario y la RLS                |
+| `SUPABASE_SERVICE_ROLE_KEY` | Configuración | Solo servidor: envía las invitaciones del staff                               |
+| `DATABASE_URL`              | Configuración | Postgres directo para el seed y las pruebas (la app no la usa)                |
+| `PUBLIC_SITE_URL`           | Configuración | Dominio público sin `/` final, para las imágenes al compartir el link         |
+| `BGG_API_TOKEN`             | Configuración | Token de BoardGameGeek; sin token ni mock el proxy responde 503               |
+| `AUTH_TEST_PORT`            | Configuración | Puerto del servidor de `make test-auth` (por defecto `4317`)                  |
+| `BGG_MOCK`                  | Mock          | `1`: el proxy lee fixtures en vez de BGG (en producción avisa en los logs)    |
+| `BGG_MOCK_FALLA`            | Mock          | `timeout`, `429` o `503`: simula una caída de BGG (solo con `BGG_MOCK=1`)     |
+| `PUBLIC_FLAG_CATALOGO`      | Flag          | Catálogo público (`/catalogo`, `/api/catalogo`, enlaces de la landing)        |
+| `PUBLIC_FLAG_FORMULARIO`    | Flag          | Formulario de solicitud (`/api/solicitudes/*`; también se apaga sin catálogo) |
+| `PUBLIC_FLAG_SOLICITUDES`   | Flag          | Solicitudes Web (`/admin/solicitudes`)                                        |
+| `PUBLIC_FLAG_INVENTARIO`    | Flag          | Inventario (`/admin/inventario`)                                              |
+| `PUBLIC_FLAG_MODERACION`    | Flag          | Moderación (`/admin/miembros?tab=moderacion`)                                 |
+| `PUBLIC_FLAG_BGG`           | Flag          | Proxy de BoardGameGeek (`/admin/bgg/*`)                                       |
+| Swagger                     | dev           | `/docs/api`                                                                   |
+| Guía de estados             | dev           | `/admin/estados`                                                              |
+| Escaneo QR simulado         | dev           | Botón del cajero que simula QR con los IDs del seed                           |
+| Detalle de errores          | dev           | La exportación CSV muestra el mensaje real del error                          |
+
 ## Panel administrativo y autenticación
 
 `/admin/*` exige una sesión de staff (Supabase Auth, solo por invitación) y cada operación se

@@ -1,4 +1,6 @@
 import { error } from '@sveltejs/kit';
+import { flags } from '$lib/flags';
+import { rutaApagada } from '$lib/schemas/flags';
 import { permisoRequerido } from '$lib/server/auth';
 import type { LayoutServerLoad } from './$types';
 
@@ -16,6 +18,11 @@ export const load: LayoutServerLoad = async ({ locals, url }) => {
 	const permiso = permisoRequerido(url);
 	if (permiso && !staff.permisos.includes(permiso)) {
 		error(403, 'Tu cargo no tiene acceso a esta sección del panel.');
+	}
+
+	// Módulo apagado en este despliegue (#40): la ruta no existe, sin importar el cargo.
+	if (rutaApagada(url, flags)) {
+		error(404, 'Not Found');
 	}
 
 	return { staff };

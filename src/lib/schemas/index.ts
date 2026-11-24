@@ -11,3 +11,4 @@ export * from './solicitud.ts';
 export * from './exportacion.ts';
 export * from './staff.ts';
 export * from './landing.ts';
+export * from './flags.ts';

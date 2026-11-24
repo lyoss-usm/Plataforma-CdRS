@@ -1,11 +1,7 @@
 // Pruebas de autorización del servidor web: build real servido con `vite preview` y HTTP real.
 // Cubre el guard de /admin/*, el 403 por rol, el login/logout y la vigencia de la sesión.
-import {
-	bottomSlotsByRole,
-	quickActions,
-	sidebarSections,
-	type SidebarLink
-} from '../../../src/lib/data/admin.ts';
+import { navegacion, type SidebarLink } from '../../../src/lib/data/admin.ts';
+import { flagsSchema } from '../../../src/lib/schemas/flags.ts';
 import { asegurarEntornoLocal, cuentasDev, type RolStaff } from '../config.ts';
 import {
 	Resultados,
@@ -19,6 +15,11 @@ import {
 } from '../helpers.ts';
 
 asegurarEntornoLocal();
+
+// Mismos flags que el servidor de `vite preview` (ambos leen .env): la navegación esperada es la
+// de este despliegue.
+const flags = flagsSchema.parse(process.env);
+const { bottomSlotsByRole, quickActions, sidebarSections } = navegacion(flags);
 
 const r = new Resultados();
 const sql = conectarDb();
@@ -59,9 +60,13 @@ try {
 	// -----------------------------------------------------------------------------------------
 	const anonimo = new Sesion();
 
-	for (const ruta of ['/', '/catalogo', '/api/catalogo', '/login']) {
+	const rutasCatalogo = ['/catalogo', '/api/catalogo'];
+	for (const ruta of ['/', '/login', ...(flags.catalogo ? rutasCatalogo : [])]) {
 		const res = await anonimo.pedir(ruta);
 		r.igual(`anon: ${ruta} es público`, res.status, 200);
+	}
+	for (const ruta of flags.catalogo ? [] : rutasCatalogo) {
+		r.igual(`anon: ${ruta} con el catálogo apagado → 404`, (await anonimo.pedir(ruta)).status, 404);
 	}
 
 	for (const ruta of ['/admin', ...rutasAdmin.keys()]) {
@@ -166,6 +171,18 @@ try {
 		r.igual(`${rol}: /login con sesión redirige`, login.status, 303);
 	}
 
+	// Módulos apagados (#40) y herramientas de desarrollo: 404 aunque el cargo tenga el permiso.
+	const modulosAdmin: [ruta: string, encendida: boolean][] = [
+		['/admin/solicitudes', flags.solicitudes],
+		['/admin/inventario', flags.inventario],
+		['/admin/miembros?tab=moderacion', flags.moderacion],
+		['/admin/bgg/search?q=catan', flags.bgg],
+		['/admin/estados', false]
+	];
+	for (const [ruta] of modulosAdmin.filter(([, encendida]) => !encendida)) {
+		r.igual(`directivo: ${ruta} apagada → 404`, (await sesiones.directivo.pedir(ruta)).status, 404);
+	}
+
 	// Una ruta prohibida no entrega datos ni por la petición interna de SvelteKit.
 	const prohibida = await sesiones.junior.pedir('/admin/inventario/__data.json');
 	const cuerpoProhibida = await prohibida.text();
@@ -208,7 +225,7 @@ try {
 		!datosSinCargo.includes('"staff"') && !datosSinCargo.includes(cuentasDev.comun.correo),
 		datosSinCargo.slice(0, 120)
 	);
-	for (const publica of ['/', '/catalogo']) {
+	for (const publica of flags.catalogo ? ['/', '/catalogo'] : ['/']) {
 		r.igual(
 			`sin cargo: ${publica} sigue siendo público`,
 			(await sinCargo.pedir(publica)).status,
@@ -259,9 +276,10 @@ try {
 		SET "idCargo" = (SELECT "idCargo" FROM "Cargo" WHERE "nombreCargo" = 'Directivo')
 		WHERE "rutSansano" = ${staffBaja.rut}
 	`;
+	// Exportar es solo del Directivo y no depende de ningún flag (#40), a diferencia de Moderación.
 	r.igual(
 		'ascenso: el nuevo cargo aplica sin volver a iniciar sesión',
-		(await sesionBaja.pedir('/admin/miembros?tab=moderacion')).status,
+		(await sesionBaja.pedir('/admin/exportar?dataset=nomina')).status,
 		200
 	);
 

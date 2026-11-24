@@ -1,9 +1,9 @@
-import { redirect } from '@sveltejs/kit';
-import { resolve } from '$app/paths';
+import { error } from '@sveltejs/kit';
 import { dev } from '$app/environment';
 
+// Guía de estados (#24): herramienta de desarrollo, como Swagger; en producción la ruta no existe.
 export function load() {
 	if (!dev) {
-		throw redirect(307, resolve('/admin'));
+		error(404, 'Not Found');
 	}
 }

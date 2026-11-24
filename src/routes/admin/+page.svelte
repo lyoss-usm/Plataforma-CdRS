@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import Icon from '$lib/components/Icon.svelte';
-	import { quickActions } from '$lib/data/admin';
+	import { navegacion } from '$lib/data/admin';
+	import { flags } from '$lib/flags';
 	import { adminSession } from '$lib/stores/adminSession.svelte';
 	import ExportarDatos from '$lib/components/exportar/ExportarDatos.svelte';
 
 	const role = $derived(adminSession.user.role);
+	const { quickActions } = navegacion(flags);
 	const actions = $derived(quickActions.filter((action) => action.roles.includes(role)));
 	const showsDataPanels = $derived(role === 'directivo');
 </script>

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onDestroy, untrack } from 'svelte';
 	import { SvelteURLSearchParams } from 'svelte/reactivity';
+	import { flags } from '$lib/flags';
 	import CatalogFilters from './CatalogFilters.svelte';
 	import GameCard from './GameCard.svelte';
 	import SolicitudModal from './SolicitudModal.svelte';
@@ -224,7 +225,7 @@
 			class="grid w-full max-w-6xl grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
 		>
 			{#each pagina.juegos as juego (juego.idJuego)}
-				<GameCard {juego} onPedir={abrirSolicitud} />
+				<GameCard {juego} onPedir={flags.formulario ? abrirSolicitud : undefined} />
 			{/each}
 		</div>
 	{/if}

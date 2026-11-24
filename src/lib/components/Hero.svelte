@@ -3,6 +3,7 @@
 	import LogoCoin from '$lib/components/LogoCoin.svelte';
 	import StarField from '$lib/components/StarField.svelte';
 	import { landing } from '$lib/data/landing';
+	import { flags } from '$lib/flags';
 
 	const events = landing.eventos;
 </script>
@@ -50,11 +51,13 @@
 		</div>
 
 		<div class="mt-8 flex flex-wrap justify-center gap-4">
-			<a
-				href={resolve('/catalogo')}
-				class="rounded-base border border-primary/50 bg-primary/10 px-6 py-3 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow"
-				>Ver catálogo</a
-			>
+			{#if flags.catalogo}
+				<a
+					href={resolve('/catalogo')}
+					class="rounded-base border border-primary/50 bg-primary/10 px-6 py-3 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow"
+					>Ver catálogo</a
+				>
+			{/if}
 			<a
 				href="#sobre-nosotros"
 				class="rounded-base border border-glass-border px-6 py-3 font-semibold text-on-surface-variant transition hover:bg-white/5 hover:text-on-surface"

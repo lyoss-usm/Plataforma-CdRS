@@ -1,4 +1,5 @@
 import type { IconName } from '$lib/icons';
+import type { Flags, Modulo } from '$lib/schemas/flags';
 import type { AdminRole } from '$lib/stores/adminSession.svelte';
 
 export type AdminRoute =
@@ -31,6 +32,7 @@ export interface NavSlot {
 	href: AdminRoute;
 	label: string;
 	icon: IconName;
+	modulo?: Modulo;
 }
 
 export interface SidebarLink {
@@ -39,6 +41,7 @@ export interface SidebarLink {
 	label: string;
 	icon: IconName;
 	roles: AdminRole[];
+	modulo?: Modulo;
 	children?: SidebarLink[];
 }
 
@@ -49,6 +52,7 @@ export interface QuickAction {
 	href: AdminRoute;
 	icon: IconName;
 	roles: AdminRole[];
+	modulo?: Modulo;
 }
 
 // Préstamos = cajero de Juntas Masivas (wiki § 1.3). El préstamo general es la solicitud web (§ 1.2).
@@ -63,7 +67,15 @@ const solicitudesSlot: NavSlot = {
 	id: 'solicitudes',
 	href: '/admin/solicitudes',
 	label: 'Solicitudes',
-	icon: 'globe'
+	icon: 'globe',
+	modulo: 'solicitudes'
+};
+const inventarioSlot: NavSlot = {
+	id: 'inventario',
+	href: '/admin/inventario',
+	label: 'Inventario',
+	icon: 'shapes',
+	modulo: 'inventario'
 };
 const miembrosSlot: NavSlot = {
 	id: 'miembros',
@@ -72,13 +84,14 @@ const miembrosSlot: NavSlot = {
 	icon: 'users'
 };
 
-export const bottomSlotsByRole: Record<AdminRole, NavSlot[]> = {
+// Barra inferior (móvil): 3 casillas; las siguientes cubren el hueco si un módulo está apagado.
+const candidatosPorRol: Record<AdminRole, NavSlot[]> = {
 	junior: [prestamosSlot, homeSlot, miembrosSlot],
-	senior: [prestamosSlot, homeSlot, solicitudesSlot],
-	directivo: [prestamosSlot, homeSlot, solicitudesSlot]
+	senior: [prestamosSlot, homeSlot, solicitudesSlot, inventarioSlot],
+	directivo: [prestamosSlot, homeSlot, solicitudesSlot, miembrosSlot]
 };
 
-export const sidebarSections: { title: string; links: SidebarLink[] }[] = [
+const todasLasSecciones: { title: string; links: SidebarLink[] }[] = [
 	{
 		title: 'Principal',
 		links: [
@@ -106,7 +119,8 @@ export const sidebarSections: { title: string; links: SidebarLink[] }[] = [
 				href: '/admin/solicitudes',
 				label: 'Solicitudes Web',
 				icon: 'globe',
-				roles: ['senior', 'directivo']
+				roles: ['senior', 'directivo'],
+				modulo: 'solicitudes'
 			}
 		]
 	},
@@ -118,7 +132,8 @@ export const sidebarSections: { title: string; links: SidebarLink[] }[] = [
 				href: '/admin/inventario',
 				label: 'Inventario',
 				icon: 'shapes',
-				roles: ['senior', 'directivo']
+				roles: ['senior', 'directivo'],
+				modulo: 'inventario'
 			}
 		]
 	},
@@ -137,7 +152,8 @@ export const sidebarSections: { title: string; links: SidebarLink[] }[] = [
 						href: moderacionRoute,
 						label: 'Moderación',
 						icon: 'shield-check',
-						roles: ['directivo']
+						roles: ['directivo'],
+						modulo: 'moderacion'
 					}
 				]
 			}
@@ -145,7 +161,7 @@ export const sidebarSections: { title: string; links: SidebarLink[] }[] = [
 	}
 ];
 
-export const quickActions: QuickAction[] = [
+const todasLasQuickActions: QuickAction[] = [
 	{
 		id: 'juntas',
 		label: 'Juntas',
@@ -160,7 +176,8 @@ export const quickActions: QuickAction[] = [
 		description: 'Respuestas del formulario público de préstamo',
 		href: '/admin/solicitudes',
 		icon: 'globe',
-		roles: ['senior', 'directivo']
+		roles: ['senior', 'directivo'],
+		modulo: 'solicitudes'
 	},
 	{
 		id: 'inventario',
@@ -168,7 +185,8 @@ export const quickActions: QuickAction[] = [
 		description: 'Catálogo físico y juegos externos con dueño',
 		href: '/admin/inventario',
 		icon: 'shapes',
-		roles: ['senior', 'directivo']
+		roles: ['senior', 'directivo'],
+		modulo: 'inventario'
 	},
 	{
 		id: 'miembros',
@@ -184,6 +202,34 @@ export const quickActions: QuickAction[] = [
 		description: 'Permisos y baneos de usuarios',
 		href: moderacionRoute,
 		icon: 'shield-check',
-		roles: ['directivo']
+		roles: ['directivo'],
+		modulo: 'moderacion'
 	}
 ];
+
+/**
+ * Navegación visible con los módulos encendidos (#40). Recibe los flags en vez de importar
+ * `$lib/flags` para que las pruebas en Node (scripts/auth/tests/web.ts) usen los mismos datos.
+ */
+export function navegacion(flags: Flags) {
+	const encendido = ({ modulo }: { modulo?: Modulo }) => modulo === undefined || flags[modulo];
+
+	return {
+		sidebarSections: todasLasSecciones
+			.map((section) => ({
+				...section,
+				links: section.links.filter(encendido).map((link) => ({
+					...link,
+					children: link.children?.filter(encendido)
+				}))
+			}))
+			.filter((section) => section.links.length > 0),
+		quickActions: todasLasQuickActions.filter(encendido),
+		bottomSlotsByRole: Object.fromEntries(
+			Object.entries(candidatosPorRol).map(([rol, slots]) => [
+				rol,
+				slots.filter(encendido).slice(0, 3)
+			])
+		) as Record<AdminRole, NavSlot[]>
+	};
+}

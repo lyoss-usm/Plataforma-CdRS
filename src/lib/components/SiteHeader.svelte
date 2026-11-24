@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { Menu, X } from '@lucide/svelte';
+	import { flags } from '$lib/flags';
 
 	const navLinks = [
 		{ href: '/#inicio', label: 'Inicio' },
@@ -53,12 +54,14 @@
 		</div>
 
 		<div class="flex items-center gap-3">
-			<a
-				href={resolve('/catalogo')}
-				class="hidden shrink-0 rounded-base border border-primary/50 bg-primary/10 px-4 py-2 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow md:block"
-			>
-				Ver catálogo
-			</a>
+			{#if flags.catalogo}
+				<a
+					href={resolve('/catalogo')}
+					class="hidden shrink-0 rounded-base border border-primary/50 bg-primary/10 px-4 py-2 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow md:block"
+				>
+					Ver catálogo
+				</a>
+			{/if}
 
 			<button
 				class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-base text-on-surface-variant transition hover:bg-white/5 hover:text-on-surface md:hidden"
@@ -92,13 +95,15 @@
 				</a>
 			{/each}
 
-			<a
-				href={resolve('/catalogo')}
-				class="mt-2 rounded-base border border-primary/50 bg-primary/10 px-3 py-3 text-center font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow"
-				onclick={closeMenu}
-			>
-				Ver catálogo
-			</a>
+			{#if flags.catalogo}
+				<a
+					href={resolve('/catalogo')}
+					class="mt-2 rounded-base border border-primary/50 bg-primary/10 px-3 py-3 text-center font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow"
+					onclick={closeMenu}
+				>
+					Ver catálogo
+				</a>
+			{/if}
 		</div>
 	{/if}
 </header>
