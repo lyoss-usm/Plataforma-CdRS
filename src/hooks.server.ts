@@ -86,4 +86,4 @@ const flagsApagados: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
-export const handle = sequence(supabase, guardAdmin, registroApi, flagsApagados);
+export const handle = sequence(supabase, registroApi, flagsApagados, guardAdmin);
