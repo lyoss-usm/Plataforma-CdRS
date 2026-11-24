@@ -26,6 +26,8 @@ tags:
     description: Registro público de solicitudes de préstamo
   - name: BGG
     description: Proxy de BoardGameGeek con caché (staff con permiso inventario:editar)
+  - name: Inventario
+    description: Alta, edición y eliminación de juegos y ejemplares (staff con permiso inventario:editar; eliminar exige inventario:eliminar)
 
 paths:
   /api/catalogo:
@@ -777,6 +779,237 @@ paths:
         '504':
           description: La imagen no respondió a tiempo
 
+  /admin/inventario/juegos:
+    post:
+      operationId: crearJuego
+      tags:
+        - Inventario
+      summary: Crear un juego
+      description: |
+        Crea un juego base o una expansión (con idJuegoBase de un juego base). La DB valida
+        la coherencia tipo ↔ idJuegoBase, el nombre único y el idBgg único.
+      security:
+        - sesionSupabase: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JuegoRequest'
+      responses:
+        '201':
+          description: Juego creado
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - juego
+                properties:
+                  juego:
+                    $ref: '#/components/schemas/Juego'
+        '400':
+          $ref: '#/components/responses/PrestamoInvalido'
+        '401':
+          $ref: '#/components/responses/PrestamoNoAutenticado'
+        '403':
+          $ref: '#/components/responses/InventarioSinPermiso'
+        '409':
+          $ref: '#/components/responses/InventarioConflicto'
+        '500':
+          $ref: '#/components/responses/PrestamoErrorInterno'
+
+  /admin/inventario/juegos/{idJuego}:
+    parameters:
+      - name: idJuego
+        in: path
+        required: true
+        schema:
+          type: integer
+          minimum: 1
+    patch:
+      operationId: actualizarJuego
+      tags:
+        - Inventario
+      summary: Actualizar un juego
+      description: |
+        Cambios parciales de la ficha. Para cambiar el tipo se envían tipo e idJuegoBase
+        juntos; un juego base con expansiones no puede pasar a expansión (trigger).
+      security:
+        - sesionSupabase: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Campos de JuegoRequest, todos opcionales (tipo e idJuegoBase van juntos)
+      responses:
+        '200':
+          description: Juego actualizado
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - juego
+                properties:
+                  juego:
+                    $ref: '#/components/schemas/Juego'
+        '400':
+          $ref: '#/components/responses/PrestamoInvalido'
+        '401':
+          $ref: '#/components/responses/PrestamoNoAutenticado'
+        '403':
+          $ref: '#/components/responses/InventarioSinPermiso'
+        '404':
+          $ref: '#/components/responses/InventarioNoEncontrado'
+        '409':
+          $ref: '#/components/responses/InventarioConflicto'
+        '500':
+          $ref: '#/components/responses/PrestamoErrorInterno'
+    delete:
+      operationId: eliminarJuego
+      tags:
+        - Inventario
+      summary: Eliminar un juego sin referencias
+      description: |
+        Requiere inventario:eliminar. La DB rechaza (FK RESTRICT) un juego con ejemplares o que
+        sea juego base de expansiones; el 409 explica el motivo.
+      security:
+        - sesionSupabase: []
+      responses:
+        '200':
+          $ref: '#/components/responses/InventarioEliminado'
+        '400':
+          $ref: '#/components/responses/PrestamoInvalido'
+        '401':
+          $ref: '#/components/responses/PrestamoNoAutenticado'
+        '403':
+          $ref: '#/components/responses/InventarioSinPermiso'
+        '404':
+          $ref: '#/components/responses/InventarioNoEncontrado'
+        '409':
+          $ref: '#/components/responses/InventarioConflicto'
+        '500':
+          $ref: '#/components/responses/PrestamoErrorInterno'
+
+  /admin/inventario/ejemplares:
+    post:
+      operationId: crearEjemplar
+      tags:
+        - Inventario
+      summary: Crear un ejemplar
+      description: |
+        El sistema genera el idEjemplar (3 letras del juego + correlativo, p. ej. CAT-003) y lo
+        devuelve para imprimir su QR. El estado inicial no puede ser Prestado.
+      security:
+        - sesionSupabase: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AltaEjemplarRequest'
+      responses:
+        '201':
+          description: Ejemplar creado
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - ejemplar
+                properties:
+                  ejemplar:
+                    $ref: '#/components/schemas/Ejemplar'
+        '400':
+          $ref: '#/components/responses/PrestamoInvalido'
+        '401':
+          $ref: '#/components/responses/PrestamoNoAutenticado'
+        '403':
+          $ref: '#/components/responses/InventarioSinPermiso'
+        '404':
+          $ref: '#/components/responses/InventarioNoEncontrado'
+        '409':
+          $ref: '#/components/responses/InventarioConflicto'
+        '500':
+          $ref: '#/components/responses/PrestamoErrorInterno'
+
+  /admin/inventario/ejemplares/{idEjemplar}:
+    parameters:
+      - name: idEjemplar
+        in: path
+        required: true
+        schema:
+          type: string
+        example: CAT-001
+    patch:
+      operationId: actualizarEjemplar
+      tags:
+        - Inventario
+      summary: Actualizar un ejemplar
+      description: |
+        Cambios parciales (sin idEjemplar ni idJuego). El estado Prestado no se asigna ni se quita
+        desde el inventario: solo lo cambian los préstamos y la devolución (409).
+      security:
+        - sesionSupabase: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EdicionEjemplarRequest'
+      responses:
+        '200':
+          description: Ejemplar actualizado
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - ejemplar
+                properties:
+                  ejemplar:
+                    $ref: '#/components/schemas/Ejemplar'
+        '400':
+          $ref: '#/components/responses/PrestamoInvalido'
+        '401':
+          $ref: '#/components/responses/PrestamoNoAutenticado'
+        '403':
+          $ref: '#/components/responses/InventarioSinPermiso'
+        '404':
+          $ref: '#/components/responses/InventarioNoEncontrado'
+        '409':
+          $ref: '#/components/responses/InventarioConflicto'
+        '500':
+          $ref: '#/components/responses/PrestamoErrorInterno'
+    delete:
+      operationId: eliminarEjemplar
+      tags:
+        - Inventario
+      summary: Eliminar un ejemplar sin historial
+      description: |
+        Requiere inventario:eliminar. La DB rechaza (FK RESTRICT) un ejemplar con solicitudes o
+        préstamos; en ese caso conviene marcarlo Perdido o Con su dueño.
+      security:
+        - sesionSupabase: []
+      responses:
+        '200':
+          $ref: '#/components/responses/InventarioEliminado'
+        '400':
+          $ref: '#/components/responses/PrestamoInvalido'
+        '401':
+          $ref: '#/components/responses/PrestamoNoAutenticado'
+        '403':
+          $ref: '#/components/responses/InventarioSinPermiso'
+        '404':
+          $ref: '#/components/responses/InventarioNoEncontrado'
+        '409':
+          $ref: '#/components/responses/InventarioConflicto'
+        '500':
+          $ref: '#/components/responses/PrestamoErrorInterno'
+
 components:
   securitySchemes:
     sesionSupabase:
@@ -836,6 +1069,42 @@ components:
             $ref: '#/components/schemas/PrestamoError'
           example:
             error: Tu cargo no puede registrar préstamos de junta
+    InventarioSinPermiso:
+      description: El cargo no tiene inventario:editar (o inventario:eliminar para borrar)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PrestamoError'
+          example:
+            error: Tu cargo no puede administrar el inventario
+    InventarioNoEncontrado:
+      description: El juego o ejemplar no existe
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PrestamoError'
+          example:
+            error: El juego no existe
+    InventarioConflicto:
+      description: La DB rechazó el cambio (nombre o código repetido, referencias, tipo incoherente o estado Prestado)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PrestamoError'
+          example:
+            error: Tiene ejemplares asociados. Elimínalos primero.
+    InventarioEliminado:
+      description: Registro eliminado
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - success
+            properties:
+              success:
+                type: boolean
+                const: true
     PrestamoErrorInterno:
       description: Error inesperado al llamar a la base de datos
       content:
@@ -846,6 +1115,148 @@ components:
             error: Error interno del servidor
 
   schemas:
+    JuegoRequest:
+      type: object
+      required:
+        - nombreJuego
+        - tipo
+        - idJuegoBase
+        - edadMinima
+        - jugadoresMin
+        - jugadoresMax
+        - duracion
+        - calificacion
+        - dificultad
+        - pathImagen
+        - idBgg
+        - manual
+        - video
+      properties:
+        nombreJuego:
+          type: string
+          minLength: 1
+        tipo:
+          type: string
+          enum: [Juego base, Expansión]
+        idJuegoBase:
+          type: [integer, 'null']
+          description: null para un juego base; id de un juego base para una expansión
+        edadMinima:
+          type: [integer, 'null']
+        jugadoresMin:
+          type: [integer, 'null']
+        jugadoresMax:
+          type: [integer, 'null']
+        duracion:
+          type: [integer, 'null']
+          description: Minutos
+        calificacion:
+          type: [number, 'null']
+          minimum: 0
+          maximum: 10
+        dificultad:
+          type: [string, 'null']
+          enum: [Fácil, Intermedio, Difícil, null]
+        pathImagen:
+          type: [string, 'null']
+        idBgg:
+          type: [integer, 'null']
+        manual:
+          type: [string, 'null']
+          format: uri
+        video:
+          type: [string, 'null']
+          format: uri
+
+    Juego:
+      allOf:
+        - $ref: '#/components/schemas/JuegoRequest'
+        - type: object
+          required:
+            - idJuego
+          properties:
+            idJuego:
+              type: integer
+
+    AltaEjemplarRequest:
+      type: object
+      required:
+        - idJuego
+        - esExterno
+        - estadoCompletitud
+        - situacion
+        - comentarios
+        - componentes
+        - estadoEjemplar
+      properties:
+        idJuego:
+          type: integer
+        esExterno:
+          type: boolean
+        estadoCompletitud:
+          type: string
+          enum: [Completo, Incompleto]
+        situacion:
+          type: [string, 'null']
+        comentarios:
+          type: [string, 'null']
+        componentes:
+          type: [string, 'null']
+        estadoEjemplar:
+          type: string
+          enum: [En bodega, Perdido, Para revisar, Con su dueño]
+
+    EdicionEjemplarRequest:
+      type: object
+      description: Todos opcionales; estadoEjemplar no puede pasar a Prestado ni salir de él
+      properties:
+        esExterno:
+          type: boolean
+        estadoCompletitud:
+          type: string
+          enum: [Completo, Incompleto]
+        situacion:
+          type: [string, 'null']
+        comentarios:
+          type: [string, 'null']
+        componentes:
+          type: [string, 'null']
+        estadoEjemplar:
+          type: string
+          enum: [En bodega, Prestado, Perdido, Para revisar, Con su dueño]
+
+    Ejemplar:
+      type: object
+      required:
+        - idEjemplar
+        - idJuego
+        - esExterno
+        - estadoCompletitud
+        - situacion
+        - comentarios
+        - componentes
+        - estadoEjemplar
+      properties:
+        idEjemplar:
+          type: string
+          example: CAT-001
+        idJuego:
+          type: integer
+        esExterno:
+          type: boolean
+        estadoCompletitud:
+          type: string
+          enum: [Completo, Incompleto]
+        situacion:
+          type: [string, 'null']
+        comentarios:
+          type: [string, 'null']
+        componentes:
+          type: [string, 'null']
+        estadoEjemplar:
+          type: string
+          enum: [En bodega, Prestado, Perdido, Para revisar, Con su dueño]
+
     BggSugerencia:
       type: object
       required: [idBgg, nombre, anio, tipo, idJuego, enCache]

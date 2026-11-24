@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Icon from '$lib/components/Icon.svelte';
-	import { onMount } from 'svelte';
 	import DataTable from '$lib/components/admin/primitives/DataTable.svelte';
 	import type { DataColumn } from '$lib/components/admin/primitives/types';
 	import Dropdown from '$lib/components/admin/primitives/Dropdown.svelte';
@@ -10,10 +9,21 @@
 	import FichaInventarioModal from './FichaInventarioModal.svelte';
 	import EjemplarFormModal from './EjemplarFormModal.svelte';
 	import EliminarInventarioModal from './EliminarInventarioModal.svelte';
-	import { meson } from '$lib/data/junta.svelte';
+	import { imprimirQrs } from '$lib/qr/imprimirQr';
 	import { adminSession } from '$lib/stores/adminSession.svelte';
+	import { Inventario, proveerInventario, type Resultado } from '$lib/stores/inventario.svelte';
 	import { notificaciones } from '$lib/stores/notificaciones.svelte';
 	import type { Ejemplar, Juego } from '$lib/schemas';
+
+	interface Props {
+		datos: { juegos: Juego[]; ejemplares: Ejemplar[] };
+	}
+
+	let { datos }: Props = $props();
+
+	// Datos iniciales del load; desde ahí el panel aplica cada cambio confirmado por el servidor.
+	// svelte-ignore state_referenced_locally
+	const inventario = proveerInventario(new Inventario(datos));
 
 	const sizePagina = 8;
 
@@ -53,7 +63,6 @@
 	let filtroDisp = $state('Todos');
 	let soloExternos = $state(false);
 	let pagina = $state(1);
-	let cargando = $state(true);
 
 	let creandoJuego = $state(false);
 	let editandoJuego = $state<Juego | null>(null);
@@ -70,16 +79,8 @@
 			.replace(/\p{Diacritic}/gu, '');
 	}
 
-	onMount(() => {
-		const temporizador = setTimeout(() => {
-			cargando = false;
-		}, 450);
-
-		return () => clearTimeout(temporizador);
-	});
-
 	function resumen(idJuego: number): { total: number; bodega: number; externos: number } {
-		const ejemplares = meson.ejemplaresDeJuego(idJuego);
+		const ejemplares = inventario.ejemplaresDeJuego(idJuego);
 
 		return {
 			total: ejemplares.length,
@@ -89,7 +90,7 @@
 	}
 
 	const filtrados = $derived(
-		meson.juegos.filter((j) => {
+		inventario.juegos.filter((j) => {
 			const termino = normalizar(buscar.trim());
 			const coincideTexto =
 				termino === '' ||
@@ -100,7 +101,7 @@
 
 			if (filtroTipo !== 'Todos' && j.tipo !== filtroTipo) return false;
 
-			const disponible = meson.disponibleDe(j.idJuego);
+			const disponible = inventario.disponibleDe(j.idJuego);
 
 			if (filtroDisp === 'Disponible' && !disponible) return false;
 			if (filtroDisp === 'No disponible' && disponible) return false;
@@ -120,10 +121,29 @@
 		}
 	});
 
-	function confirmarEliminarJuego(): { ok: boolean; motivo: string } {
-		if (!eliminandoJuego) return { ok: false, motivo: 'No hay juego seleccionado.' };
+	// Etiquetas de todos los ejemplares de los juegos filtrados (p. ej. buscar un juego o «Externos»).
+	const etiquetasFiltradas = $derived(
+		filtrados.flatMap((juego) =>
+			inventario
+				.ejemplaresDeJuego(juego.idJuego)
+				.map((e) => ({ idEjemplar: e.idEjemplar, nombreJuego: juego.nombreJuego }))
+		)
+	);
 
-		const resultado = meson.eliminarJuego(eliminandoJuego.idJuego);
+	function imprimirFiltrados() {
+		if (!imprimirQrs(etiquetasFiltradas)) {
+			notificaciones.mostrar(
+				'error',
+				'Ventana bloqueada',
+				'El navegador bloqueó la ventana de impresión. Permite ventanas emergentes.'
+			);
+		}
+	}
+
+	async function confirmarEliminarJuego(): Promise<Resultado> {
+		if (!eliminandoJuego) return { ok: false, dato: null, motivo: 'No hay juego seleccionado.' };
+
+		const resultado = await inventario.eliminarJuego(eliminandoJuego.idJuego);
 
 		if (!resultado.ok) return resultado;
 
@@ -134,13 +154,15 @@
 		);
 		eliminandoJuego = null;
 
-		return { ok: true, motivo: '' };
+		return resultado;
 	}
 
-	function confirmarEliminarEjemplar(): { ok: boolean; motivo: string } {
-		if (!eliminandoEjemplar) return { ok: false, motivo: 'No hay ejemplar seleccionado.' };
+	async function confirmarEliminarEjemplar(): Promise<Resultado> {
+		if (!eliminandoEjemplar) {
+			return { ok: false, dato: null, motivo: 'No hay ejemplar seleccionado.' };
+		}
 
-		const resultado = meson.eliminarEjemplar(eliminandoEjemplar.ejemplar.idEjemplar);
+		const resultado = await inventario.eliminarEjemplar(eliminandoEjemplar.ejemplar.idEjemplar);
 
 		if (!resultado.ok) return resultado;
 
@@ -151,7 +173,7 @@
 		);
 		eliminandoEjemplar = null;
 
-		return { ok: true, motivo: '' };
+		return resultado;
 	}
 </script>
 
@@ -224,6 +246,16 @@
 		{#if puedeEditar}
 			<button
 				type="button"
+				onclick={imprimirFiltrados}
+				disabled={etiquetasFiltradas.length === 0}
+				title="Imprime el QR de cada ejemplar de los juegos filtrados"
+				class="inline-flex cursor-pointer items-center gap-1.5 rounded-base border border-glass-border bg-surface-container-lowest px-3 py-2 font-mono text-xs tracking-wider text-on-surface-variant uppercase transition hover:text-on-surface disabled:cursor-not-allowed disabled:opacity-40"
+			>
+				<Icon name="qr-code" class="h-3.5 w-3.5" strokeWidth={2} />
+				Imprimir QR ({etiquetasFiltradas.length})
+			</button>
+			<button
+				type="button"
 				onclick={() => (creandoJuego = true)}
 				class="inline-flex cursor-pointer items-center gap-1.5 rounded-base border border-primary/50 bg-primary/10 px-3 py-2 font-mono text-xs tracking-wider text-primary uppercase transition hover:bg-primary/20 hover:ice-glow"
 			>
@@ -236,7 +268,7 @@
 
 {#snippet tarjetaMovil(fila: Juego)}
 	{@const r = resumen(fila.idJuego)}
-	{@const disponible = meson.disponibleDe(fila.idJuego)}
+	{@const disponible = inventario.disponibleDe(fila.idJuego)}
 	<div class="flex flex-col gap-2.5">
 		<div class="flex items-start justify-between gap-2">
 			<div class="flex min-w-0 flex-col">
@@ -295,7 +327,7 @@
 
 {#snippet cell(fila: Juego, columna: DataColumn)}
 	{@const r = resumen(fila.idJuego)}
-	{@const disponible = meson.disponibleDe(fila.idJuego)}
+	{@const disponible = inventario.disponibleDe(fila.idJuego)}
 	{#if columna.id === 'juego'}
 		<span class="flex min-w-0 flex-col">
 			<span class="font-medium">{fila.nombreJuego}</span>
@@ -382,7 +414,6 @@
 			keyRow={(fila) => String(fila.idJuego)}
 			{cell}
 			mobileCard={tarjetaMovil}
-			loading={cargando}
 			emptyMessage="No hay juegos en el catálogo"
 			emptyDescription="Crea el primero con «Nuevo juego» o ajusta los filtros."
 			{toolbar}
@@ -448,7 +479,7 @@
 {#if eliminandoJuego}
 	<EliminarInventarioModal
 		titulo="Eliminar juego"
-		mensaje={`«${eliminandoJuego.nombreJuego}» (#${eliminandoJuego.idJuego}) desaparecerá del catálogo. Solo procede sin ejemplares ni expansiones asociadas (FK RESTRICT).`}
+		mensaje={`«${eliminandoJuego.nombreJuego}» (#${eliminandoJuego.idJuego}) desaparecerá del catálogo. Solo procede sin ejemplares ni expansiones asociadas.`}
 		onclose={() => (eliminandoJuego = null)}
 		onConfirmar={confirmarEliminarJuego}
 	/>

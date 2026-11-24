@@ -4,12 +4,12 @@
 	import Dropdown from '$lib/components/admin/primitives/Dropdown.svelte';
 	import FormField from '$lib/components/admin/primitives/FormField.svelte';
 	import QrEjemplar from './QrEjemplar.svelte';
-	import { meson } from '$lib/data/junta.svelte';
 	import { imprimirQr } from '$lib/qr/imprimirQr';
+	import { usarInventario } from '$lib/stores/inventario.svelte';
 	import { notificaciones } from '$lib/stores/notificaciones.svelte';
 	import {
-		createEjemplarSchema,
-		updateEjemplarSchema,
+		altaEjemplarSchema,
+		edicionEjemplarSchema,
 		type Ejemplar,
 		type Juego
 	} from '$lib/schemas';
@@ -24,14 +24,22 @@
 
 	let { juego, ejemplar, onclose }: Props = $props();
 
+	const inventario = usarInventario();
+	let enviando = $state(false);
+
 	const esEdicion = ejemplar !== null;
 
-	const itemsEstado = [
-		{ value: 'En bodega', label: 'En bodega' },
-		{ value: 'Para revisar', label: 'Para revisar' },
-		{ value: 'Perdido', label: 'Perdido' },
-		{ value: 'Con su dueño', label: 'Con su dueño' }
-	];
+	// Un ejemplar prestado conserva su estado hasta la devolución (el servidor rechaza cambiarlo).
+	const itemsEstado = $derived(
+		ejemplar?.estadoEjemplar === 'Prestado'
+			? [{ value: 'Prestado', label: 'Prestado (lo cambia la devolución)' }]
+			: [
+					{ value: 'En bodega', label: 'En bodega' },
+					{ value: 'Para revisar', label: 'Para revisar' },
+					{ value: 'Perdido', label: 'Perdido' },
+					{ value: 'Con su dueño', label: 'Con su dueño' }
+				]
+	);
 	const itemsCompletitud = [
 		{ value: 'Completo', label: 'Completo' },
 		{ value: 'Incompleto', label: 'Incompleto' }
@@ -60,7 +68,7 @@
 	const claseBotonSecundario =
 		'cursor-pointer rounded-base border border-glass-border px-4 py-2 text-on-surface-variant transition hover:bg-white/5 hover:text-on-surface';
 	const claseBotonPrimario =
-		'inline-flex cursor-pointer items-center gap-2 rounded-base border border-primary/50 bg-primary/10 px-4 py-2 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow';
+		'inline-flex cursor-pointer items-center gap-2 rounded-base border border-primary/50 bg-primary/10 px-4 py-2 font-semibold text-primary transition hover:bg-primary/20 hover:ice-glow disabled:cursor-not-allowed disabled:opacity-50';
 
 	function marcarTocado(campo: CampoValidable) {
 		tocado[campo] = true;
@@ -74,9 +82,7 @@
 				return completitud === '' ? 'Selecciona la completitud.' : null;
 			case 'comentarios':
 				if (!esExterno) return null;
-				return comentarios.trim() === ''
-					? 'Indica el dueño en los comentarios (campo temporal).'
-					: null;
+				return comentarios.trim() === '' ? 'Indica el dueño en los comentarios.' : null;
 		}
 	}
 
@@ -106,14 +112,26 @@
 		}
 	}
 
-	function guardar() {
+	async function guardar() {
+		if (enviando) return;
+
 		intentoEnvio = true;
 		error = null;
 
 		if (hayErrores) return;
 
+		enviando = true;
+		try {
+			await enviar();
+		} finally {
+			enviando = false;
+		}
+	}
+
+	async function enviar() {
 		if (!esEdicion) {
-			const validado = createEjemplarSchema.omit({ idEjemplar: true, idJuego: true }).safeParse({
+			const validado = altaEjemplarSchema.safeParse({
+				idJuego: juego.idJuego,
 				esExterno,
 				estadoCompletitud: completitud,
 				situacion: textoONulo(situacion),
@@ -127,26 +145,26 @@
 				return;
 			}
 
-			const resultado = meson.crearEjemplar(juego.idJuego, validado.data);
+			const resultado = await inventario.crearEjemplar(validado.data);
 
-			if (!resultado.ok || !resultado.ejemplar) {
+			if (!resultado.ok || !resultado.dato) {
 				error = resultado.motivo;
 				return;
 			}
 
-			creado = resultado.ejemplar;
+			creado = resultado.dato;
 
 			notificaciones.mostrar(
 				'success',
 				'Ejemplar creado',
-				`${resultado.ejemplar.idEjemplar} quedó con el estado elegido. Imprime su QR y pégalo en la caja.`
+				`${resultado.dato.idEjemplar} quedó con el estado elegido. Imprime su QR y pégalo en la caja.`
 			);
 			return;
 		}
 
 		if (!ejemplar) return;
 
-		const validado = updateEjemplarSchema.safeParse({
+		const validado = edicionEjemplarSchema.safeParse({
 			esExterno,
 			estadoCompletitud: completitud,
 			situacion: textoONulo(situacion),
@@ -160,7 +178,7 @@
 			return;
 		}
 
-		const resultado = meson.actualizarEjemplar(ejemplar.idEjemplar, validado.data);
+		const resultado = await inventario.actualizarEjemplar(ejemplar.idEjemplar, validado.data);
 
 		if (!resultado.ok) {
 			error = resultado.motivo;
@@ -221,8 +239,7 @@
 		>
 			{#if !esEdicion}
 				<p class="text-body-md text-on-surface-variant">
-					El identificador y el QR los genera el sistema al guardar (wiki §2.1); no se ingresan a
-					mano.
+					El identificador y el QR los genera el sistema al guardar; no se ingresan a mano.
 				</p>
 			{/if}
 
@@ -257,7 +274,7 @@
 			</div>
 
 			<p class="text-body-sm text-on-surface-variant/70">
-				El estado Prestado solo aplicable mediante Préstamos (wiki §1.2/§1.3).
+				El estado Prestado lo asignan los préstamos y la devolución.
 			</p>
 
 			<div class="rounded-base border border-glass-border p-4">
@@ -275,8 +292,7 @@
 							Juego externo (de un tercero)
 						</span>
 						<span class="text-body-sm text-on-surface-variant/70">
-							Si se activa, indica el dueño en los comentarios (campo temporal hasta definir el
-							definitivo, wiki §2.3). El ejemplar sigue prestándose igual.
+							Si se activa, indica el dueño en los comentarios.
 						</span>
 					</span>
 				</label>
@@ -332,9 +348,9 @@
 
 			<div class="mt-2 flex flex-wrap items-center justify-end gap-3">
 				<button type="button" onclick={onclose} class={claseBotonSecundario}>Cancelar</button>
-				<button type="submit" class={claseBotonPrimario}>
+				<button type="submit" disabled={enviando} class={claseBotonPrimario}>
 					<Icon name="check" class="h-4 w-4" strokeWidth={2} />
-					{esEdicion ? 'Guardar cambios' : 'Crear ejemplar'}
+					{enviando ? 'Guardando…' : esEdicion ? 'Guardar cambios' : 'Crear ejemplar'}
 				</button>
 			</div>
 		</form>

@@ -89,7 +89,8 @@
 		</div>
 	{:else}
 		{#if mobileCard}
-			<div class="grid gap-3 p-3 md:hidden" aria-busy={loading || undefined}>
+			<!-- grid-cols-1 (minmax(0, 1fr)): sin él, un texto que no se corta ensancha la tarjeta. -->
+			<div class="grid grid-cols-1 gap-3 p-3 md:hidden" aria-busy={loading || undefined}>
 				{#if loading}
 					{#each filasEsqueleto as indice (indice)}
 						<div class="rounded-base border border-glass-border surface-level-1 p-3.5">
@@ -109,7 +110,7 @@
 					{/each}
 				{:else}
 					{#each rows as row (keyRow(row))}
-						<div class="rounded-base border border-glass-border surface-level-1 p-3.5">
+						<div class="min-w-0 rounded-base border border-glass-border surface-level-1 p-3.5">
 							{@render mobileCard(row)}
 						</div>
 					{/each}

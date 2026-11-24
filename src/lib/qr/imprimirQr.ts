@@ -1,5 +1,10 @@
 import { qrcodegen } from './qrcodegen';
 
+export interface EtiquetaQr {
+	idEjemplar: string;
+	nombreJuego: string;
+}
+
 function escapar(texto: string): string {
 	return texto
 		.replace(/&/g, '&amp;')
@@ -8,15 +13,8 @@ function escapar(texto: string): string {
 		.replace(/"/g, '&quot;');
 }
 
-/**
- * Abre una ventana solo con la tarjeta del QR (idEjemplar + juego) y lanza la
- * impresión, para pegar el código en la caja física. El QR codifica únicamente
- * el idEjemplar, por eso no se almacena: se deriva al mostrar.
- *
- * Retorna false si el navegador bloqueó la ventana emergente.
- */
-export function imprimirQr(idEjemplar: string, nombreJuego: string): boolean {
-	const qr = qrcodegen.QrCode.encodeText(idEjemplar, qrcodegen.QrCode.Ecc.LOW);
+function svgQr(texto: string): string {
+	const qr = qrcodegen.QrCode.encodeText(texto, qrcodegen.QrCode.Ecc.LOW);
 	const borde = 2;
 	const n = qr.size + borde * 2;
 
@@ -32,25 +30,51 @@ export function imprimirQr(idEjemplar: string, nombreJuego: string): boolean {
 		}
 	}
 
-	const svg =
-		`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${n} ${n}" width="480" height="480">` +
-		`<rect width="${n}" height="${n}" fill="#ffffff"/><g fill="#000000">${modulos}</g></svg>`;
+	return (
+		`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${n} ${n}">` +
+		`<rect width="${n}" height="${n}" fill="#ffffff"/><g fill="#000000">${modulos}</g></svg>`
+	);
+}
 
-	const ventana = window.open('', '_blank', 'width=560,height=680');
+/**
+ * Abre una ventana con las etiquetas (QR + idEjemplar + juego) y lanza la impresión, para pegarlas
+ * en las cajas. Una etiqueta ocupa la hoja; varias van en grilla de 5 cm, sin cortarse entre
+ * páginas. El QR codifica únicamente el idEjemplar, por eso no se almacena: se deriva al imprimir.
+ *
+ * Retorna false si el navegador bloqueó la ventana emergente.
+ */
+export function imprimirQrs(etiquetas: EtiquetaQr[]): boolean {
+	if (etiquetas.length === 0) return true;
+
+	const ventana = window.open('', '_blank', 'width=760,height=680');
 
 	if (!ventana) {
 		return false;
 	}
 
+	const una = etiquetas.length === 1;
+	const tarjetas = etiquetas
+		.map(
+			({ idEjemplar, nombreJuego }) =>
+				`<figure>${svgQr(idEjemplar)}<figcaption><b>${escapar(idEjemplar)}</b>` +
+				`<span>${escapar(nombreJuego)}</span></figcaption></figure>`
+		)
+		.join('');
+	const titulo = una ? `QR ${etiquetas[0].idEjemplar}` : `QR · ${etiquetas.length} ejemplares`;
+
 	ventana.document.write(
 		`<!doctype html><html lang="es"><head><meta charset="utf-8">` +
-			`<title>QR ${escapar(idEjemplar)}</title>` +
-			`<style>body{font-family:sans-serif;display:flex;flex-direction:column;align-items:center;` +
-			`gap:8px;padding:32px;text-align:center}h1{font-size:22px;margin:0}p{font-family:monospace;` +
-			`font-size:18px;margin:0 0 12px}button{font-size:16px;padding:10px 24px;cursor:pointer}` +
-			`@media print{button{display:none}}</style></head><body>` +
-			`<h1>${escapar(nombreJuego)}</h1><p>${escapar(idEjemplar)}</p>${svg}` +
-			`<button onclick="window.print()">Imprimir</button>` +
+			`<title>${escapar(titulo)}</title>` +
+			`<style>body{font-family:sans-serif;margin:16px}` +
+			`main{display:grid;grid-template-columns:repeat(auto-fill,${una ? '12cm' : '5cm'});` +
+			`gap:4mm;justify-content:center}` +
+			`figure{margin:0;padding:3mm;border:1px dashed #999;text-align:center;break-inside:avoid}` +
+			`svg{width:100%;height:auto;display:block}figcaption{display:flex;flex-direction:column;gap:1mm}` +
+			`b{font-family:monospace;font-size:${una ? '20px' : '12px'}}` +
+			`span{font-size:${una ? '18px' : '10px'};overflow-wrap:anywhere}` +
+			`button{font-size:16px;padding:10px 24px;cursor:pointer;margin:0 auto 16px;display:block}` +
+			`@media print{button{display:none}body{margin:0}}</style></head><body>` +
+			`<button onclick="window.print()">Imprimir</button><main>${tarjetas}</main>` +
 			`<script>window.onload = function () { window.print(); }; ` +
 			'</scr' +
 			`ipt></body></html>`
@@ -58,4 +82,8 @@ export function imprimirQr(idEjemplar: string, nombreJuego: string): boolean {
 	ventana.document.close();
 
 	return true;
+}
+
+export function imprimirQr(idEjemplar: string, nombreJuego: string): boolean {
+	return imprimirQrs([{ idEjemplar, nombreJuego }]);
 }

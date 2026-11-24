@@ -431,6 +431,7 @@ if (flagsSchema.safeParse({ PUBLIC_FLAG_CATALOGO: 'true' }).success) {
 
 const flagsPiloto = flagsSchema.parse({
 	PUBLIC_FLAG_CATALOGO: '0',
+	PUBLIC_FLAG_INVENTARIO: '0',
 	PUBLIC_FLAG_SOLICITUDES: '0',
 	PUBLIC_FLAG_MODERACION: '0',
 	PUBLIC_FLAG_BGG: '0'
@@ -444,6 +445,9 @@ for (const ruta of [
 	'/api/solicitudes/opciones',
 	'/admin/solicitudes',
 	'/admin/bgg/search',
+	'/admin/inventario',
+	'/admin/inventario/juegos/3',
+	'/admin/inventario/ejemplares',
 	'/admin/miembros?tab=moderacion'
 ]) {
 	if (!apagada(ruta)) {
@@ -456,7 +460,7 @@ for (const ruta of [
 	'/',
 	'/admin',
 	'/admin/prestamos',
-	'/admin/inventario',
+	'/admin/inventarios',
 	'/admin/miembros',
 	'/catalogos'
 ]) {

@@ -43,7 +43,8 @@ export type Flags = z.output<typeof flagsSchema>;
  * Formulario de solicitud: también vive dentro del catálogo (`onPedir` de `GameCard`).
  */
 export function moduloDeRuta(url: Pick<URL, 'pathname' | 'searchParams'>): Modulo | null {
-	const { pathname, searchParams } = url;
+	// `searchParams` solo se lee donde importa: SvelteKit lo prohíbe en páginas prerenderizadas (`/`).
+	const { pathname } = url;
 	const bajo = (prefijo: string) => pathname === prefijo || pathname.startsWith(`${prefijo}/`);
 
 	if (bajo('/catalogo') || bajo('/api/catalogo')) return 'catalogo';
@@ -51,10 +52,22 @@ export function moduloDeRuta(url: Pick<URL, 'pathname' | 'searchParams'>): Modul
 	if (bajo('/admin/solicitudes')) return 'solicitudes';
 	if (bajo('/admin/inventario')) return 'inventario';
 	if (bajo('/admin/bgg')) return 'bgg';
-	if (bajo('/admin/miembros') && searchParams.get('tab') === 'moderacion') return 'moderacion';
+	if (bajo('/admin/miembros') && url.searchParams.get('tab') === 'moderacion') return 'moderacion';
 
 	return null;
 }
+
+/**
+ * Páginas de módulos con flag: responden 404 desde su load (admin/+layout.server.ts,
+ * catalogo/+page.server.ts) para mostrar src/routes/+error.svelte. Cualquier otra ruta apagada
+ * (endpoints, presentes o futuros) la corta hooks.server.ts.
+ */
+export const paginasConFlag: ReadonlySet<string> = new Set([
+	'/catalogo',
+	'/admin/solicitudes',
+	'/admin/inventario',
+	'/admin/miembros'
+]);
 
 /** Una ruta está apagada si su módulo lo está (el formulario además depende del catálogo). */
 export function rutaApagada(url: Pick<URL, 'pathname' | 'searchParams'>, flags: Flags): boolean {

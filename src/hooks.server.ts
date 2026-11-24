@@ -2,7 +2,7 @@ import { json, redirect, type Handle, type ServerInit } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { building, dev } from '$app/environment';
 import { flags } from '$lib/flags';
-import { rutaApagada } from '$lib/schemas/flags';
+import { paginasConFlag, rutaApagada } from '$lib/schemas/flags';
 import { esRutaAdmin, obtenerStaff } from '$lib/server/auth';
 import { bggMockActivo } from '$lib/server/bgg';
 import { crearClienteSupabase } from '$lib/server/supabase';
@@ -73,13 +73,11 @@ const registroApi: Handle = async ({ event, resolve }) => {
 	}
 };
 
-// Endpoints de módulos apagados (#40): 404 como si no existieran. Las páginas apagadas responden 404
-// desde su load (admin/+layout.server.ts, catalogo/+page.server.ts) para usar src/routes/+error.svelte.
+// Rutas de módulos apagados (#40): 404 como si no existieran. Las páginas (`paginasConFlag`) lo
+// responden desde su load para usar src/routes/+error.svelte; un `error()` lanzado aquí mostraría la
+// página genérica de SvelteKit.
 const flagsApagados: Handle = async ({ event, resolve }) => {
-	const { pathname } = event.url;
-	const esEndpoint = pathname.startsWith('/api/') || pathname.startsWith('/admin/bgg/');
-
-	if (esEndpoint && rutaApagada(event.url, flags)) {
+	if (!paginasConFlag.has(event.url.pathname) && rutaApagada(event.url, flags)) {
 		return json({ message: 'Not Found' }, { status: 404 });
 	}
 
