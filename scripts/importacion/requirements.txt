@@ -1,0 +1,5 @@
+# Preparación del Excel e importación de los CSV a PostgreSQL.
+openpyxl==3.1.5
+et_xmlfile==2.0.0
+defusedxml==0.7.1
+psycopg[binary]==3.3.2

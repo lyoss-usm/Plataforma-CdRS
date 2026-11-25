@@ -27,3 +27,9 @@ vite.config.ts.timestamp-*
 
 # Imágenes del mock de BGG (se generan con pnpm bgg:imagenes-mock)
 fixtures/bgg/img/
+
+# Importación AppSheet: datos y reportes locales, nunca fixtures del repositorio.
+.importacion/
+.venv-importacion/
+__pycache__/
+*.py[cod]

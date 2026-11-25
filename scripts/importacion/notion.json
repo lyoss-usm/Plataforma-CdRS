@@ -1,0 +1,1491 @@
+{
+	"version": 1,
+	"estado": "captura_de_trabajo",
+	"fuente": "https://clubderolsansano.notion.site/",
+	"fechaConsulta": "2026-11-24",
+	"procedencia": "Tabla pública consultada mediante herramienta web; no es una exportación directa de Notion.",
+	"filas": [
+		{
+			"nombre": "¡Aventureros al tren! (Ticket to Ride)",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "60 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "¡Aventureros al Tren! Amsterdam (Ticket to Ride)",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "¡Aventureros al Tren! Asia (Ticket to ride)",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "60 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "¡Aventureros al Tren! Londres (Ticket to Ride)",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "¡Aventureros al Tren! San Francisco (Ticket to Ride)",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "¡Aventureros del tren! New York (Ticket to Ride)",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "¿Quién fue?",
+			"jugadores": "3 – 6 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 6"
+		},
+		{
+			"nombre": "7 Wonders",
+			"jugadores": "2 – 7 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "7 Wonders Duel",
+			"jugadores": "2 – 2 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "8 Bit box",
+			"jugadores": "3 - 6 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 6"
+		},
+		{
+			"nombre": "A pet's death life",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "90 min",
+			"edadMinima": "+ 13"
+		},
+		{
+			"nombre": "Alakablast",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "35 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Alhambra",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "60 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Anarchy Pancakes",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "5 min",
+			"edadMinima": "+ 7"
+		},
+		{
+			"nombre": "Anda a Lavar",
+			"jugadores": "2 – 8 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Arkham Horror",
+			"jugadores": "1 – 2 Jugadores",
+			"duracion": "120 min",
+			"edadMinima": "+ 14"
+		},
+		{
+			"nombre": "Arte Moderno",
+			"jugadores": "3 – 5 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Attack of the Jelly Monster",
+			"jugadores": "3 – 5 Jugadores",
+			"duracion": "25 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Autumn",
+			"jugadores": "1 – 3 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Avalon",
+			"jugadores": "5 – 10 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 13"
+		},
+		{
+			"nombre": "Aventureros al tren (Ticket to ride): Nederland",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "60 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Azul: Master Chocolatier",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Azul: Pabellón de verano",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Bandido",
+			"jugadores": "1 – 4 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 6"
+		},
+		{
+			"nombre": "Bang! El juego de cartas",
+			"jugadores": "4 – 7 Jugadores",
+			"duracion": "40 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Bang! El juego de dados (Nuevo)",
+			"jugadores": "3 – 8 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Bang! El juego de dados: Old Saloon (Exp1)",
+			"jugadores": "3 – 8 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Bang! El juego de dados: Undead Or Alive (Exp2)",
+			"jugadores": "3 – 8 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Barricada",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "60 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Barrio",
+			"jugadores": "1 – 4 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Bears VS Babies",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 7"
+		},
+		{
+			"nombre": "Best of Hombres Lobo de Castronegro",
+			"jugadores": "8 – 18 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Blackjack Golf",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "60 min",
+			"edadMinima": "+ 12"
+		},
+		{
+			"nombre": "Bloodborne: El juego de cartas",
+			"jugadores": "3 – 5 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 14"
+		},
+		{
+			"nombre": "Bohnanza",
+			"jugadores": "2 – 7 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 12"
+		},
+		{
+			"nombre": "Bohnanza: Dahlias",
+			"jugadores": "3 – 5 Jugadores",
+			"duracion": "0 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "BrainBox",
+			"jugadores": "1 Jugadores",
+			"duracion": "10 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Calico",
+			"jugadores": "1 – 4 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Camel Up",
+			"jugadores": "2 – 8 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Canvas",
+			"jugadores": "1 – 5 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Carcassonne (Antiguo)",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 7"
+		},
+		{
+			"nombre": "Carcassonne (Nuevo)",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 7"
+		},
+		{
+			"nombre": "Cash & Guns",
+			"jugadores": "4 – 6 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Castles of Mad King Ludwig",
+			"jugadores": "1 – 4 Jugadores",
+			"duracion": "90 min",
+			"edadMinima": "+ 13"
+		},
+		{
+			"nombre": "Catan (01)",
+			"jugadores": "3 – 4 Jugadores",
+			"duracion": "120 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Catan (02)",
+			"jugadores": "3 – 4 Jugadores",
+			"duracion": "120 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Catan (03)",
+			"jugadores": "3 – 4 Jugadores",
+			"duracion": "120 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Catan (04)",
+			"jugadores": "3 – 4 Jugadores",
+			"duracion": "120 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Catan para 5-6 jugadores",
+			"jugadores": "5 – 6 Jugadores",
+			"duracion": "120 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Catan: Ciudades y Caballeros",
+			"jugadores": "3 – 4 Jugadores",
+			"duracion": "150 min",
+			"edadMinima": "+ 12"
+		},
+		{
+			"nombre": "Catan: Ciudades y Caballeros para 5-6 jugadores",
+			"jugadores": "5 – 6 Jugadores",
+			"duracion": "120 min",
+			"edadMinima": "+ 12"
+		},
+		{
+			"nombre": "Catan: Piratas y Exploradores",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "120 min",
+			"edadMinima": "+ 12"
+		},
+		{
+			"nombre": "Celestia",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Chakra",
+			"jugadores": "1 – 4 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Chancho inflado",
+			"jugadores": "3 - 6 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 6"
+		},
+		{
+			"nombre": "Chromino",
+			"jugadores": "1 – 8 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 7"
+		},
+		{
+			"nombre": "Ciudad Machi Koro",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Ciudadelas Clásico",
+			"jugadores": "2 – 8 Jugadores",
+			"duracion": "60 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Clue",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Coatl",
+			"jugadores": "1 – 4 Jugadores",
+			"duracion": "60 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Código Secreto",
+			"jugadores": "2 – 8 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Código Secreto Imágenes",
+			"jugadores": "2 – 8 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Coloretto",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Colt Express",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "40 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Concept",
+			"jugadores": "4 – 12 Jugadores",
+			"duracion": "40 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Concordia",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "100 min",
+			"edadMinima": "+ 13"
+		},
+		{
+			"nombre": "Conejos a la Obra!!",
+			"jugadores": "3 – 6 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 6"
+		},
+		{
+			"nombre": "Corinth",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "CoupX",
+			"jugadores": "2 - 10 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Crazy Mistigri",
+			"jugadores": "3 – 5 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 7"
+		},
+		{
+			"nombre": "Crossing",
+			"jugadores": "3 – 6 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 6"
+		},
+		{
+			"nombre": "Danza del Huevo",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "10 min",
+			"edadMinima": "+ 5"
+		},
+		{
+			"nombre": "DC-deck building Game TeenTitans",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "75 min",
+			"edadMinima": "+ 15"
+		},
+		{
+			"nombre": "Dead of Winter",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "120 min",
+			"edadMinima": "+ 13"
+		},
+		{
+			"nombre": "Desamparados -Stalingrado-",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "90 min",
+			"edadMinima": "+ 13"
+		},
+		{
+			"nombre": "Desierto Prohibido",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Ding El Juego de la Feria",
+			"jugadores": "3 – 8 Jugadores",
+			"duracion": "90 min",
+			"edadMinima": "+ 7"
+		},
+		{
+			"nombre": "Dixit",
+			"jugadores": "3 – 8 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Dixit: Disney Edition",
+			"jugadores": "3 – 6 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Dobble",
+			"jugadores": "2 – 8 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 6"
+		},
+		{
+			"nombre": "Dobble Minions",
+			"jugadores": "2 – 8 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 6"
+		},
+		{
+			"nombre": "Doggy Style",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "40 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Donde las papas queman",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Dos",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 7"
+		},
+		{
+			"nombre": "Draftosaurus",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Dungeon Raiders",
+			"jugadores": "3 – 5 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "El Hobbit. El juego de cartas.",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "El señor de los anillos Duelo por la tierra media",
+			"jugadores": "2 – 2 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "El señor de los Anillos: La Batalla por la Tierra Media",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Ensalada de puntos",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Equinox",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "60 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Erase una vez",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Everdell",
+			"jugadores": "1 – 4 Jugadores",
+			"duracion": "80 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Experimento 626",
+			"jugadores": "",
+			"duracion": "",
+			"edadMinima": ""
+		},
+		{
+			"nombre": "Explodding Kittens Recetas del Desastre",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 7"
+		},
+		{
+			"nombre": "Exploding Kittens NSFW",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 18"
+		},
+		{
+			"nombre": "Exploding Kittens Party Pack",
+			"jugadores": "2 – 10 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 7"
+		},
+		{
+			"nombre": "Fantasma Blitz",
+			"jugadores": "2 – 8 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Faraway",
+			"jugadores": "3 – 8 Jugadores",
+			"duracion": "90 min",
+			"edadMinima": "+ 7"
+		},
+		{
+			"nombre": "Flamecraft",
+			"jugadores": "1 – 5 Jugadores",
+			"duracion": "60 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Flash 10",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Fluxx Cthulhu",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "40 min",
+			"edadMinima": "+ 13"
+		},
+		{
+			"nombre": "Formula D",
+			"jugadores": "2 – 10 Jugadores",
+			"duracion": "60 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Fort",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "40 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Fosil",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "25 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Giant Dobble",
+			"jugadores": "",
+			"duracion": "",
+			"edadMinima": ""
+		},
+		{
+			"nombre": "Granjeros",
+			"jugadores": "4 – 5 Jugadores",
+			"duracion": "60 min",
+			"edadMinima": "+ 12"
+		},
+		{
+			"nombre": "Hanabi",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "25 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Hand-to-hand Wombat",
+			"jugadores": "3 – 6 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 7"
+		},
+		{
+			"nombre": "Happy Little Dinosaur exp 5 - 6",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "60 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Happy Little Dinosaurs",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "60 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Happy mochi",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Happy Salmon",
+			"jugadores": "3 – 8 Jugadores",
+			"duracion": "2 min",
+			"edadMinima": "+ 6"
+		},
+		{
+			"nombre": "Hegemonia",
+			"jugadores": "3 – 6 Jugadores",
+			"duracion": "60 min",
+			"edadMinima": "+ 14"
+		},
+		{
+			"nombre": "Here to Slay",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "60 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Hidden Leaders",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "40 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Hint",
+			"jugadores": "4 – 10 Jugadores",
+			"duracion": "60 min",
+			"edadMinima": "+ 15"
+		},
+		{
+			"nombre": "Hive",
+			"jugadores": "2 – 2 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 9"
+		},
+		{
+			"nombre": "Hombres lobo (Jubilado)",
+			"jugadores": "8 – 18 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Hues and Cues",
+			"jugadores": "3 - 10 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Iki",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "90 min",
+			"edadMinima": "+ 14"
+		},
+		{
+			"nombre": "Ikonikus",
+			"jugadores": "3 – 8 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 7"
+		},
+		{
+			"nombre": "Insondable",
+			"jugadores": "3 – 6 Jugadores",
+			"duracion": "240 min",
+			"edadMinima": "+ 14"
+		},
+		{
+			"nombre": "Jaipur",
+			"jugadores": "2 – 2 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Just One",
+			"jugadores": "3 – 7 Jugadores",
+			"duracion": "60 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Kanagawa",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Kawarimi",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "King of New York",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "40 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "King Of Tokyo (1era Edición)",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Kodama",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 14"
+		},
+		{
+			"nombre": "La asamblea del mal",
+			"jugadores": "6 – 12 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "La Feria de las Pulgas de Titirilquén",
+			"jugadores": "3 – 8 Jugadores",
+			"duracion": "90 min",
+			"edadMinima": "+ 7"
+		},
+		{
+			"nombre": "La Gran Capital",
+			"jugadores": "2 – 8 Jugadores",
+			"duracion": "180 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "La Isla Prohibida",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "La Morada Maldita",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 7"
+		},
+		{
+			"nombre": "La resistencia",
+			"jugadores": "5 – 10 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 13"
+		},
+		{
+			"nombre": "La Tripulación - Misión Mar Profundo",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Las aventuras de Robin Hood",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "60 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Las redes del Reich",
+			"jugadores": "3 – 4 Jugadores",
+			"duracion": "0 min",
+			"edadMinima": "+ 12"
+		},
+		{
+			"nombre": "Link city",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Llama",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Loot sobre rueda",
+			"jugadores": "2 – 8 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Los Tesoros del Rey Pirata",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Los Viajes de Marco Polo",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "100 min",
+			"edadMinima": "+ 12"
+		},
+		{
+			"nombre": "Love Letter",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Machi Koro Legacy",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Magic Maze",
+			"jugadores": "1 – 8 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Majesty",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 7"
+		},
+		{
+			"nombre": "Make Make",
+			"jugadores": "3 – 4 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Marrakech",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 6"
+		},
+		{
+			"nombre": "Marvel Splendor",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Mascarade",
+			"jugadores": "2 – 13 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Matanga!",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "25 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Meeple Circus",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Misión Chungungo",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Molino de 9",
+			"jugadores": "2 – 2 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 6"
+		},
+		{
+			"nombre": "Monstruo Final. El ascenso de los mini monstruos finales.",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 13"
+		},
+		{
+			"nombre": "Munchkin",
+			"jugadores": "3 – 6 Jugadores",
+			"duracion": "120 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Mysterium",
+			"jugadores": "2 – 7 Jugadores",
+			"duracion": "42 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Naturalia",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "40 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "No Gracias",
+			"jugadores": "3 – 7 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Nobel Run",
+			"jugadores": "1 – 4 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Océanos de Papel",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Odin",
+			"jugadores": "",
+			"duracion": "",
+			"edadMinima": ""
+		},
+		{
+			"nombre": "Onirim",
+			"jugadores": "1 – 2 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Pandemic",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Paper Tales: Beyond The Gates",
+			"jugadores": "1 – 7 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 12"
+		},
+		{
+			"nombre": "Party K.O.",
+			"jugadores": "",
+			"duracion": "",
+			"edadMinima": ""
+		},
+		{
+			"nombre": "Patchwork",
+			"jugadores": "2 – 2 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Pelusas",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Pet Worlds",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "60 min",
+			"edadMinima": "+ 13"
+		},
+		{
+			"nombre": "Pictureka",
+			"jugadores": "2 – 7 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 6"
+		},
+		{
+			"nombre": "Pictureka! Cartas",
+			"jugadores": "2 – 20 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 6"
+		},
+		{
+			"nombre": "Piles!",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 6"
+		},
+		{
+			"nombre": "Pistas Cruzadas",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "10 min",
+			"edadMinima": "+ 7"
+		},
+		{
+			"nombre": "Polilla tramposa",
+			"jugadores": "3 – 5 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 7"
+		},
+		{
+			"nombre": "Poltergeist",
+			"jugadores": "2 – 0 Jugadores",
+			"duracion": "0 min",
+			"edadMinima": "+ 0"
+		},
+		{
+			"nombre": "Poquer de Bichos",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Potion explotion",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Pradera",
+			"jugadores": "1 – 4 Jugadores",
+			"duracion": "90 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Project L",
+			"jugadores": "1 – 4 Jugadores",
+			"duracion": "40 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Purrlock Holmes: tras las pistas de Miaurarty",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Qwirkle",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 6"
+		},
+		{
+			"nombre": "Qwixx",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Racko",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Ramen Fury",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Rasca Cielos - Condorito",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "RCG",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "35 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Rebel Princess",
+			"jugadores": "",
+			"duracion": "",
+			"edadMinima": ""
+		},
+		{
+			"nombre": "Regroup Chicken Army",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 6"
+		},
+		{
+			"nombre": "Reinos de Papel",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 12"
+		},
+		{
+			"nombre": "Relatos del Hobbit en la del Dragón Verde",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "60 min",
+			"edadMinima": "+ 13"
+		},
+		{
+			"nombre": "Rescate",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Rhino Hero",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 5"
+		},
+		{
+			"nombre": "Ricochet robots",
+			"jugadores": "1 – 99 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Root",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "90 min",
+			"edadMinima": "+ 14"
+		},
+		{
+			"nombre": "Saboteur",
+			"jugadores": "3 – 10 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "San Francisco",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "60 min",
+			"edadMinima": "+ 12"
+		},
+		{
+			"nombre": "Sand",
+			"jugadores": "1 - 4 Jugadores",
+			"duracion": "120 min",
+			"edadMinima": "+ 14"
+		},
+		{
+			"nombre": "Savernake Forest",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "40 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Scout",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 9"
+		},
+		{
+			"nombre": "Scrabble Dash",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "10 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Secret Hitler",
+			"jugadores": "5 – 10 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 13"
+		},
+		{
+			"nombre": "Silk",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Skull",
+			"jugadores": "3 – 6 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Slam Boogle",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Splendor",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Spyfall",
+			"jugadores": "3 – 8 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 13"
+		},
+		{
+			"nombre": "Star Realms",
+			"jugadores": "2 – 2 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 12"
+		},
+		{
+			"nombre": "Stella Dixit",
+			"jugadores": "3 – 6 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Stratego",
+			"jugadores": "",
+			"duracion": "",
+			"edadMinima": ""
+		},
+		{
+			"nombre": "Sushi Go Party",
+			"jugadores": "2 – 8 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Sushi Go!",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Tag",
+			"jugadores": "2 – 2 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 12"
+		},
+		{
+			"nombre": "Takenoko",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Tank Up",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Tanxi",
+			"jugadores": "",
+			"duracion": "",
+			"edadMinima": ""
+		},
+		{
+			"nombre": "Tartapies",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 13"
+		},
+		{
+			"nombre": "Ten",
+			"jugadores": "1 – 5 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 10"
+		},
+		{
+			"nombre": "Terapeuta de Pacotilla",
+			"jugadores": "3 – 8 Jugadores",
+			"duracion": "60 min",
+			"edadMinima": "+ 17"
+		},
+		{
+			"nombre": "Thakhi",
+			"jugadores": "1 – 1 Jugadores",
+			"duracion": "25 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "The Game",
+			"jugadores": "1 – 5 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "The Grimm Forest",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "60 min",
+			"edadMinima": "+ 14"
+		},
+		{
+			"nombre": "The mind",
+			"jugadores": "2 – 4 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Throw Throw Avocado",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 7"
+		},
+		{
+			"nombre": "Timeline Chile",
+			"jugadores": "2 – 8 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Timeline: Ciencia y Descubrimientos",
+			"jugadores": "2 – 8 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Timeline: Eventos",
+			"jugadores": "2 – 8 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Timeline: Multitemático",
+			"jugadores": "2 – 8 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Toma 6",
+			"jugadores": "2 – 10 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Toskasi",
+			"jugadores": "2 – 5 Jugadores",
+			"duracion": "50 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Tranvía Mortal",
+			"jugadores": "3 – 13 Jugadores",
+			"duracion": "90 min",
+			"edadMinima": "+ 14"
+		},
+		{
+			"nombre": "Trapwords",
+			"jugadores": "4 – 8 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Trio",
+			"jugadores": "3 - 6 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 6"
+		},
+		{
+			"nombre": "Tulio Lulo Lana Tarro Patana",
+			"jugadores": "2 – 8 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Unicorn Fever",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "40 min",
+			"edadMinima": "+ 14"
+		},
+		{
+			"nombre": "Uno",
+			"jugadores": "2 – 10 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 6"
+		},
+		{
+			"nombre": "Uno Flip",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "15 min",
+			"edadMinima": "+ 7"
+		},
+		{
+			"nombre": "Uno No Mercy",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "30 min",
+			"edadMinima": "+ 7"
+		},
+		{
+			"nombre": "Unstable Unicorns",
+			"jugadores": "2 – 8 Jugadores",
+			"duracion": "60 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Unstable Unicorns: Aventuras",
+			"jugadores": "2 – 8 Jugadores",
+			"duracion": "60 min",
+			"edadMinima": "+ 14"
+		},
+		{
+			"nombre": "Unstable Unicorns: Dragones",
+			"jugadores": "2 – 8 Jugadores",
+			"duracion": "45 min",
+			"edadMinima": "+ 14"
+		},
+		{
+			"nombre": "Virus",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Virus 2",
+			"jugadores": "2 – 6 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "When I Dream",
+			"jugadores": "4 – 10 Jugadores",
+			"duracion": "40 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Winter",
+			"jugadores": "2 – 2 Jugadores",
+			"duracion": "10 min",
+			"edadMinima": "+ 8"
+		},
+		{
+			"nombre": "Zombie Dice",
+			"jugadores": "2 – 99 Jugadores",
+			"duracion": "20 min",
+			"edadMinima": "+ 10"
+		}
+	]
+}
