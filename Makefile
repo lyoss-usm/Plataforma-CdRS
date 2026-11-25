@@ -1,4 +1,10 @@
-.PHONY: all init start stop clean test-schemas seed-small seed-medium seed-large seed-clean reset-seed test-seed test-seed-integration test-db test-auth test-security help
+.PHONY: all init start stop clean test-schemas seed-small seed-medium seed-large seed-clean reset-seed test-seed test-seed-integration test-db test-auth test-security migracion-init migracion-preparar migracion-importar test-importacion help
+
+IMPORT_VENV ?= .venv-importacion
+IMPORT_PYTHON ?= $(IMPORT_VENV)/bin/python
+EXCEL ?=
+NOTION ?= scripts/importacion/notion.json
+CSV_DIR ?= .importacion/csv
 
 all: init start
 
@@ -20,6 +26,10 @@ help:
 	@echo "  test-db - Ejecuta las pruebas pgTAP de RLS (supabase/tests) contra Supabase local."
 	@echo "  test-auth - Prueba la autorización por rol en la API de Supabase y en el servidor web (hace build)."
 	@echo "  test-security - Ejecuta test-db y test-auth."
+	@echo "  migracion-init - Prepara Python e instala las dependencias de migración."
+	@echo "  migracion-preparar EXCEL=/ruta/app.xlsx - Genera los CSV y su informe."
+	@echo "  migracion-importar - Importa los CSV en la base configurada con DATABASE_URL o Supabase local."
+	@echo "  test-importacion - Valida la preparación e importación de CSV y los schemas Zod."
 	@echo "  clean  - Limpia todos los contenedores, imágenes y volúmenes de Docker."
 	@echo ""
 
@@ -73,6 +83,23 @@ test-auth:
 	@pnpm test:auth:web
 
 test-security: test-db test-auth
+
+migracion-init:
+	@python3 -m venv "$(IMPORT_VENV)"
+	@"$(IMPORT_PYTHON)" -m pip install -r scripts/importacion/requirements.txt
+	@pnpm install
+
+migracion-preparar:
+	@test -n "$(EXCEL)" || { echo "Falta EXCEL. Uso: make migracion-preparar EXCEL=/ruta/app.xlsx" >&2; exit 1; }
+	@"$(IMPORT_PYTHON)" scripts/importacion/normalizar.py --excel "$(EXCEL)" --notion "$(NOTION)" --salida "$(CSV_DIR)"
+
+migracion-importar:
+	@"$(IMPORT_PYTHON)" scripts/importacion/importar.py --csv "$(CSV_DIR)"
+
+test-importacion:
+	@"$(IMPORT_PYTHON)" -m unittest discover -s scripts/importacion/tests -v
+	@node --experimental-strip-types scripts/importacion/tests/zod.ts
+	@pnpm exec tsc --project scripts/importacion/tsconfig.json
 
 clean:
 	@sudo docker system prune -a --volumes -f

@@ -1,0 +1,4 @@
+{
+	"extends": "../tsconfig.json",
+	"include": ["./validar.ts", "./tests/zod.ts"]
+}
